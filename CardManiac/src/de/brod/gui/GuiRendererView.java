@@ -70,11 +70,17 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 		// Specifies the location and data format of an array of vertex
 
+		gl.glEnable(GL10.GL_TEXTURE_2D);
+		// Enable the texture state
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+
 		// Draw our scene.
 		// for (Sprite sp : lstSprites) {
 		//	sp.draw(gl);
 		// }
 		root.draw(gl);
+
+		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 
 		// Disable the vertices buffer.
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);

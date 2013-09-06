@@ -156,13 +156,12 @@ public class Sprite implements Comparable<Sprite> {
 			}
 
 			if (mTextureBuffer != null) {
-				gl.glEnable(GL10.GL_TEXTURE_2D);
-				// Enable the texture state
-				gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 
 				// Point to our buffers
 				gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
 				gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureId);
+			} else {
+				gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 			}
 			// ... end new part.
 
@@ -170,8 +169,10 @@ public class Sprite implements Comparable<Sprite> {
 			gl.glDrawElements(GL10.GL_TRIANGLES, mNumOfIndices,
 					GL10.GL_UNSIGNED_SHORT, mIndicesBuffer);
 			// New part...
-			if (mTextureBuffer != null) {
-				gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+			if (mTextureBuffer == null) {
+				gl.glEnable(GL10.GL_TEXTURE_2D);
+				// Enable the texture state
+				gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 			}
 		}
 		// ... end new part.
