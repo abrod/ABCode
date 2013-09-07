@@ -9,8 +9,8 @@ import de.brod.cm.game.FreeCell;
 import de.brod.cm.game.Game;
 import de.brod.gui.GuiRendererView;
 import de.brod.gui.IAction;
-import de.brod.gui.Sprite;
 import de.brod.gui.StateHandler;
+import de.brod.gui.shape.Sprite;
 import de.brod.xml.XmlObject;
 
 public class CardManiacView extends GuiRendererView<Card> {

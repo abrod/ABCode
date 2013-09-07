@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
-import de.brod.gui.Sprite;
+import de.brod.gui.shape.Sprite;
 import de.brod.xml.XmlObject;
 
 public class Hand {

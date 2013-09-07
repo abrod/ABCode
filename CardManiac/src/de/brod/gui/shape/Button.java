@@ -1,10 +1,12 @@
-package de.brod.gui;
+package de.brod.gui.shape;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import de.brod.gui.IAction;
+import de.brod.gui.Texture;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -59,8 +61,8 @@ public class Button extends Sprite {
 	private static Texture texture = null;
 	static float width = 0;
 	static float height = 0;
-	static float maxHeight;
-	static float maxWidth;
+	public static float maxHeight;
+	public static float maxWidth;
 
 	public static void init(AssetManager assetManager, GL10 gl, int pWidth,
 			int pHeight, float pfTitleHeight) {

@@ -1,4 +1,4 @@
-package de.brod.gui;
+package de.brod.gui.shape;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -9,13 +9,12 @@ import java.util.Vector;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import de.brod.gui.Texture;
 import android.graphics.Color;
 
-public class Sprite implements Comparable<Sprite> {
+public class Sprite extends Container implements Comparable<Sprite> {
 
 	private static final int[] pos = { 0, 6, 9, 3 };
-
-	private Texture tex;
 
 	// Our vertex buffer.
 	private FloatBuffer mVerticesBuffer = null;
@@ -33,8 +32,6 @@ public class Sprite implements Comparable<Sprite> {
 
 	// Smooth Colors
 	private FloatBuffer mColorBuffer = null;
-
-	private final List<Sprite> lstChildren = new Vector<Sprite>();
 
 	private float x, y, w, h, touchX, touchY;
 	private float dx, dy, xSave, ySave;
@@ -78,32 +75,6 @@ public class Sprite implements Comparable<Sprite> {
 
 		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
 		setIndices(indices);
-	}
-
-	/**
-	 * @param location
-	 * @param object
-	 * @see java.util.Vector#add(int, java.lang.Object)
-	 */
-	public void add(int location, Sprite object) {
-		lstChildren.add(location, object);
-	}
-
-	/**
-	 * @param object
-	 * @return
-	 * @see java.util.Vector#add(java.lang.Object)
-	 */
-	public boolean add(Sprite object) {
-		return lstChildren.add(object);
-	}
-
-	/**
-	 * 
-	 * @see java.util.Vector#clear()
-	 */
-	public void clear() {
-		lstChildren.clear();
 	}
 
 	@Override
@@ -175,33 +146,8 @@ public class Sprite implements Comparable<Sprite> {
 				gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 			}
 		}
-		// ... end new part.
-		// draw the children
-		for (Sprite child : lstChildren) {
-			child.draw(gl);
-		}
-	}
 
-	/**
-	 * @param location
-	 * @return
-	 * @see java.util.Vector#get(int)
-	 */
-	public Sprite get(int location) {
-		return lstChildren.get(location);
-	}
-
-	protected void getAllSprites(List<Sprite> plstSprites) {
-		for (Sprite child : lstChildren) {
-			if (child.tex != null) {
-				plstSprites.add(child);
-			}
-			child.getAllSprites(plstSprites);
-		}
-	}
-
-	public List<Sprite> getChildren() {
-		return lstChildren;
+		super.draw(gl);
 	}
 
 	public boolean isCenter() {
@@ -214,24 +160,6 @@ public class Sprite implements Comparable<Sprite> {
 
 	public boolean isMoving() {
 		return moving;
-	}
-
-	/**
-	 * @param location
-	 * @return
-	 * @see java.util.Vector#remove(int)
-	 */
-	public Sprite remove(int location) {
-		return lstChildren.remove(location);
-	}
-
-	/**
-	 * @param object
-	 * @return
-	 * @see java.util.Vector#remove(java.lang.Object)
-	 */
-	public boolean remove(Object object) {
-		return lstChildren.remove(object);
 	}
 
 	public boolean resetPosition() {
@@ -286,15 +214,13 @@ public class Sprite implements Comparable<Sprite> {
 	 * @param blue
 	 * @param alpha
 	 */
-	protected void setColor(float red, float green, float blue, float alpha) {
+	public void setColor(float red, float green, float blue, float alpha) {
 		mRGBA[0] = red;
 		mRGBA[1] = green;
 		mRGBA[2] = blue;
 		mRGBA[3] = alpha;
 		mColorBuffer = null;
-		for (Sprite child : lstChildren) {
-			child.setColor(red, green, blue, alpha);
-		}
+		super.setColor(red, green, blue, alpha);
 	}
 
 	public void setColor(int color) {
@@ -310,16 +236,14 @@ public class Sprite implements Comparable<Sprite> {
 	 * 
 	 * @param colors
 	 */
-	protected void setColors(float[] colors) {
+	public void setColors(float[] colors) {
 		// float has 4 bytes.
 		ByteBuffer cbb = ByteBuffer.allocateDirect(colors.length * 4);
 		cbb.order(ByteOrder.nativeOrder());
 		mColorBuffer = cbb.asFloatBuffer();
 		mColorBuffer.put(colors);
 		mColorBuffer.position(0);
-		for (Sprite child : lstChildren) {
-			child.setColors(colors);
-		}
+		super.setColors(colors);
 	}
 
 	public void setDimension(float px, float py, float width, float height) {
@@ -432,14 +356,6 @@ public class Sprite implements Comparable<Sprite> {
 		mVerticesBuffer.position(0);
 	}
 
-	/**
-	 * @return
-	 * @see java.util.Vector#size()
-	 */
-	public int size() {
-		return lstChildren.size();
-	}
-
 	public boolean slide(float d) {
 		d = d / len;
 		if (d > 1) {
@@ -451,7 +367,7 @@ public class Sprite implements Comparable<Sprite> {
 		return !sliding;
 	}
 
-	boolean touches(float px, float py) {
+	public boolean touches(float px, float py) {
 		if (tex == null) {
 			return false;
 		}

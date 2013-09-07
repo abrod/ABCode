@@ -3,8 +3,8 @@ package de.brod.cm;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.graphics.Bitmap;
-import de.brod.gui.Sprite;
 import de.brod.gui.Texture;
+import de.brod.gui.shape.Sprite;
 
 public class Card extends Sprite {
 

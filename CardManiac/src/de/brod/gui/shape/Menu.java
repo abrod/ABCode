@@ -1,4 +1,4 @@
-package de.brod.gui;
+package de.brod.gui.shape;
 
 import java.util.ArrayList;
 import java.util.List;

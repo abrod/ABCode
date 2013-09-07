@@ -1,9 +1,10 @@
-package de.brod.gui;
+package de.brod.gui.shape;
 
 import java.util.Hashtable;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import de.brod.gui.Texture;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;

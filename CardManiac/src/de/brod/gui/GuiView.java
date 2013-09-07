@@ -9,6 +9,12 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
+import de.brod.gui.shape.Button;
+import de.brod.gui.shape.Container;
+import de.brod.gui.shape.Menu;
+import de.brod.gui.shape.MenuItem;
+import de.brod.gui.shape.Sprite;
+import de.brod.gui.shape.Text;
 import de.brod.xml.XmlObject;
 
 public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
@@ -43,7 +49,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 
 	/** The OpenGL view */
 	StateHandler stateHandler;
-	List<Sprite> lstButtons;
+	List<Container> lstButtons;
 
 	List<MenuItem> lstMenuItems;
 
@@ -111,7 +117,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			return true;
 		}
 		for (int i = lstButtons.size() - 1; i >= 0; i--) {
-			Sprite sprite = lstButtons.get(i);
+			Container sprite = lstButtons.get(i);
 			if (sprite.touches(eventX, eventY)) {
 				if (sprite instanceof Button) {
 					System.out.println("Button " + sprite + " pressed");
@@ -266,7 +272,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	public void reload() {
 		area.clear();
 		initGroup(area, stateHandler.getLastHistoryEntry());
-		lstSprites = area.getChildren();
+		lstSprites = new ArrayList<Sprite>();
+		area.getSprites(lstSprites);
 		sortSprites();
 
 	}

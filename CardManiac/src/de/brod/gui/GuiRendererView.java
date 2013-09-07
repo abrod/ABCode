@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import de.brod.gui.shape.Button;
+import de.brod.gui.shape.Menu;
+import de.brod.gui.shape.MenuItem;
+import de.brod.gui.shape.Rectangle;
+import de.brod.gui.shape.Sprite;
+import de.brod.gui.shape.Text;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
