@@ -4,15 +4,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.util.List;
-import java.util.Vector;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import de.brod.gui.Texture;
 import android.graphics.Color;
+import de.brod.gui.Texture;
 
-public class Sprite extends Container implements Comparable<Sprite> {
+public class Sprite extends Container {
 
 	private static final int[] pos = { 0, 6, 9, 3 };
 
@@ -38,20 +36,14 @@ public class Sprite extends Container implements Comparable<Sprite> {
 
 	private float[] position = new float[12];;
 
-	private int id, sid;
-
-	private boolean moving, moveable = true;
-
 	private boolean center = true;
-
-	private boolean sliding;
 
 	private float len;
 
 	public Sprite() {
 		// this(null, 0, 0);
 		tex = null;
-		moveable = false;
+		setMoveable(false);
 	}
 
 	/**
@@ -75,34 +67,6 @@ public class Sprite extends Container implements Comparable<Sprite> {
 
 		short[] indices = new short[] { 0, 1, 2, 1, 3, 2 };
 		setIndices(indices);
-	}
-
-	@Override
-	public int compareTo(Sprite another) {
-		if (sliding != another.sliding) {
-			if (!another.sliding) {
-				return 1;
-			}
-			return -1;
-		}
-		if (moving != another.moving) {
-			if (!another.moving) {
-				return 1;
-			}
-			return -1;
-		}
-		if (moveable != another.moveable) {
-			if (!another.moveable) {
-				return 1;
-			}
-			return -1;
-		}
-
-		int c = sid - another.sid;
-		if (c == 0) {
-			c = id - another.id;
-		}
-		return c;
 	}
 
 	/**
@@ -154,30 +118,22 @@ public class Sprite extends Container implements Comparable<Sprite> {
 		return center;
 	}
 
-	public boolean isMoveable() {
-		return moveable;
-	}
-
-	public boolean isMoving() {
-		return moving;
-	}
-
 	public boolean resetPosition() {
-		sliding = x != xSave || y != ySave;
-		if (sliding) {
+		setSliding(x != xSave || y != ySave);
+		if (isSliding()) {
 			dx = x - xSave;
 			dy = y - ySave;
 			len = Math.max(0.01f,
 					Math.min(1, (float) Math.sqrt(dx * dx + dy * dy)));
 			setPosition(xSave, ySave);
 		}
-		return sliding;
+		return isSliding();
 	}
 
 	public void savePosition() {
 		xSave = x;
 		ySave = y;
-		sliding = false;
+		setSliding(false);
 	}
 
 	/**
@@ -252,10 +208,6 @@ public class Sprite extends Container implements Comparable<Sprite> {
 		setSize(width, height);
 	}
 
-	public void setId(int pId) {
-		id = pId;
-	}
-
 	/**
 	 * Set the indices.
 	 * 
@@ -272,18 +224,10 @@ public class Sprite extends Container implements Comparable<Sprite> {
 		mNumOfIndices = indices.length;
 	}
 
-	public void setMoveable(boolean moveable) {
-		this.moveable = moveable;
-	}
-
-	public void setMoving(boolean moving) {
-		this.moving = moving;
-	}
-
 	public void setPosition(float px, float py) {
 		x = px;
 		y = py;
-		sid = (int) ((x - y * 2) * 1000);
+		setSid((int) ((x - y * 2) * 1000));
 		if (center) {
 			position[0] = x - w;
 			position[1] = y - h;
@@ -363,8 +307,8 @@ public class Sprite extends Container implements Comparable<Sprite> {
 		}
 		setPosition(xSave + d * dx, ySave + d * dy);
 
-		sliding = d < 1;
-		return !sliding;
+		setSliding(d < 1);
+		return !isSliding();
 	}
 
 	public boolean touches(float px, float py) {

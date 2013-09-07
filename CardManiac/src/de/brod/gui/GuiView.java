@@ -31,7 +31,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		public void run() {
 			System.out.println("Start action");
 			// reset the slides
-			for (Sprite sprite : lstSprites) {
+			for (Container sprite : lstSprites) {
 				sprite.savePosition();
 				sprite.setMoving(false);
 			}
@@ -53,9 +53,9 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 
 	List<MenuItem> lstMenuItems;
 
-	private List<Sprite> lstSprites;
+	private List<Container> lstSprites;
 	private List<SPRITE> lstMoves = new ArrayList<SPRITE>();
-	private List<Sprite> lstSlides = new ArrayList<Sprite>();
+	private List<Container> lstSlides = new ArrayList<Container>();
 	Sprite area;
 	Menu menu;
 	private long startSlidingTime;
@@ -81,7 +81,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	protected abstract void initTextures(GL10 gl, int width2, int height2,
 			int statusBarHeight);
 
-	protected abstract boolean isInstanceOf(Sprite sprite);
+	protected abstract boolean isInstanceOf(Container sprite);
 
 	private boolean isThinking() {
 		return actionThread != null && actionThread.isAlive();
@@ -95,7 +95,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			return false;
 		}
 		if (lstSlides.size() > 0) {
-			for (Sprite sprite : lstSlides) {
+			for (Container sprite : lstSlides) {
 				sprite.slide(1);
 			}
 			lstSlides.clear();
@@ -130,7 +130,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			}
 		}
 		for (int i = lstSprites.size() - 1; i >= 0; i--) {
-			Sprite sprite = lstSprites.get(i);
+			Container sprite = lstSprites.get(i);
 			if (sprite.touches(eventX, eventY)) {
 				if (isInstanceOf(sprite)) {
 					System.out.println("touch " + i + " " + sprite.toString());
@@ -172,7 +172,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		if (lstMoves.size() > 0) {
 
 			// reset the slides
-			for (Sprite sprite : lstSprites) {
+			for (Container sprite : lstSprites) {
 				sprite.savePosition();
 			}
 			for (Sprite moveItem : lstMoves) {
@@ -180,7 +180,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			}
 			SPRITE selected = null;
 			for (int i = lstSprites.size() - 1; i >= 0; i--) {
-				Sprite sprite = lstSprites.get(i);
+				Sprite sprite = (Sprite) lstSprites.get(i);
 				if (!isInstanceOf(sprite)) {
 					// ignore
 				} else if (!lstMoves.contains(sprite)
@@ -208,13 +208,14 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		case MotionEvent.ACTION_DOWN:
 			if (mouseDown(eventX, eventY)) {
 				// Schedules a repaint.
-				update();
+				sortSprites();
+				requestRender();
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (mouseMove(eventX, eventY)) {
 				// Schedules a repaint.
-				update();
+				requestRender();
 			}
 			break;
 		case MotionEvent.ACTION_UP:
@@ -272,15 +273,14 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	public void reload() {
 		area.clear();
 		initGroup(area, stateHandler.getLastHistoryEntry());
-		lstSprites = new ArrayList<Sprite>();
-		area.getSprites(lstSprites);
+		lstSprites = area.getChildren();
 		sortSprites();
 
 	}
 
 	private void resetSlidePositions() {
 		lstSlides.clear();
-		for (Sprite sprite : lstSprites) {
+		for (Container sprite : lstSprites) {
 			if (sprite.resetPosition()) {
 				lstSlides.add(sprite);
 			}

@@ -7,7 +7,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import de.brod.gui.Texture;
 
-public class Container {
+public abstract class Container implements Comparable<Container> {
 
 	private final List<Container> lstChildren = new Vector<Container>();
 
@@ -15,6 +15,46 @@ public class Container {
 
 	public void add(int location, Container object) {
 		lstChildren.add(location, object);
+	}
+
+	@Override
+	public int compareTo(Container another) {
+		if (isSliding() != another.isSliding()) {
+			if (!another.isSliding()) {
+				return 1;
+			}
+			return -1;
+		}
+		if (moving != another.moving) {
+			if (!another.moving) {
+				return 1;
+			}
+			return -1;
+		}
+		if (isMoveable() != another.isMoveable()) {
+			if (!another.isMoveable()) {
+				return 1;
+			}
+			return -1;
+		}
+
+		int c = sid - another.sid;
+		if (c == 0) {
+			c = id - another.id;
+		}
+		return c;
+	}
+
+	private int id, sid;
+	private boolean moveable = true;
+	private boolean sliding;
+
+	public void setSid(int piSid) {
+		sid = piSid;
+	}
+
+	public void setId(int pId) {
+		id = pId;
 	}
 
 	/**
@@ -102,12 +142,36 @@ public class Container {
 		return false;
 	}
 
-	public void getSprites(List<Sprite> lstSprites) {
-		for (Container cont : lstChildren) {
-			if (cont instanceof Sprite) {
-				lstSprites.add((Sprite) cont);
-			}
-			cont.getSprites(lstSprites);
-		}
+	public abstract void savePosition();
+
+	public boolean isMoving() {
+		return moving;
 	}
+
+	public void setMoving(boolean moving) {
+		this.moving = moving;
+	}
+
+	protected boolean moving;
+
+	public abstract boolean slide(float f);
+
+	public abstract boolean resetPosition();
+
+	public boolean isMoveable() {
+		return moveable;
+	}
+
+	public void setMoveable(boolean moveable) {
+		this.moveable = moveable;
+	}
+
+	public boolean isSliding() {
+		return sliding;
+	}
+
+	public void setSliding(boolean sliding) {
+		this.sliding = sliding;
+	}
+
 }

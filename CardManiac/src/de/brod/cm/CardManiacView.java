@@ -10,6 +10,7 @@ import de.brod.cm.game.Game;
 import de.brod.gui.GuiRendererView;
 import de.brod.gui.IAction;
 import de.brod.gui.StateHandler;
+import de.brod.gui.shape.Container;
 import de.brod.gui.shape.Sprite;
 import de.brod.xml.XmlObject;
 
@@ -76,7 +77,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 	}
 
 	@Override
-	protected boolean isInstanceOf(Sprite sprite) {
+	protected boolean isInstanceOf(Container sprite) {
 		return sprite instanceof Card;
 	}
 
