@@ -4,7 +4,8 @@ import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.content.Context;
+import android.app.Activity;
+import android.content.Intent;
 import de.brod.cm.game.FreeCell;
 import de.brod.cm.game.Game;
 import de.brod.gui.GuiRendererView;
@@ -20,7 +21,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	private Hand[] hands;
 
-	public CardManiacView(Context context) {
+	public CardManiacView(Activity context) {
 		super(context);
 	}
 
@@ -85,6 +86,8 @@ public class CardManiacView extends GuiRendererView<Card> {
 	protected void menuPressed(String sItem, StateHandler stateHandler) {
 		if (sItem.equalsIgnoreCase("New")) {
 			stateHandler.clear();
+		} else {
+			getActivity().finish();
 		}
 	}
 

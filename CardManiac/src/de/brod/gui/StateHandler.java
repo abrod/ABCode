@@ -13,8 +13,10 @@ public class StateHandler {
 		try {
 			System.out.println("Save " + file.getAbsolutePath());
 			FileOutputStream out = new FileOutputStream(file);
-			out.write(xmlState.toString().getBytes());
+			String sXml = xmlState.toString();
+			out.write(sXml.getBytes());
 			out.close();
+			System.out.println(sXml);
 		} catch (IOException e) {
 			// invalid file
 			e.printStackTrace();
@@ -40,7 +42,7 @@ public class StateHandler {
 			// invalid file ... so clear
 			e.printStackTrace();
 		}
-		if (xmlState == null) {
+		if (xmlState == null || !xmlState.getName().equals("State")) {
 			xmlState = new XmlObject("<State />");
 		}
 		histories = xmlState.getObject("Histories", "root", "true", true);

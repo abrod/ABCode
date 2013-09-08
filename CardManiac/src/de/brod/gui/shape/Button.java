@@ -92,7 +92,7 @@ public class Button extends Sprite {
 	private Type type;
 	IAction action;
 
-	public Button(Type type, IAction action) {
+	private Button(Type type, IAction action) {
 		super(texture, width, height);
 		this.type = type;
 		this.action = action;

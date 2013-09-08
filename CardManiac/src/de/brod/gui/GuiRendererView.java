@@ -6,13 +6,9 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import de.brod.gui.shape.Button;
-import de.brod.gui.shape.Menu;
-import de.brod.gui.shape.MenuItem;
-import de.brod.gui.shape.Rectangle;
-import de.brod.gui.shape.Sprite;
-import de.brod.gui.shape.Text;
-import android.content.Context;
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
 import android.opengl.GLSurfaceView;
@@ -20,15 +16,27 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+import de.brod.cm.R;
+import de.brod.gui.shape.Button;
+import de.brod.gui.shape.Menu;
+import de.brod.gui.shape.MenuItem;
+import de.brod.gui.shape.Rectangle;
+import de.brod.gui.shape.Sprite;
+import de.brod.gui.shape.Text;
 
 public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		GuiView<SPRITE> implements Renderer {
 
 	private float width, height, wd, hg;
-	private Context activity;
+	private Activity activity;
 	private Sprite root;
+	private Texture iconTexture;
 
-	public GuiRendererView(Context context) {
+	public Activity getActivity() {
+		return activity;
+	}
+
+	public GuiRendererView(Activity context) {
 		super(context);
 		activity = context;
 		// set our renderer to be the main renderer with
@@ -173,6 +181,12 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		Text.init(gl, width, height, fTitleHeight, activity);
 		Rectangle.init(gl, fTitleHeight);
 
+		// add the current image
+		Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(),
+				R.drawable.ic_launcher);
+		iconTexture = new Texture(gl, bitmap, 1, 1);
+		bitmap.recycle();
+
 		initTextures(gl, width, height, statusBarHeight);
 
 		stateHandler = new StateHandler(new File(activity.getFilesDir(),
@@ -192,12 +206,16 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		title.add(titleBar);
 
 		float fontHeight = fTitleHeight * 0.7f;
-		Text textHallo = Text.createText(getApplicationName(), -Button.maxWidth
-				+ fTitleHeight / 2, Button.maxHeight
+		Text textTitle = Text.createText(getApplicationName(), -Button.maxWidth
+				+ fTitleHeight*1.1f, Button.maxHeight
 				- (fontHeight + (fTitleHeight - fontHeight) / 2), fontHeight);
 
-		textHallo.setColor(Color.GREEN);
-		title.add(textHallo);
+		textTitle.setColor(Color.WHITE);
+		Sprite icon = new Sprite(iconTexture, fTitleHeight, fTitleHeight);
+		icon.setPosition(-Button.maxWidth + fTitleHeight / 2, Button.maxHeight
+				- (fTitleHeight / 2));
+		title.add(icon);
+		title.add(textTitle);
 
 		// add the buttons
 		title.add(Button.Type.menu.createButton(0, 5, true, Align.RIGHT,
