@@ -207,15 +207,16 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 		float fontHeight = fTitleHeight * 0.7f;
 		Text textTitle = Text.createText(getApplicationName(), -Button.maxWidth
-				+ fTitleHeight*1.1f, Button.maxHeight
-				- (fontHeight + (fTitleHeight - fontHeight) / 2), fontHeight);
+				+ fTitleHeight * 1.1f, Button.maxHeight
+				- (fTitleHeight + fontHeight) / 2, fontHeight);
 
 		textTitle.setColor(Color.WHITE);
+		title.add(textTitle);
+
 		Sprite icon = new Sprite(iconTexture, fTitleHeight, fTitleHeight);
 		icon.setPosition(-Button.maxWidth + fTitleHeight / 2, Button.maxHeight
 				- (fTitleHeight / 2));
 		title.add(icon);
-		title.add(textTitle);
 
 		// add the buttons
 		title.add(Button.Type.menu.createButton(0, 5, true, Align.RIGHT,
