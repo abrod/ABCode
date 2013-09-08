@@ -82,7 +82,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 		// Draw our scene.
 		// for (Sprite sp : lstSprites) {
-		//	sp.draw(gl);
+		// sp.draw(gl);
 		// }
 		root.draw(gl);
 
@@ -126,8 +126,8 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		// Calculate the aspect ratio of the window
 		GLU.gluOrtho2D(gl, -wd, wd, -hg, hg);
 
-		//GLU.gluPerspective(gl, 45.0f, (float) width / (float) height, 0.1f,
-		//				   1000.0f);
+		// GLU.gluPerspective(gl, 45.0f, (float) width / (float) height, 0.1f,
+		// 1000.0f);
 		// Select the modelview matrix
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		// Reset the modelview matrix
@@ -157,7 +157,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		// Really nice perspective calculations.
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
 
-		// Enable blending using premultiplied alpha. 
+		// Enable blending using premultiplied alpha.
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		// init the textures
@@ -165,7 +165,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		int width = metrics.widthPixels;
 		int height = metrics.heightPixels;
 
-		// init 
+		// init
 		int statusBarHeight = Math.round(48 * metrics.density);
 		float fTitleHeight = statusBarHeight * 2f / Math.min(height, width);
 
@@ -191,9 +191,10 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		titleBar.setColor(Color.argb(128, 0, 0, 0));
 		title.add(titleBar);
 
-		Text textHallo = Text.createText("Hallo", -Button.maxWidth
-				+ fTitleHeight / 2, Button.maxHeight - fTitleHeight,
-				fTitleHeight);
+		float fontHeight = fTitleHeight * 0.7f;
+		Text textHallo = Text.createText(getApplicationName(), -Button.maxWidth
+				+ fTitleHeight / 2, Button.maxHeight
+				- (fontHeight + (fTitleHeight - fontHeight) / 2), fontHeight);
 
 		textHallo.setColor(Color.GREEN);
 		title.add(textHallo);

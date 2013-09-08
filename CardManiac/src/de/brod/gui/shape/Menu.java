@@ -37,10 +37,12 @@ public class Menu extends Sprite {
 			maxWidth = Math.max(maxWidth, menuItem.getTextWidth());
 		}
 		float fTitleHeight = Button.height;
+		float border = fTitleHeight / 15;
 		for (int i = 0; i < lstMenuItems.size(); i++) {
 			MenuItem menuItem = lstMenuItems.get(i);
-			menuItem.setDimension(Button.maxWidth - maxWidth, Button.maxHeight
-					- fTitleHeight * (2 + i), maxWidth, fTitleHeight);
+			menuItem.setDimension(Button.maxWidth - maxWidth - border,
+					Button.maxHeight - (border + fTitleHeight) * (2 + i),
+					maxWidth, fTitleHeight);
 		}
 		plstMenuItems.clear();
 		plstMenuItems.addAll(lstMenuItems);

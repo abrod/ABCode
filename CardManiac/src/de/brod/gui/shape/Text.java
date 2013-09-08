@@ -39,7 +39,8 @@ public class Text extends Sprite {
 			String text = String.valueOf(ch);
 			paint.getTextBounds(text, 0, 1, bounds);
 			ox = Math.max(0, -bounds.left);
-			size = 4 + bounds.left + ox + bounds.width();//(int) paint.measureText(text);
+			size = 4 + bounds.left + ox + bounds.width();// (int)
+															// paint.measureText(text);
 			println(ch + " " + x + " " + y + " " + size, bounds);
 			if (x + size >= pwd) {
 				x = 0;
@@ -52,9 +53,10 @@ public class Text extends Sprite {
 	}
 
 	private static void println(String string, Rect bounds2) {
-		//System.out.println(string + " [" + bounds2.left + " " + bounds2.width()
-		//		+ " " + bounds2.right + "/" + bounds2.top + " "
-		//		+ bounds2.height() + " " + bounds2.bottom + "]");
+		// System.out.println(string + " [" + bounds2.left + " " +
+		// bounds2.width()
+		// + " " + bounds2.right + "/" + bounds2.top + " "
+		// + bounds2.height() + " " + bounds2.bottom + "]");
 	}
 
 	public float width;
@@ -63,7 +65,7 @@ public class Text extends Sprite {
 	private static Hashtable<String, CharType> ht;
 	private static int wd;
 
-	public static Text createText(String psText, float fHeight) {
+	private static Text createText(String psText, float fHeight) {
 		CharType charType = ht.get(psText.substring(0, 1));
 		if (charType == null) {
 			charType = ht.get(" ");

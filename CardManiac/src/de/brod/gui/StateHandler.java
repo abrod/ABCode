@@ -8,18 +8,16 @@ import java.io.IOException;
 import de.brod.xml.XmlObject;
 
 public class StateHandler {
-	class SaveThread extends Thread {
-		@Override
-		public void run() {
-			try {
-				System.out.println("Save " + file.getAbsolutePath());
-				FileOutputStream out = new FileOutputStream(file);
-				out.write(xmlState.toString().getBytes());
-				out.close();
-			} catch (IOException e) {
-				// invalid file
-				e.printStackTrace();
-			}
+
+	private void saveState() {
+		try {
+			System.out.println("Save " + file.getAbsolutePath());
+			FileOutputStream out = new FileOutputStream(file);
+			out.write(xmlState.toString().getBytes());
+			out.close();
+		} catch (IOException e) {
+			// invalid file
+			e.printStackTrace();
 		}
 	}
 
@@ -28,7 +26,6 @@ public class StateHandler {
 	private XmlObject histories;
 	private File file;
 
-	private SaveThread saveThread;
 	private int iCounter;
 
 	public StateHandler(File pFile) {
@@ -76,19 +73,6 @@ public class StateHandler {
 
 	public XmlObject getLastHistoryEntry() {
 		return lastHistoryEntry;
-	}
-
-	public void saveState() {
-		if (saveThread != null) {
-			try {
-				saveThread.join();
-			} catch (InterruptedException e) {
-				// Interrupted
-				e.printStackTrace();
-			}
-		}
-		saveThread = new SaveThread();
-		saveThread.start();
 	}
 
 	private void setValues() {

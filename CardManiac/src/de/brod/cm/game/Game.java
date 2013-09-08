@@ -13,7 +13,9 @@ public abstract class Game {
 	}
 
 	public String getName() {
-		return getClass().getName();
+		String sName = getClass().getName();
+		sName = sName.substring(sName.lastIndexOf(".") + 1);
+		return sName;
 	}
 
 	public abstract IAction getNextAction();
