@@ -1,6 +1,7 @@
 package de.brod.gui;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,6 +24,7 @@ public abstract class GuiActivity extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		// Initiate the Open GL view and
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
 		// create an instance with this activity
 		glSurfaceView = createGuiRendererView();
