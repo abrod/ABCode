@@ -11,33 +11,37 @@ public class StateHandler {
 
 	private void saveState() {
 		try {
-			System.out.println("Save " + file.getAbsolutePath());
-			FileOutputStream out = new FileOutputStream(file);
-			String sXml = xmlState.toString();
-			out.write(sXml.getBytes());
-			out.close();
-			System.out.println(sXml);
+			saveXml(file, xmlState);
+			if (lastHistoryEntry != null) {
+				File f = getHistoryFile();
+				if (f != null) {
+					saveXml(f, lastHistoryEntry);
+				}
+			}
+
 		} catch (IOException e) {
 			// invalid file
 			e.printStackTrace();
 		}
 	}
 
+	private void saveXml(File pFile, XmlObject pXml) throws IOException {
+		System.out.println("Save File " + pFile.getAbsolutePath());
+		FileOutputStream out = new FileOutputStream(pFile);
+		String sXml = pXml.toString();
+		out.write(sXml.getBytes());
+		out.close();
+	}
+
 	private XmlObject xmlState;
 	private XmlObject lastHistoryEntry;
-	private XmlObject histories;
 	private File file;
-
-	private int iCounter;
 
 	public StateHandler(File pFile) {
 		xmlState = null;
 		file = pFile;
 		try {
-			System.out.println("Load " + file.getAbsolutePath());
-			FileInputStream pxStream = new FileInputStream(file);
-			xmlState = new XmlObject(pxStream);
-			pxStream.close();
+			xmlState = loadXml(file);
 		} catch (IOException e) {
 			// invalid file ... so clear
 			e.printStackTrace();
@@ -45,26 +49,29 @@ public class StateHandler {
 		if (xmlState == null || !xmlState.getName().equals("State")) {
 			xmlState = new XmlObject("<State />");
 		}
-		histories = xmlState.getObject("Histories", "root", "true", true);
 		setValues();
+	}
+
+	private XmlObject loadXml(File pFile) throws IOException {
+		System.out.println("load File " + pFile.getAbsolutePath());
+		FileInputStream pxStream = new FileInputStream(pFile);
+		XmlObject ret = new XmlObject(pxStream);
+		pxStream.close();
+		return ret;
 	}
 
 	public void addHistory(XmlObject historyEntry) {
 		if (lastHistoryEntry == null
 				|| !lastHistoryEntry.toString().equals(historyEntry.toString())) {
-			while (histories.getObjectCount() > iCounter) {
-				histories.deleteObject(iCounter);
-			}
-			histories.addObject(historyEntry);
-			iCounter = histories.getObjectCount();
-
+			int iCounter = xmlState.getAttributeAsInt("counter") + 1;
+			xmlState.setAttribute("counter", iCounter);
 			lastHistoryEntry = historyEntry;
 			saveState();
 		}
 	}
 
 	public void clear() {
-		histories.deleteAll();
+		xmlState = new XmlObject("<State />");
 		setValues();
 	}
 
@@ -78,12 +85,25 @@ public class StateHandler {
 	}
 
 	private void setValues() {
-		XmlObject[] history = histories.getObjects();
-		iCounter = history.length;
-		if (iCounter > 0) {
-			lastHistoryEntry = history[iCounter - 1];
-		} else {
-			lastHistoryEntry = null;
+		File f = getHistoryFile();
+		lastHistoryEntry = null;
+		if (f != null && f.exists()) {
+			try {
+				lastHistoryEntry = loadXml(f);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+	}
+
+	private File getHistoryFile() {
+		int iCounter = xmlState.getAttributeAsInt("counter");
+		if (iCounter > 0) {
+			File f = new File(file.getParent(), file.getName() + ".h"
+					+ iCounter);
+			return f;
+		}
+		return null;
 	}
 }
