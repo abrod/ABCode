@@ -10,6 +10,7 @@ import de.brod.gui.Texture;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Paint.Align;
 
 public class Button extends Sprite {
@@ -51,7 +52,7 @@ public class Button extends Sprite {
 			} else if (align.equals(Align.LEFT)) {
 				px = -maxWidth + width * (i + 0.5f);
 			} else {
-				px = -maxWidth + (maxWidth * i + 0.5f) / piCount;
+				px = maxWidth - (maxWidth * (i + 0.5f) * 2) / piCount;
 			}
 
 			return createButton(px, py, action);
@@ -99,11 +100,16 @@ public class Button extends Sprite {
 	}
 
 	public void pressed() {
+		// setColor(Color.BLUE);
 		action.action();
 	}
 
 	@Override
 	public String toString() {
 		return type.toString();
+	}
+
+	public void release() {
+		// setColor(Color.WHITE);
 	}
 }

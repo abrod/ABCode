@@ -1,16 +1,18 @@
 package de.brod.cm;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import android.app.Activity;
-import android.content.Intent;
 import de.brod.cm.game.FreeCell;
 import de.brod.cm.game.Game;
 import de.brod.gui.GuiRendererView;
 import de.brod.gui.IAction;
 import de.brod.gui.StateHandler;
+import de.brod.gui.shape.Button;
+import de.brod.gui.shape.Button.Type;
 import de.brod.gui.shape.Container;
 import de.brod.gui.shape.Sprite;
 import de.brod.xml.XmlObject;
@@ -121,6 +123,15 @@ public class CardManiacView extends GuiRendererView<Card> {
 					"" + hand.getId(), true);
 			hand.saveState(xmlHand);
 		}
+	}
+
+	@Override
+	protected List<Type> getButtonsBottom() {
+		List<Type> lst = new ArrayList<Button.Type>();
+		lst.add(Type.question);
+		lst.add(Type.redo);
+		lst.add(Type.undo);
+		return lst;
 	}
 
 }

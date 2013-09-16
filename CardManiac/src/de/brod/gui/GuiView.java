@@ -61,6 +61,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	private long startSlidingTime;
 
 	private ActionThread actionThread;
+	private Button pressedButton;
 
 	public GuiView(Context context) {
 		super(context);
@@ -94,6 +95,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		if (isThinking()) {
 			return false;
 		}
+		pressedButton = null;
 		if (lstSlides.size() > 0) {
 			for (Container sprite : lstSlides) {
 				sprite.slide(1);
@@ -121,7 +123,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			if (sprite.touches(eventX, eventY)) {
 				if (sprite instanceof Button) {
 					System.out.println("Button " + sprite + " pressed");
-					((Button) sprite).pressed();
+					pressedButton = (Button) sprite;
+					pressedButton.pressed();
 					return true;
 				} else if (sprite instanceof Text) {
 					System.out.println("Text " + sprite + " pressed");
@@ -167,6 +170,10 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	private boolean mouseUp(float eventX, float eventY) {
 		if (isThinking()) {
 			return false;
+		}
+		if (pressedButton != null) {
+			pressedButton.release();
+			pressedButton = null;
 		}
 
 		if (lstMoves.size() > 0) {

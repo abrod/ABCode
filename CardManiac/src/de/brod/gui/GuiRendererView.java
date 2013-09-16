@@ -2,6 +2,7 @@ package de.brod.gui;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -18,6 +19,7 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import de.brod.cm.R;
 import de.brod.gui.shape.Button;
+import de.brod.gui.shape.Button.Type;
 import de.brod.gui.shape.Menu;
 import de.brod.gui.shape.MenuItem;
 import de.brod.gui.shape.Rectangle;
@@ -219,22 +221,61 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		title.add(icon);
 
 		// add the buttons
-		title.add(Button.Type.menu.createButton(0, 5, true, Align.RIGHT,
-				new IAction() {
+		List<Button.Type> lstButtonTop = getButtonsTop();
+		List<Button.Type> lstButtonBottom = getButtonsBottom();
+
+		if (width < height) {
+			Rectangle titleBar2 = new Rectangle(-Button.maxWidth,
+					-Button.maxHeight, Button.maxWidth * 2, fTitleHeight);
+			titleBar2.setColor(Color.argb(128, 0, 0, 0));
+			title.add(titleBar2);
+			int maxCount = lstButtonBottom.size();
+			for (int i = 0; i < maxCount; i++) {
+				final Type type = lstButtonBottom.get(i);
+				IAction action = new IAction() {
 					@Override
 					public void action() {
-						openMenu();
+						buttonPressed(type);
 					}
-				}));
-		title.add(Button.Type.people.createButton(1, 5, true, Align.RIGHT,
-				new IAction() {
-					@Override
-					public void action() {
-					}
-				}));
+				};
+				title.add(type.createButton(i, maxCount, false, Align.CENTER,
+						action));
+			}
+
+		} else {
+			lstButtonTop.addAll(lstButtonBottom);
+			lstButtonBottom.clear();
+		}
+		int maxCount = Math.min(lstButtonTop.size(), 5);
+
+		for (int i = 0; i < lstButtonTop.size(); i++) {
+			final Type type = lstButtonTop.get(i);
+			IAction action = new IAction() {
+				@Override
+				public void action() {
+					buttonPressed(type);
+				}
+			};
+			title.add(type.createButton(i, maxCount, true, Align.RIGHT, action));
+		}
+
 		lstButtons = title.getChildren();
 		lstMenuItems = new ArrayList<MenuItem>();
 		reload();
+	}
+
+	protected abstract List<Type> getButtonsBottom();
+
+	protected void buttonPressed(Type type) {
+		if (type.equals(Type.menu)) {
+			openMenu();
+		}
+	}
+
+	public List<Type> getButtonsTop() {
+		ArrayList<Type> arrayList = new ArrayList<Type>();
+		arrayList.add(Button.Type.menu);
+		return arrayList;
 	}
 
 }
