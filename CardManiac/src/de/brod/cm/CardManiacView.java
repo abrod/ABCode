@@ -23,6 +23,14 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	private Hand[] hands;
 
+	private int _width;
+
+	private int _height;
+
+	private int _piOffsetTop;
+
+	private GL10 _gl;
+
 	public CardManiacView(Activity context) {
 		super(context);
 	}
@@ -72,11 +80,26 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected void initTextures(GL10 gl, int width, int height, int piOffsetTop) {
-		game = new FreeCell();
-		float fOffsetTop = piOffsetTop * 2f / Math.min(width, height);
-		Card.init(gl, width, height, fOffsetTop,
-				game.getAmountOfCardsPerWidth());
-		hands = game.initHands(width > height);
+		_width = width;
+		_height = height;
+		_piOffsetTop = piOffsetTop;
+		_gl = gl;
+
+		float fOffsetTop = _piOffsetTop * 2f / Math.min(_width, _height);
+		Card.init(_gl, _width, _height, fOffsetTop);
+
+	}
+
+	protected void initApplication() {
+		// set the correct game
+		setGame(new FreeCell());
+		// init the application (menu, etc.)
+		super.initApplication();
+	}
+
+	public void setGame(Game pGame) {
+		game = pGame;
+		hands = game.initHands(_width > _height);
 	}
 
 	@Override

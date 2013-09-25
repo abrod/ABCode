@@ -29,10 +29,12 @@ import de.brod.gui.shape.Text;
 public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		GuiView<SPRITE> implements Renderer {
 
-	private float width, height, wd, hg;
+	private int width, height;
+	float wd, hg;
 	private Activity activity;
 	private Sprite root;
 	private Texture iconTexture;
+	private float fTitleHeight;
 
 	public Activity getActivity() {
 		return activity;
@@ -172,12 +174,12 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		// init the textures
 		DisplayMetrics metrics = getResources().getDisplayMetrics();
-		int width = metrics.widthPixels;
-		int height = metrics.heightPixels;
+		width = metrics.widthPixels;
+		height = metrics.heightPixels;
 
 		// init
 		int statusBarHeight = Math.round(48 * metrics.density);
-		float fTitleHeight = statusBarHeight * 2f / Math.min(height, width);
+		fTitleHeight = statusBarHeight * 2f / Math.min(height, width);
 
 		Button.init(activity.getAssets(), gl, width, height, fTitleHeight);
 		Text.init(gl, width, height, fTitleHeight, activity);
@@ -189,7 +191,14 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		iconTexture = new Texture(gl, bitmap, 1, 1);
 		bitmap.recycle();
 
+		// init the textures
 		initTextures(gl, width, height, statusBarHeight);
+
+		initApplication();
+
+	}
+
+	protected void initApplication() {
 
 		stateHandler = new StateHandler(new File(activity.getFilesDir(),
 				getApplicationName() + ".conf.xml"));
@@ -202,28 +211,44 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		menu = new Menu();
 		root.add(menu);
 
+		// createa a title bar
 		Rectangle titleBar = new Rectangle(-Button.maxWidth, Button.maxHeight
 				- fTitleHeight, Button.maxWidth * 2, fTitleHeight);
 		titleBar.setColor(Color.argb(128, 0, 0, 0));
 		title.add(titleBar);
 
+		// create a title text
+		float fMoveLeft = 0.5f;
 		float fontHeight = fTitleHeight * 0.7f;
 		Text textTitle = Text.createText(getApplicationName(), -Button.maxWidth
-				+ fTitleHeight * 1.1f, Button.maxHeight
+				+ fTitleHeight * (1.1f + fMoveLeft), Button.maxHeight
 				- (fTitleHeight + fontHeight) / 2, fontHeight);
 
 		textTitle.setColor(Color.WHITE);
 		title.add(textTitle);
 
+		// create a title icon
 		Sprite icon = new Sprite(iconTexture, fTitleHeight, fTitleHeight);
-		icon.setPosition(-Button.maxWidth + fTitleHeight / 2, Button.maxHeight
-				- (fTitleHeight / 2));
+		icon.setPosition(-Button.maxWidth + fTitleHeight * (0.5f + fMoveLeft),
+				Button.maxHeight - (fTitleHeight / 2));
 		title.add(icon);
+
+		if (fMoveLeft > 0) {
+			title.add(Button.Type.left.createButton(-Button.maxWidth
+					+ fTitleHeight * (0.5f), Button.maxHeight
+					- (fTitleHeight / 2), new IAction() {
+				@Override
+				public void action() {
+					// TODO Auto-generated method stub
+				}
+			}));
+		}
 
 		// add the buttons
 		List<Button.Type> lstButtonTop = getButtonsTop();
 		List<Button.Type> lstButtonBottom = getButtonsBottom();
 
+		// portait mode
 		if (width < height) {
 			Rectangle titleBar2 = new Rectangle(-Button.maxWidth,
 					-Button.maxHeight, Button.maxWidth * 2, fTitleHeight);
@@ -262,6 +287,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		lstButtons = title.getChildren();
 		lstMenuItems = new ArrayList<MenuItem>();
 		reload();
+
 	}
 
 	protected abstract List<Type> getButtonsBottom();

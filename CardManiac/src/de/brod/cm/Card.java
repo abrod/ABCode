@@ -110,17 +110,19 @@ public class Card extends Sprite {
 		return ym - offsetY - cardHeight * (y + 0.5f);
 	}
 
-	public static void init(GL10 gl, int width, int height, float piOffsetY,
-			int amountOfCardsPerWidth) {
+	public static void init(GL10 gl, int width, int height, float piOffsetY) {
 		float ratio = width * 1f / height;
+		int amountOfCardsPerWidth = 8;
 		ym = 1f;
 		if (ratio < 1) {// width<height
 			ym = 1 / ratio;
 		}
+
 		offsetY = piOffsetY;
 		cardWidth = (2f / amountOfCardsPerWidth);
 		cardHeight = (cardWidth * 3 / 2);
 		maxCardY = (ym * 2 - offsetY - cardHeight) / cardHeight;
+
 		Bitmap bitmap = CardImage.createBitmap(Math.min(width, height), 0,
 				amountOfCardsPerWidth);
 		cardTextures = new Texture(gl, bitmap, 6, 4);

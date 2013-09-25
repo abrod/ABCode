@@ -8,10 +8,6 @@ import de.brod.gui.IAction;
 
 public abstract class Game {
 
-	public int getAmountOfCardsPerWidth() {
-		return 8;
-	}
-
 	public String getName() {
 		String sName = getClass().getName();
 		sName = sName.substring(sName.lastIndexOf(".") + 1);
