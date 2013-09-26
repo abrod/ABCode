@@ -112,4 +112,8 @@ public class Button extends Sprite {
 	public void release() {
 		// setColor(Color.WHITE);
 	}
+
+	public void resize(float f) {
+		setSize(width * f, height * f);
+	}
 }

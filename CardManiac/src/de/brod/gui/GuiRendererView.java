@@ -186,8 +186,8 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		Rectangle.init(gl, fTitleHeight);
 
 		// add the current image
-		Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(),
-				R.drawable.ic_launcher);
+		Bitmap bitmap = Texture.base2image(BitmapFactory.decodeResource(
+				activity.getResources(), R.drawable.ic_launcher));
 		iconTexture = new Texture(gl, bitmap, 1, 1);
 		bitmap.recycle();
 
@@ -234,14 +234,16 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		title.add(icon);
 
 		if (fMoveLeft > 0) {
-			title.add(Button.Type.left.createButton(-Button.maxWidth
-					+ fTitleHeight * (0.5f), Button.maxHeight
+			Button leftButton = Button.Type.left.createButton(-Button.maxWidth
+					+ fTitleHeight * (0.25f), Button.maxHeight
 					- (fTitleHeight / 2), new IAction() {
 				@Override
 				public void action() {
 					// TODO Auto-generated method stub
 				}
-			}));
+			});
+			leftButton.resize(0.7f);
+			title.add(leftButton);
 		}
 
 		// add the buttons
