@@ -228,7 +228,15 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		title.add(textTitle);
 
 		// create a title icon
-		Sprite icon = new Sprite(iconTexture, fTitleHeight, fTitleHeight);
+		IAction backAction = new IAction() {
+			@Override
+			public void action() {
+				// TODO Auto-generated method stub
+
+			}
+		};
+		Sprite icon = new Button(iconTexture, fTitleHeight, fTitleHeight,
+				"Icon", backAction);
 		icon.setPosition(-Button.maxWidth + fTitleHeight * (0.5f + fMoveLeft),
 				Button.maxHeight - (fTitleHeight / 2));
 		title.add(icon);
@@ -236,12 +244,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		if (fMoveLeft > 0) {
 			Button leftButton = Button.Type.left.createButton(-Button.maxWidth
 					+ fTitleHeight * (0.25f), Button.maxHeight
-					- (fTitleHeight / 2), new IAction() {
-				@Override
-				public void action() {
-					// TODO Auto-generated method stub
-				}
-			});
+					- (fTitleHeight / 2), backAction);
 			leftButton.resize(0.7f);
 			title.add(leftButton);
 		}

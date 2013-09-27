@@ -5,13 +5,12 @@ import java.io.InputStream;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import de.brod.gui.IAction;
-import de.brod.gui.Texture;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Paint.Align;
+import de.brod.gui.IAction;
+import de.brod.gui.Texture;
 
 public class Button extends Sprite {
 
@@ -31,10 +30,9 @@ public class Button extends Sprite {
 		}
 
 		public Button createButton(float px, float py, IAction action) {
-			Button button = new Button(this, action);
+			Button button = new Button(this.toString(), action);
 			button.setCell(x, y);
 			button.setPosition(px, py);
-			button.setMoveable(false);
 			return button;
 		}
 
@@ -90,13 +88,19 @@ public class Button extends Sprite {
 		}
 	}
 
-	private Type type;
+	private String type;
 	IAction action;
 
-	private Button(Type type, IAction action) {
-		super(texture, width, height);
-		this.type = type;
+	private Button(String psType, IAction action) {
+		this(texture, width, height, psType, action);
+	}
+
+	public Button(Texture pTexture, float piWidth, float piHeight,
+			String psType, IAction action) {
+		super(pTexture, piWidth, piHeight);
+		this.type = psType;
 		this.action = action;
+		setMoveable(false);
 	}
 
 	public void pressed() {
@@ -106,7 +110,7 @@ public class Button extends Sprite {
 
 	@Override
 	public String toString() {
-		return type.toString();
+		return type;
 	}
 
 	public void release() {
