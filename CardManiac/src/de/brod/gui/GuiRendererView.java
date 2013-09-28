@@ -186,10 +186,10 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		Rectangle.init(gl, fTitleHeight);
 
 		// add the current image
-		Bitmap bitmap = Texture.base2image(BitmapFactory.decodeResource(
+		Bitmap bitmapIcon = Texture.base2image(BitmapFactory.decodeResource(
 				activity.getResources(), R.drawable.ic_launcher));
-		iconTexture = new Texture(gl, bitmap, 1, 1);
-		bitmap.recycle();
+		iconTexture = new Texture(gl, bitmapIcon, 1, 1);
+		bitmapIcon.recycle();
 
 		// init the textures
 		initTextures(gl, width, height, statusBarHeight);
@@ -219,6 +219,18 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 		// create a title text
 		float fMoveLeft = 0.5f;
+		// create a title icon
+		IAction backAction = null;
+		if (showBackButton()) {
+			backAction = new IAction() {
+				@Override
+				public void action() {
+					backButtonPressed();
+				}
+			};
+		} else {
+			fMoveLeft = 0;
+		}
 		float fontHeight = fTitleHeight * 0.7f;
 		Text textTitle = Text.createText(getApplicationName(), -Button.maxWidth
 				+ fTitleHeight * (1.1f + fMoveLeft), Button.maxHeight
@@ -227,14 +239,6 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		textTitle.setColor(Color.WHITE);
 		title.add(textTitle);
 
-		// create a title icon
-		IAction backAction = new IAction() {
-			@Override
-			public void action() {
-				// TODO Auto-generated method stub
-
-			}
-		};
 		Sprite icon = new Button(iconTexture, fTitleHeight, fTitleHeight,
 				"Icon", backAction);
 		icon.setPosition(-Button.maxWidth + fTitleHeight * (0.5f + fMoveLeft),
@@ -294,6 +298,10 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		reload();
 
 	}
+
+	protected abstract boolean showBackButton();
+
+	protected abstract void backButtonPressed();
 
 	protected abstract List<Type> getButtonsBottom();
 

@@ -18,6 +18,16 @@ public class Hand {
 	private Card c0;
 	private int id;
 
+	/**
+	 * Create a Hand object. The 
+	 * 
+	 * @param piId
+	 * @param px1
+	 * @param py1
+	 * @param px2
+	 * @param py2
+	 * @param piCardCount
+	 */
 	public Hand(int piId, float px1, float py1, float px2, float py2,
 			int piCardCount) {
 		id = piId;

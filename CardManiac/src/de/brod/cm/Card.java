@@ -121,7 +121,8 @@ public class Card extends Sprite {
 		offsetY = piOffsetY;
 		cardWidth = (2f / amountOfCardsPerWidth);
 		cardHeight = (cardWidth * 3 / 2);
-		maxCardY = (ym * 2 - offsetY - cardHeight) / cardHeight;
+		int barAmount = width < height ? 2 : 1;
+		maxCardY = (ym * 2 - offsetY * barAmount - cardHeight) / cardHeight;
 
 		Bitmap bitmap = CardImage.createBitmap(Math.min(width, height), 0,
 				amountOfCardsPerWidth);

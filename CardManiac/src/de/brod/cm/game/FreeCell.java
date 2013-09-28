@@ -5,10 +5,15 @@ import java.util.List;
 
 import de.brod.cm.Card;
 import de.brod.cm.Card.Values;
+import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
 
 public class FreeCell extends Game {
+
+	public FreeCell(CardManiacView pCardManiacView) {
+		super(pCardManiacView);
+	}
 
 	private class FinishAction implements IAction {
 

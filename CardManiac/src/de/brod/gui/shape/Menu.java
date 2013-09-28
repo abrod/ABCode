@@ -7,7 +7,7 @@ import android.graphics.Color;
 
 public class Menu extends Sprite {
 
-	private Rectangle back;
+	private Rectangle back, back2;
 	private List<MenuItem> lstMenuItems = new ArrayList<MenuItem>();
 
 	public void addItem(String psText) {
@@ -16,6 +16,10 @@ public class Menu extends Sprite {
 					Button.maxWidth * 2, Button.maxHeight * 2);
 			back.setColor(Color.argb(128, 0, 0, 0));
 			add(back);
+			back2 = new Rectangle(-Button.maxWidth, -Button.maxHeight,
+					Button.maxWidth * 2, Button.maxHeight * 2);
+			back2.setColor(Color.argb(128, 0, 0, 0));
+			add(back2);
 		}
 
 		float fTitleHeight = Button.height;
@@ -37,13 +41,19 @@ public class Menu extends Sprite {
 			maxWidth = Math.max(maxWidth, menuItem.getTextWidth());
 		}
 		float fTitleHeight = Button.height;
-		float border = fTitleHeight / 15;
+		float border = fTitleHeight / 30;
+		float yMin = 0, yMax = 0;
+		float x = Button.maxWidth - maxWidth - border;
 		for (int i = 0; i < lstMenuItems.size(); i++) {
 			MenuItem menuItem = lstMenuItems.get(i);
-			menuItem.setDimension(Button.maxWidth - maxWidth - border,
-					Button.maxHeight - (border + fTitleHeight) * (2 + i),
-					maxWidth, fTitleHeight);
+			float y = Button.maxHeight - (border + fTitleHeight) * (2 + i);
+			menuItem.setDimension(x, y, maxWidth, fTitleHeight);
+			if (i == 0) {
+				yMin = y;
+			}
+			yMax = y + fTitleHeight;
 		}
+		back2.setDimension(x, yMin, maxWidth, yMax - yMin);
 		plstMenuItems.clear();
 		plstMenuItems.addAll(lstMenuItems);
 	}

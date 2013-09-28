@@ -3,10 +3,17 @@ package de.brod.cm.game;
 import java.util.List;
 
 import de.brod.cm.Card;
+import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
 
 public abstract class Game {
+
+	protected CardManiacView cardManiacView;
+
+	public Game(CardManiacView pCardManiacView) {
+		cardManiacView = pCardManiacView;
+	}
 
 	public String getName() {
 		String sName = getClass().getName();
@@ -26,6 +33,10 @@ public abstract class Game {
 		for (Card card : pLstMoves) {
 			card.moveTo(handTo);
 		}
+	}
+
+	public void openGame(Game pGame) {
+		cardManiacView.openGame(pGame);
 	}
 
 }

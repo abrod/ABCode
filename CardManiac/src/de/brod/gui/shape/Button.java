@@ -105,7 +105,8 @@ public class Button extends Sprite {
 
 	public void pressed() {
 		// setColor(Color.BLUE);
-		action.action();
+		if (action != null)
+			action.action();
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.app.Activity;
+import de.brod.cm.game.CardManiac;
 import de.brod.cm.game.FreeCell;
 import de.brod.cm.game.Game;
 import de.brod.gui.GuiRendererView;
@@ -87,19 +88,15 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 		float fOffsetTop = _piOffsetTop * 2f / Math.min(_width, _height);
 		Card.init(_gl, _width, _height, fOffsetTop);
-
+		// create the game
+		game = new FreeCell(this);
 	}
 
 	protected void initApplication() {
 		// set the correct game
-		setGame(new FreeCell());
+		hands = game.initHands(_width > _height);
 		// init the application (menu, etc.)
 		super.initApplication();
-	}
-
-	public void setGame(Game pGame) {
-		game = pGame;
-		hands = game.initHands(_width > _height);
 	}
 
 	@Override
@@ -155,6 +152,21 @@ public class CardManiacView extends GuiRendererView<Card> {
 		lst.add(Type.redo);
 		lst.add(Type.undo);
 		return lst;
+	}
+
+	public void openGame(Game pGame) {
+		game = pGame;
+		initApplication();
+	}
+
+	@Override
+	protected boolean showBackButton() {
+		return game == null || !(game instanceof CardManiac);
+	}
+
+	@Override
+	protected void backButtonPressed() {
+		openGame(new CardManiac(this));
 	}
 
 }
