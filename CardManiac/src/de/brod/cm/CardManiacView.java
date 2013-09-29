@@ -152,6 +152,16 @@ public class CardManiacView extends GuiRendererView<Card> {
 		return lst;
 	}
 
+	@Override
+	protected void buttonPressed(Type type) {
+		if (type.equals(Type.undo)) {
+			stateHandler.undo();
+			reload();
+		} else {
+			super.buttonPressed(type);
+		}
+	}
+
 	public void openGame(Game pGame) {
 		game = pGame;
 		initApplication();

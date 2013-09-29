@@ -48,7 +48,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	}
 
 	/** The OpenGL view */
-	StateHandler stateHandler;
+	protected StateHandler stateHandler;
 	List<Container> lstButtons;
 
 	List<MenuItem> lstMenuItems;
@@ -104,16 +104,16 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		}
 		lstMoves.clear();
 		if (lstMenuItems.size() > 0) {
-			String sItem = "";
+			String sMenuItem = "";
 			for (MenuItem item : lstMenuItems) {
 				if (item.touches(eventX, eventY)) {
-					sItem = item.getText();
+					sMenuItem = item.getText();
 				}
 			}
 			menu.clear();
 			lstMenuItems.clear();
-			if (sItem.length() > 0) {
-				menuPressed(sItem, stateHandler);
+			if (sMenuItem.length() > 0) {
+				menuPressed(sMenuItem, stateHandler);
 				reload();
 			}
 			return true;

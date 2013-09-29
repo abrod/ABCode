@@ -106,4 +106,15 @@ public class StateHandler {
 		}
 		return null;
 	}
+
+	public void undo() {
+		int iCounter = xmlState.getAttributeAsInt("counter") - 1;
+		if (iCounter > 0) {
+			xmlState.setAttribute("counter", iCounter);
+			setValues();
+			saveState();
+		} else {
+			clear();
+		}
+	}
 }
