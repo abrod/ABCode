@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import android.graphics.Color;
 import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.gui.shape.Sprite;
+import de.brod.gui.shape.Text;
 import de.brod.xml.XmlObject;
 
 public class Hand {
@@ -17,9 +19,10 @@ public class Hand {
 	private int iCardCount;
 	private Card c0;
 	private int id;
+	private Text text = null;
 
 	/**
-	 * Create a Hand object. The 
+	 * Create a Hand object. The
 	 * 
 	 * @param piId
 	 * @param px1
@@ -50,6 +53,21 @@ public class Hand {
 		sprite.add(c0);
 		for (Card c : lstCards) {
 			sprite.add(c);
+		}
+		if (text != null) {
+			sprite.add(text);
+		}
+	}
+
+	public void setText(String psText) {
+		if (psText.length() == 0) {
+			text = null;
+		} else {
+			float fTitleHeight = Card.getCardHeight() / 4;
+			text = Text.createText(psText, pos[0],
+					pos[1] - pos[3] - Card.getCardHeight() / 2 - fTitleHeight,
+					fTitleHeight);
+			text.setColor(Color.WHITE);
 		}
 	}
 

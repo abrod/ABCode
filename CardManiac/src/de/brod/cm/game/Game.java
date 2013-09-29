@@ -6,6 +6,7 @@ import de.brod.cm.Card;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
+import de.brod.gui.shape.Button.Type;
 
 public abstract class Game {
 
@@ -37,6 +38,12 @@ public abstract class Game {
 
 	public void openGame(Game pGame) {
 		cardManiacView.openGame(pGame);
+	}
+
+	public void addButtonTypes(List<Type> lst) {
+		lst.add(Type.question);
+		lst.add(Type.redo);
+		lst.add(Type.undo);
 	}
 
 }

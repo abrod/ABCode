@@ -8,6 +8,7 @@ import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
+import de.brod.gui.shape.Button.Type;
 
 public class CardManiac extends Game {
 
@@ -23,16 +24,33 @@ public class CardManiac extends Game {
 
 	@Override
 	public void initCards(Hand[] hands) {
-		hands[0].createCard(Values.Jack, Colors.Spades);
-		hands[0].createCard(Values.Jack, Colors.Clubs);
-		hands[0].createCard(Values.Jack, Colors.Hearts);
-		hands[0].createCard(Values.Jack, Colors.Diamonds);
+		for (int i = 0; i < hands.length; i++) {
+			hands[i].createCard(Values.Ace, Colors.Clubs);
+			hands[i].createCard(Values.Ace, Colors.Spades);
+			hands[i].createCard(Values.Ace, Colors.Hearts);
+			hands[i].createCard(Values.Ace, Colors.Diamonds);
+			hands[i].setText("FreeCell");
+		}
+	}
+
+	@Override
+	public void addButtonTypes(List<Type> lst) {
+		lst.add(Type.next);
+		lst.add(Type.info);
+		lst.add(Type.previous);
 	}
 
 	@Override
 	public Hand[] initHands(boolean bLandscape) {
-		Hand[] h = new Hand[1];
+		Hand[] h = new Hand[5];
+
 		h[0] = new Hand(0, 0, 0, 1, 0, 4);
+		h[1] = new Hand(0, 2, 0, 3, 0, 4);
+		h[2] = new Hand(0, 4, 0, 5, 0, 4);
+		h[3] = new Hand(0, 6, 0, 7, 0, 4);
+
+		float dy = 1.4f;
+		h[4] = new Hand(0, 0, dy, 1, dy, 4);
 		return h;
 	}
 

@@ -148,9 +148,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 	@Override
 	protected List<Type> getButtonsBottom() {
 		List<Type> lst = new ArrayList<Button.Type>();
-		lst.add(Type.question);
-		lst.add(Type.redo);
-		lst.add(Type.undo);
+		game.addButtonTypes(lst);
 		return lst;
 	}
 

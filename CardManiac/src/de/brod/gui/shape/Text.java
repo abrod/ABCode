@@ -16,6 +16,14 @@ import android.graphics.Rect;
 
 public class Text extends Sprite {
 
+	@Override
+	public int compareTo(Container another) {
+		if (!(another instanceof Text)) {
+			return 1;
+		}
+		return super.compareTo(another);
+	}
+
 	private static class CharType {
 		Rect bounds = new Rect();
 		private int x, y, h, ox, size;

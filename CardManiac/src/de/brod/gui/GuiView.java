@@ -135,7 +135,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		for (int i = lstSprites.size() - 1; i >= 0; i--) {
 			Container sprite = lstSprites.get(i);
 			if (sprite.touches(eventX, eventY)) {
-				if (isInstanceOf(sprite)) {
+				if (isInstanceOf(sprite) && sprite.isMoveable()) {
 					System.out.println("touch " + i + " " + sprite.toString());
 					lstMoves.add((SPRITE) sprite);
 					mouseDown(lstMoves);
