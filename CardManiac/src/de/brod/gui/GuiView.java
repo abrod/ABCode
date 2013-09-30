@@ -43,7 +43,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			actionThread = null;
 			System.out.println("finished action " + lstSlides.size() + "/"
 					+ lstSprites.size());
-			update();
+			update(false);
 		}
 	}
 
@@ -228,7 +228,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		case MotionEvent.ACTION_UP:
 			if (mouseUp(eventX, eventY)) {
 				// Schedules a repaint.
-				update();
+				update(true);
 			}
 			break;
 		default:
@@ -304,12 +304,12 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		Collections.sort(lstSprites);
 	}
 
-	public void update() {
+	public void update(boolean pbSetUndoPoint) {
 		sortSprites();
 
 		XmlObject historyEntry = stateHandler.createEmptyHistoryEntry();
 		saveState(historyEntry);
-		stateHandler.addHistory(historyEntry);
+		stateHandler.addHistory(historyEntry, pbSetUndoPoint);
 
 		requestRender();
 	}

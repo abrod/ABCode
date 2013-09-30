@@ -60,7 +60,8 @@ public class StateHandler {
 		return ret;
 	}
 
-	public void addHistory(XmlObject historyEntry) {
+	public void addHistory(XmlObject historyEntry, boolean pbSetUndoPoint) {
+		historyEntry.setAttribute("undoPoint", "" + pbSetUndoPoint);
 		if (lastHistoryEntry == null
 				|| !lastHistoryEntry.toString().equals(historyEntry.toString())) {
 			int iCounter = xmlState.getAttributeAsInt("counter") + 1;
@@ -108,12 +109,29 @@ public class StateHandler {
 	}
 
 	public void undo() {
-		int iCounter = xmlState.getAttributeAsInt("counter") - 1;
+		int iCounter = xmlState.getAttributeAsInt("counter");
+		// go to next undo point
+		while (lastHistoryEntry != null
+				&& lastHistoryEntry.getAttribute("undoPoint").equals("false")) {
+			iCounter--;
+			if (iCounter > 0) {
+				xmlState.setAttribute("counter", iCounter);
+				setValues();
+				saveState();
+			} else {
+				xmlState.setAttribute("counter", 0);
+				clear();
+				return;
+			}
+		}
+
+		iCounter--;
 		if (iCounter > 0) {
 			xmlState.setAttribute("counter", iCounter);
 			setValues();
 			saveState();
 		} else {
+			xmlState.setAttribute("counter", 0);
 			clear();
 		}
 	}
