@@ -92,6 +92,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 		game = new FreeCell(this);
 	}
 
+	@Override
 	protected void initApplication() {
 		// set the correct game
 		hands = game.initHands(_width > _height);
@@ -156,6 +157,9 @@ public class CardManiacView extends GuiRendererView<Card> {
 	protected void buttonPressed(Type type) {
 		if (type.equals(Type.undo)) {
 			stateHandler.undo();
+			reload();
+		} else if (type.equals(Type.redo)) {
+			stateHandler.redo();
 			reload();
 		} else {
 			super.buttonPressed(type);

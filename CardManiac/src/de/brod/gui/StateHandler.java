@@ -66,6 +66,9 @@ public class StateHandler {
 				|| !lastHistoryEntry.toString().equals(historyEntry.toString())) {
 			int iCounter = xmlState.getAttributeAsInt("counter") + 1;
 			xmlState.setAttribute("counter", iCounter);
+			if (pbSetUndoPoint) {
+				xmlState.setAttribute("maxcounter", iCounter);
+			}
 			lastHistoryEntry = historyEntry;
 			saveState();
 		}
@@ -132,7 +135,24 @@ public class StateHandler {
 			saveState();
 		} else {
 			xmlState.setAttribute("counter", 0);
+			xmlState.setAttribute("maxcounter", 0);
 			clear();
 		}
+	}
+
+	public void redo() {
+		int iCounter = xmlState.getAttributeAsInt("counter");
+		int iMaxCounter = xmlState.getAttributeAsInt("maxcounter");
+		while (iCounter < iMaxCounter) {
+			iCounter++;
+			xmlState.setAttribute("counter", iCounter);
+			setValues();
+			if (lastHistoryEntry == null
+					|| !lastHistoryEntry.getAttribute("undoPoint").equals(
+							"false")) {
+				break;
+			}
+		}
+		saveState();
 	}
 }

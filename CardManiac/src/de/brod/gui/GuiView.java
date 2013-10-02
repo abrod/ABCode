@@ -279,10 +279,13 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 
 	public void reload() {
 		area.clear();
-		initGroup(area, stateHandler.getLastHistoryEntry());
+		XmlObject lastHistoryEntry = stateHandler.getLastHistoryEntry();
+		initGroup(area, lastHistoryEntry);
 		lstSprites = area.getChildren();
 		sortSprites();
-
+		if (lastHistoryEntry == null) {
+			update(true);
+		}
 	}
 
 	private void resetSlidePositions() {
