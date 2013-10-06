@@ -44,14 +44,16 @@ public class CardManiac extends Game {
 	public Hand[] initHands(boolean bLandscape) {
 		Hand[] h = new Hand[5];
 
-		h[0] = new Hand(0, 0, 0, 1, 0, 4);
-		h[1] = new Hand(0, 2, 0, 3, 0, 4);
-		h[2] = new Hand(0, 4, 0, 5, 0, 4);
-		h[3] = new Hand(0, 6, 0, 7, 0, 4);
-
-		float dy = 1.4f;
-		h[4] = new Hand(0, 0, dy, 1, dy, 4);
+		for (int i = 0; i < h.length; i++) {
+			h[i] = newHand(i);
+		}
 		return h;
+	}
+
+	private Hand newHand(int i) {
+		int x = (i % 4) * 2;
+		float y = (i / 4) * 1.4f;
+		return new Hand(0, x, y, x + 1, y, 4);
 	}
 
 	@Override
