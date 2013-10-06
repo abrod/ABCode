@@ -23,7 +23,7 @@ public class Hand {
 
 	/**
 	 * Create a Hand object. The
-	 * 
+	 *
 	 * @param piId
 	 * @param px1
 	 * @param py1

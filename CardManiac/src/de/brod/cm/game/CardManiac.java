@@ -24,12 +24,12 @@ public class CardManiac extends Game {
 
 	@Override
 	public void initCards(Hand[] hands) {
-		for (int i = 0; i < hands.length; i++) {
-			hands[i].createCard(Values.Ace, Colors.Clubs);
-			hands[i].createCard(Values.Ace, Colors.Spades);
-			hands[i].createCard(Values.Ace, Colors.Hearts);
-			hands[i].createCard(Values.Ace, Colors.Diamonds);
-			hands[i].setText("FreeCell");
+		for (Hand hand : hands) {
+			hand.createCard(Values.Ace, Colors.Clubs);
+			hand.createCard(Values.Ace, Colors.Spades);
+			hand.createCard(Values.Ace, Colors.Hearts);
+			hand.createCard(Values.Ace, Colors.Diamonds);
+			hand.setText("FreeCell");
 		}
 	}
 

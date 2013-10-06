@@ -60,7 +60,8 @@ public class StateHandler {
 		return ret;
 	}
 
-	public void addHistory(XmlObject historyEntry, boolean pbSetUndoPoint) {
+	public synchronized void addHistory(XmlObject historyEntry,
+			boolean pbSetUndoPoint) {
 		historyEntry.setAttribute("undoPoint", "" + pbSetUndoPoint);
 		if (lastHistoryEntry == null
 				|| !lastHistoryEntry.toString().equals(historyEntry.toString())) {
