@@ -279,6 +279,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 
 	public void reload() {
 		area.clear();
+		lstMoves.clear();
 		XmlObject lastHistoryEntry = stateHandler.getLastHistoryEntry();
 		initGroup(area, lastHistoryEntry);
 		lstSprites = area.getChildren();

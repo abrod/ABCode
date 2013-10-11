@@ -31,7 +31,7 @@ public class Sprite extends Container {
 	// Smooth Colors
 	private FloatBuffer mColorBuffer = null;
 
-	private float x, y, w, h, touchX, touchY;
+	private float x, y, w, wd, h, touchX, touchY;
 	private float dx, dy, xSave, ySave;
 
 	private float[] position = new float[12];;
@@ -39,6 +39,10 @@ public class Sprite extends Container {
 	private boolean center = true;
 
 	private float len;
+
+	private float da, angle = 0, angleSave = 0;
+
+	private boolean bShowBackSide = false;
 
 	public Sprite() {
 		// this(null, 0, 0);
@@ -48,7 +52,7 @@ public class Sprite extends Container {
 
 	/**
 	 * Create a plane.
-	 * 
+	 *
 	 * @param width
 	 *            the width of the plane.
 	 * @param height
@@ -57,7 +61,7 @@ public class Sprite extends Container {
 	 */
 	public Sprite(Texture pTex, float width, float height) {
 		tex = pTex;
-		setCell(0, 0);
+		setCell(0, 0, 0, 0);
 
 		for (int i = 0; i < 12; i++) {
 			position[i] = 0;
@@ -71,10 +75,11 @@ public class Sprite extends Container {
 
 	/**
 	 * Render the mesh.
-	 * 
+	 *
 	 * @param gl
 	 *            the OpenGL context to render to.
 	 */
+	@Override
 	public void draw(GL10 gl) {
 		if (mVerticesBuffer != null) {
 			// coordinates to use when rendering.
@@ -118,33 +123,56 @@ public class Sprite extends Container {
 		return center;
 	}
 
+	@Override
 	public boolean resetPosition() {
-		setSliding(x != xSave || y != ySave);
+		setSliding(x != xSave || y != ySave || angle != angleSave);
 		if (isSliding()) {
 			dx = x - xSave;
 			dy = y - ySave;
-			len = Math.max(0.01f,
+			da = angle - angleSave;
+
+			len = Math.max(0.001f,
 					Math.min(1, (float) Math.sqrt(dx * dx + dy * dy)));
+			if (da != 0) {
+				setInternalAngle(angleSave);
+				len = 1;
+			}
 			setPosition(xSave, ySave);
 		}
 		return isSliding();
 	}
 
+	@Override
 	public void savePosition() {
 		xSave = x;
 		ySave = y;
+		angleSave = angle;
 		setSliding(false);
 	}
 
+	private float pxCell, pyCell, pxCellBack, pyCellBack;
+
+	private float cos = 1;
+
 	/**
 	 * Set the texture coordinates.
-	 * 
+	 *
 	 * @param textureCoords
 	 */
-	public void setCell(float px, float py) {
+	public void setCell(float px, float py, float pxBack, float pyBack) {
+
+		pxCell = px;
+		pyCell = py;
+		pxCellBack = pxBack;
+		pyCellBack = pyBack;
+		setCell();
+	}
+
+	private void setCell() {
 		if (tex == null) {
 			return;
 		}
+
 		// float is 4 bytes, therefore we multiply the number if
 		// vertices with 4.
 		if (mTextureBuffer == null) {
@@ -154,7 +182,11 @@ public class Sprite extends Container {
 		} else {
 			mTextureBuffer.position(0);
 		}
-		mTextureId = tex.setBuffer(mTextureBuffer, px, py);
+		if (bShowBackSide) {
+			mTextureId = tex.setBuffer(mTextureBuffer, pxCellBack, pyCellBack);
+		} else {
+			mTextureId = tex.setBuffer(mTextureBuffer, pxCell, pyCell);
+		}
 		mTextureBuffer.position(0);
 	}
 
@@ -164,12 +196,13 @@ public class Sprite extends Container {
 
 	/**
 	 * Set one flat color on the mesh.
-	 * 
+	 *
 	 * @param red
 	 * @param green
 	 * @param blue
 	 * @param alpha
 	 */
+	@Override
 	public void setColor(float red, float green, float blue, float alpha) {
 		mRGBA[0] = red;
 		mRGBA[1] = green;
@@ -189,9 +222,10 @@ public class Sprite extends Container {
 
 	/**
 	 * Set the colors
-	 * 
+	 *
 	 * @param colors
 	 */
+	@Override
 	public void setColors(float[] colors) {
 		// float has 4 bytes.
 		ByteBuffer cbb = ByteBuffer.allocateDirect(colors.length * 4);
@@ -210,7 +244,7 @@ public class Sprite extends Container {
 
 	/**
 	 * Set the indices.
-	 * 
+	 *
 	 * @param indices
 	 */
 	protected void setIndices(short[] indices) {
@@ -257,10 +291,31 @@ public class Sprite extends Container {
 	}
 
 	public void setSize(float width, float height) {
-		w = width / 2;
+		wd = width / 2;
 		h = height / 2;
 
+		setAngle(angle);
+	}
+
+	public void setAngle(float angle2) {
+		setInternalAngle(angle2);
 		setPosition(x, y);
+	}
+
+	public void setInternalAngle(float angle2) {
+		if (angle != angle2) {
+			angle = angle2;
+			cos = (float) Math.cos(Math.toRadians(angle2));
+			boolean bCos0 = cos < 0;
+			if (bCos0 != bShowBackSide) {
+				bShowBackSide = bCos0;
+				setCell();
+			}
+			if (bCos0) {
+				cos = -cos;
+			}
+		}
+		w = wd * cos;
 	}
 
 	protected void setTextureBuffer(int x1, int y1, int x2, int y2) {
@@ -283,7 +338,7 @@ public class Sprite extends Container {
 
 	/**
 	 * Set the vertices.
-	 * 
+	 *
 	 * @param vertices
 	 */
 	protected void setVertices(float[] vertices) {
@@ -300,10 +355,14 @@ public class Sprite extends Container {
 		mVerticesBuffer.position(0);
 	}
 
+	@Override
 	public boolean slide(float d) {
 		d = d / len;
 		if (d > 1) {
 			d = 1;
+		}
+		if (da != 0) {
+			setInternalAngle(angleSave + d * da);
 		}
 		setPosition(xSave + d * dx, ySave + d * dy);
 
@@ -311,6 +370,7 @@ public class Sprite extends Container {
 		return !isSliding();
 	}
 
+	@Override
 	public boolean touches(float px, float py) {
 		if (tex == null) {
 			return false;

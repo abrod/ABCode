@@ -3,8 +3,6 @@ package de.brod.cm.game;
 import java.util.List;
 
 import de.brod.cm.Card;
-import de.brod.cm.Card.Colors;
-import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
@@ -23,13 +21,10 @@ public class CardManiac extends Game {
 	}
 
 	@Override
-	public void initCards(Hand[] hands) {
-		for (Hand hand : hands) {
-			hand.createCard(Values.Ace, Colors.Clubs);
-			hand.createCard(Values.Ace, Colors.Spades);
-			hand.createCard(Values.Ace, Colors.Hearts);
-			hand.createCard(Values.Ace, Colors.Diamonds);
-			hand.setText("FreeCell");
+	public void initNewCards(Hand[] hands) {
+		for (int i = 0; i < hands.length; i++) {
+			Hand hand = hands[i];
+			games[i].createTitleCards(hand);
 		}
 	}
 
@@ -40,28 +35,73 @@ public class CardManiac extends Game {
 		lst.add(Type.previous);
 	}
 
+	private Class[] classes = { FreeCell.class, MauMau.class };
+
+	private Game[] games;
+
 	@Override
 	public Hand[] initHands(boolean bLandscape) {
-		Hand[] h = new Hand[5];
 
-		for (int i = 0; i < h.length; i++) {
+		Hand[] h = new Hand[classes.length];
+		games = new Game[classes.length];
+
+		for (int i = 0; i < classes.length; i++) {
+			try {
+				games[i] = (Game) classes[i].getConstructor(
+						CardManiacView.class).newInstance(cardManiacView);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			h[i] = newHand(i);
+			String name = classes[i].getName();
+			h[i].setText(name.substring(name.lastIndexOf(".") + 1));
 		}
+		// init the hands
+
 		return h;
 	}
 
 	private Hand newHand(int i) {
 		int x = (i % 4) * 2;
 		float y = (i / 4) * 1.4f;
-		return new Hand(0, x, y, x + 1, y, 4);
+		return new Hand(i, x, y, x + 1, y, 2);
 	}
 
 	@Override
 	public void mouseDown(List<Card> plstMoves) {
 		int id = plstMoves.get(0).getHand().getId();
-		if (id == 0) {
-			super.openGame(new FreeCell(cardManiacView));
+		if (id >= 0 && id < games.length) {
+			super.openGame(games[id]);
 		}
+	}
+
+	@Override
+	protected void createTitleCards(Hand hand) {
+		// make nothing
+	}
+
+	@Override
+	public boolean hasHistory() {
+		return false;
+	}
+
+	public Game openGame(String sName) {
+
+		for (Class<?> cls : classes) {
+			if (cls.getName().endsWith("." + sName)) {
+				try {
+					Game g = (Game) cls.getConstructor(CardManiacView.class)
+							.newInstance(cardManiacView);
+					return g;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return this;
 	}
 
 }

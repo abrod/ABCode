@@ -20,6 +20,9 @@ public class Hand {
 	private Card c0;
 	private int id;
 	private Text text = null;
+	private boolean bCenter = false;
+	private boolean bLandScape;
+	private float angle = 0;
 
 	/**
 	 * Create a Hand object. The
@@ -39,6 +42,7 @@ public class Hand {
 		float x2 = Card.getX(px2);
 		float y2 = Card.getY(py2);
 		pos = new float[] { x1, y1, x2 - x1, y2 - y1 };
+		bLandScape = Math.abs(pos[2]) > Math.abs(pos[3]);
 		iCardCount = piCardCount;
 		c0 = createCard(Card.Values.Ace, Card.Colors.Empty);
 		c0.setMoveable(false);
@@ -47,6 +51,8 @@ public class Hand {
 
 	public void add(Card card) {
 		lstCards.add(card);
+		card.hand = this;
+		card.setAngle(angle);
 	}
 
 	public void addAllCards(Sprite sprite) {
@@ -67,6 +73,7 @@ public class Hand {
 			text = Text.createText(psText, pos[0],
 					pos[1] - pos[3] - Card.getCardHeight() / 2 - fTitleHeight,
 					fTitleHeight);
+			text.setMoveable(false);
 			text.setColor(Color.WHITE);
 		}
 	}
@@ -89,7 +96,7 @@ public class Hand {
 		Card c = new Card(this);
 		c.setPosition(pos[0], pos[1]);
 		c.setValue(value, color);
-		lstCards.add(c);
+		add(c);
 		return c;
 	}
 
@@ -137,9 +144,29 @@ public class Hand {
 				dx = dx / size;
 				dy = dy / size;
 			}
-			c0.setPosition(x, y);
 			int pId = id * 1000;
 			c0.setId(pId);
+			if (bCenter) {
+				if (bLandScape) {
+					c0.setPosition(x + pos[2] / 2, y);
+					float offSetX = pos[2] - dx * (lstCards.size() - 1);
+					if (offSetX > 0) {
+						x += offSetX / 2;
+					}
+				} else {
+					c0.setPosition(x, y + pos[3] / 2);
+					float offSetY = pos[3] - dy * (lstCards.size() - 1);
+					if (offSetY > 0 && pos[3] > 0) {
+						y += offSetY / 2;
+					} else if (offSetY < 0 && pos[3] < 0) {
+						y += offSetY / 2;
+					}
+
+				}
+
+			} else {
+				c0.setPosition(x, y);
+			}
 			for (int i = 0; i < lstCards.size(); i++) {
 				Card c = lstCards.get(i);
 				pId++;
@@ -168,5 +195,30 @@ public class Hand {
 
 	private void shuffleCards() {
 		Collections.shuffle(lstCards);
+	}
+
+	public void setCenter(boolean b) {
+		bCenter = b;
+	}
+
+	public void setAngle(float pAngle) {
+		angle = pAngle;
+		for (Card c : lstCards) {
+			c.setAngle(angle);
+		}
+	}
+
+	public Card getStackCard() {
+		return c0;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("@" + getId());
+		for (Card c : lstCards) {
+			sb.append(",");
+			sb.append(c.toString());
+		}
+		return sb.toString();
 	}
 }

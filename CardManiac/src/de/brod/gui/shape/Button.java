@@ -31,7 +31,7 @@ public class Button extends Sprite {
 
 		public Button createButton(float px, float py, IAction action) {
 			Button button = new Button(this.toString(), action);
-			button.setCell(x, y);
+			button.setCell(x, y, x, y);
 			button.setPosition(px, py);
 			return button;
 		}
@@ -105,8 +105,9 @@ public class Button extends Sprite {
 
 	public void pressed() {
 		// setColor(Color.BLUE);
-		if (action != null)
+		if (action != null) {
 			action.action();
+		}
 	}
 
 	@Override

@@ -1,9 +1,9 @@
 package de.brod.cm.game;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.brod.cm.Card;
+import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
@@ -36,8 +36,6 @@ public class FreeCell extends Game {
 		}
 
 	}
-
-	private ArrayList<Hand> hands;
 
 	private FinishAction getAction(Hand hand, int iMinValue) {
 		Card c = hand.getLastCard();
@@ -100,7 +98,7 @@ public class FreeCell extends Game {
 	}
 
 	@Override
-	public void initCards(Hand[] hands) {
+	public void initNewCards(Hand[] hands) {
 		Card[] cards = hands[0].create52Cards();
 		int iPos = 1;
 		for (Card card : cards) {
@@ -114,7 +112,6 @@ public class FreeCell extends Game {
 
 	@Override
 	public Hand[] initHands(boolean bLandscape) {
-		hands = new ArrayList<Hand>();
 		if (!bLandscape) {
 			for (int i = 0; i < 8; i++) {
 				if (i < 4) {
@@ -133,6 +130,9 @@ public class FreeCell extends Game {
 				}
 				hands.add(new Hand(i * 2 + 1, i, 0, i, Card.maxCardY, 10));
 			}
+		}
+		for (int i = 4; i < 8; i++) {
+			hands.get(i * 2).getStackCard().setValue(13 * 4 + 1);
 		}
 		return hands.toArray(new Hand[0]);
 	}
@@ -205,6 +205,9 @@ public class FreeCell extends Game {
 
 	@Override
 	public void mouseUp(List<Card> pLstMoves, Hand handTo) {
+		if (handTo == null) {
+			return;
+		}
 		int id = handTo.getId();
 		int y = id % 2;
 		int x = id / 2;
@@ -236,6 +239,19 @@ public class FreeCell extends Game {
 		}
 
 		super.mouseUp(pLstMoves, handTo);
+	}
+
+	@Override
+	protected void createTitleCards(Hand hand) {
+		hand.createCard(Values.Ace, Colors.Clubs);
+		hand.createCard(Values.Ace, Colors.Spades);
+		hand.createCard(Values.Ace, Colors.Hearts);
+		hand.createCard(Values.Ace, Colors.Diamonds);
+	}
+
+	@Override
+	public boolean hasHistory() {
+		return true;
 	}
 
 }

@@ -340,20 +340,21 @@ public class XmlObject {
 		setAttribute(psAttributeName, String.valueOf(i));
 	}
 
-	public void setAttribute(String psAttributeName, String psAttributeValue) {
+	public boolean setAttribute(String psAttributeName, String psAttributeValue) {
 		for (XmlAttribute atr : subAtr) {
 			if (atr.equalsName(psAttributeName)) {
 				if (psAttributeValue == null) {
 					subAtr.remove(atr);
-					return;
+					return true;
 				}
-				atr.setValue(psAttributeValue);
-				return;
+				return atr.setValue(psAttributeValue);
+
 			}
 		}
 		if (psAttributeValue != null) {
 			subAtr.add(new XmlAttribute(psAttributeName, psAttributeValue));
 		}
+		return true;
 	}
 
 	public void setName(String psName) {

@@ -8,10 +8,12 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import de.brod.cm.Card.Values;
+import de.brod.gui.GuiRendererView;
 
 public class CardImage {
 
-	private static void cloneCard(Bitmap bitmap, Canvas c, int wd, int hg,
+	private static void cloneRectangle(Bitmap bitmap, Canvas c, int wd, int hg,
 			int px, int py, float dx, float dy, Rect src, Rect dst, Paint paint) {
 		int w = (int) (dx * wd);
 		int h = (int) (dy * hg);
@@ -54,12 +56,12 @@ public class CardImage {
 		Rect src = new Rect();
 		Rect dst = new Rect();
 
-		drawCard(c, 1, 1, wid, heig, paint, rect);
-		cloneCard(bitmap, c, 1, 1, 0, 1, dx, dy, src, dst, paint);
-		cloneCard(bitmap, c, 1, 2, 0, 2, dx, dy, src, dst, paint);
-		cloneCard(bitmap, c, 1, 4, 1, 0, dx, dy, src, dst, paint);
-		cloneCard(bitmap, c, 2, 4, 2, 0, dx, dy, src, dst, paint);
-		cloneCard(bitmap, c, 2, 4, 4, 0, dx, dy, src, dst, paint);
+		drawEmptyCard(c, 1, 1, wid, heig, paint, rect, Color.WHITE);
+		cloneRectangle(bitmap, c, 1, 1, 0, 1, dx, dy, src, dst, paint);
+		cloneRectangle(bitmap, c, 1, 2, 0, 2, dx, dy, src, dst, paint);
+		cloneRectangle(bitmap, c, 1, 4, 1, 0, dx, dy, src, dst, paint);
+		cloneRectangle(bitmap, c, 2, 4, 2, 0, dx, dy, src, dst, paint);
+		cloneRectangle(bitmap, c, 2, 4, 4, 0, dx, dy, src, dst, paint);
 
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 6; i++) {
@@ -77,16 +79,16 @@ public class CardImage {
 			float hg, Paint paint, int piColor, int piValue, RectF rect) {
 		float border = 1 + wd / 8;
 
+		float l = left + border;
+		float t = top + border;
+		float r = left + wd - border;
+		float bt = top + hg - border;
+		rect.set(l, t, r, bt);
+		Rect bounds = new Rect();
+
 		if (piColor < 4) {
-			float l = left + border;
-			float t = top + border;
-			float r = left + wd - border;
-			float bt = top + hg - border;
-			rect.set(l, t, r, bt);
 
 			String sValue = Card.Values.getString(piValue);
-
-			Rect bounds = new Rect();
 
 			if (piColor < 2) {
 				paint.setColor(Color.BLACK);
@@ -100,11 +102,48 @@ public class CardImage {
 			String sColor = Card.Colors.getString(piColor);
 			drawText(c, rect, bounds, sColor, paint, true, false);
 			drawText(c, rect, bounds, sColor, paint, false, true);
+		} else if (piColor == 4) {
+			if (piValue == 0) {
+				drawEmptyCard(c, left, top, wd, hg, paint, rect,
+						GuiRendererView.getBackColor());
+			} else if (piValue == 1) {
+				int bc = GuiRendererView.getBackColor();
+				bc = Color.argb(255, Color.red(bc) / 2, Color.green(bc) / 2,
+						Color.blue(bc) / 2);
+				drawEmptyCard(c, left, top, wd, hg, paint, rect, bc);
+				rect.set(l, t, r, bt);
+				String sValue = Values.Ace.toString();
+				paint.setColor(Color.BLACK);
+				drawText(c, rect, bounds, sValue, paint, true, true);
+				drawText(c, rect, bounds, sValue, paint, false, false);
+			} else if (piValue == 2) {
+				int bc = GuiRendererView.getBackColor();
+				int bc2 = Color.argb(255,
+						(int) Math.min(255, Color.red(bc) * 1.3f),
+						(int) Math.min(255, Color.green(bc) * 1.3f),
+						(int) Math.min(255, Color.blue(bc) * 1.3f));
+				paint.setColor(bc2);
+				c.drawRect(rect, paint);
+
+				rect.set(l + border / 2, t + border / 2, r - border / 2, bt
+						- border / 2);
+				paint.setColor(bc);
+				drawText(c, rect, bounds, Card.Colors.Clubs.toString(), paint,
+						true, true);
+				drawText(c, rect, bounds, Card.Colors.Spades.toString(), paint,
+						true, false);
+				drawText(c, rect, bounds, Card.Colors.Diamonds.toString(),
+						paint, false, true);
+				drawText(c, rect, bounds, Card.Colors.Hearts.toString(), paint,
+						false, false);
+
+			}
+
 		}
 	}
 
-	private static void drawCard(Canvas c, float left, float top, float wd,
-			float hg, Paint paint, RectF rect) {
+	private static void drawEmptyCard(Canvas c, float left, float top,
+			float wd, float hg, Paint paint, RectF rect, int colorBack) {
 		paint.setStyle(Style.FILL);
 		float b0 = 1;
 		float fRound = wd / 8;
@@ -119,7 +158,7 @@ public class CardImage {
 		c.drawRoundRect(rect, fRound, fRound, paint);
 
 		b = wd / 30 + 2;
-		paint.setColor(Color.WHITE);
+		paint.setColor(colorBack);
 		rect.set(left + b, top + b, left + wd - b, top + hg - b);
 		c.drawRoundRect(rect, fRound, fRound, paint);
 	}

@@ -7,7 +7,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.app.Activity;
 import de.brod.cm.game.CardManiac;
-import de.brod.cm.game.FreeCell;
 import de.brod.cm.game.Game;
 import de.brod.gui.GuiRendererView;
 import de.brod.gui.IAction;
@@ -58,9 +57,10 @@ public class CardManiacView extends GuiRendererView<Card> {
 		for (Hand hand : hands) {
 			hand.clear();
 		}
+		System.out.println("Init hand");
 		// init the hands
-		if (lastHistoryEntry == null) {
-			game.initCards(hands);
+		if (lastHistoryEntry == null || !game.hasHistory()) {
+			game.initNewCards(hands);
 		} else {
 			// load the last state
 			for (Hand hand : hands) {
@@ -68,13 +68,17 @@ public class CardManiacView extends GuiRendererView<Card> {
 						+ hand.getId(), false);
 				if (xmlHand != null) {
 					hand.loadState(xmlHand);
+					System.out.println(xmlHand.toString());
+					System.out.println(hand.toString());
 				}
 			}
 		}
 
+		System.out.println("Organize hand");
 		for (Hand hand : hands) {
 			hand.organize();
 			hand.addAllCards(root);
+			System.out.println(hand.toString());
 		}
 
 	}
@@ -89,11 +93,17 @@ public class CardManiacView extends GuiRendererView<Card> {
 		float fOffsetTop = _piOffsetTop * 2f / Math.min(_width, _height);
 		Card.init(_gl, _width, _height, fOffsetTop);
 		// create the game
-		game = new FreeCell(this);
+		String sGame = settings.getAttribute("game");
+
+		CardManiac cardManiac = new CardManiac(this);
+
+		game = cardManiac.openGame(sGame);
 	}
 
 	@Override
 	protected void initApplication() {
+		settings.setAttibute("game", game.getName());
+
 		// set the correct game
 		hands = game.initHands(_width > _height);
 		// init the application (menu, etc.)
@@ -122,12 +132,11 @@ public class CardManiacView extends GuiRendererView<Card> {
 	@Override
 	protected void mouseUp(List<Card> pLstMoves, Card cardTo) {
 		if (pLstMoves.size() > 0) {
-			Hand handFrom = pLstMoves.get(0).getHand();
 			if (cardTo != null) {
 				Hand handTo = cardTo.getHand();
-				if (handFrom != handTo) {
-					game.mouseUp(pLstMoves, handTo);
-				}
+				game.mouseUp(pLstMoves, handTo);
+			} else {
+				game.mouseUp(pLstMoves, null);
 			}
 			// organize the hands
 			for (Hand hand : hands) {
@@ -139,10 +148,13 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected void saveState(XmlObject historyEntry) {
+		System.out.println("Save State");
 		for (Hand hand : hands) {
 			XmlObject xmlHand = historyEntry.getObject("Hand", "id",
 					"" + hand.getId(), true);
 			hand.saveState(xmlHand);
+			System.out.println(xmlHand);
+			System.out.println(hand);
 		}
 	}
 
@@ -178,7 +190,10 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected void backButtonPressed() {
-		openGame(new CardManiac(this));
+		Game prevGame = game.getPreviousGame(this);
+		if (prevGame != null) {
+			openGame(prevGame);
+		}
 	}
 
 }

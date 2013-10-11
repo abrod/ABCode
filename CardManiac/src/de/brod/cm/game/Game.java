@@ -1,5 +1,6 @@
 package de.brod.cm.game;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.brod.cm.Card;
@@ -24,15 +25,21 @@ public abstract class Game {
 
 	public abstract IAction getNextAction();
 
-	public abstract void initCards(Hand[] hands);
+	public abstract void initNewCards(Hand[] hands);
 
 	public abstract Hand[] initHands(boolean bLandscape);
 
 	public abstract void mouseDown(List<Card> plstMoves);
 
 	public void mouseUp(List<Card> pLstMoves, Hand handTo) {
-		for (Card card : pLstMoves) {
-			card.moveTo(handTo);
+		if (handTo == null) {
+			return;
+		}
+		Hand handFrom = pLstMoves.get(0).getHand();
+		if (handFrom != handTo) {
+			for (Card card : pLstMoves) {
+				card.moveTo(handTo);
+			}
 		}
 	}
 
@@ -45,5 +52,15 @@ public abstract class Game {
 		lst.add(Type.redo);
 		lst.add(Type.undo);
 	}
+
+	protected ArrayList<Hand> hands = new ArrayList<Hand>();
+
+	protected abstract void createTitleCards(Hand hand);
+
+	public Game getPreviousGame(CardManiacView cardManiacView2) {
+		return new CardManiac(cardManiacView2);
+	}
+
+	public abstract boolean hasHistory();
 
 }

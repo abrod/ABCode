@@ -146,7 +146,7 @@ public class Card extends Sprite {
 
 	Values value;
 	Colors color;
-	private Hand hand;
+	Hand hand;
 	private int valueId;
 
 	public Card(Hand pHand) {
@@ -173,7 +173,6 @@ public class Card extends Sprite {
 	public void moveTo(Hand pHand) {
 		hand.remove(this);
 		pHand.add(this);
-		hand = pHand;
 	}
 
 	public void setValue(int parseInt) {
@@ -184,7 +183,8 @@ public class Card extends Sprite {
 		this.value = pValue;
 		this.color = pColor;
 		valueId = value._id + color._id * 13;
-		setCell(valueId % 6, valueId / 6);
+		int back = 13 * 4 + 2;
+		setCell(valueId % 6, valueId / 6, back % 6, back / 6);
 	}
 
 	@Override

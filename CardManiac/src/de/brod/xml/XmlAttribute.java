@@ -1,6 +1,5 @@
 package de.brod.xml;
 
-
 public class XmlAttribute {
 	private String sAName, sAValue;
 
@@ -27,8 +26,12 @@ public class XmlAttribute {
 		return sAValue;
 	}
 
-	public void setValue(String psAttributeValue) {
-		sAValue = psAttributeValue;
+	public boolean setValue(String psAttributeValue) {
+		if (sAValue == null || !sAValue.equals(psAttributeValue)) {
+			sAValue = psAttributeValue;
+			return true;
+		}
+		return false;
 	}
 
 }

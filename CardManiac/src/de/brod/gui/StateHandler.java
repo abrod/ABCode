@@ -105,8 +105,10 @@ public class StateHandler {
 	private File getHistoryFile() {
 		int iCounter = xmlState.getAttributeAsInt("counter");
 		if (iCounter > 0) {
-			File f = new File(file.getParent(), file.getName() + ".h"
-					+ iCounter);
+			String name = file.getName();
+			File f = new File(file.getParent(), name.substring(0,
+					name.lastIndexOf(".") + 1)
+					+ "h" + iCounter + ".xml");
 			return f;
 		}
 		return null;
@@ -155,5 +157,15 @@ public class StateHandler {
 			}
 		}
 		saveState();
+	}
+
+	public void setAttibute(String psAttributeName, String psAttributeValue) {
+		if (xmlState.setAttribute(psAttributeName, psAttributeValue)) {
+			saveState();
+		}
+	}
+
+	public String getAttribute(String psAttributeName) {
+		return xmlState.getAttribute(psAttributeName);
 	}
 }

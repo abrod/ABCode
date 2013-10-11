@@ -29,12 +29,33 @@ import de.brod.gui.shape.Text;
 public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		GuiView<SPRITE> implements Renderer {
 
+	private static float r = 0.1f;
+	private static float g = 0.4f;
+	private static float b = 0.2f;
+	private static int backColor;
+
+	static {
+		setBackColor(Color.argb(255, 26, 100, 50));
+	}
+
+	public static int getBackColor() {
+		return backColor;
+	}
+
+	private static void setBackColor(int pBackColor) {
+		r = Color.red(pBackColor) / 255f;
+		g = Color.green(pBackColor) / 255f;
+		b = Color.blue(pBackColor) / 255f;
+		backColor = pBackColor;
+	}
+
 	private int width, height;
 	float wd, hg;
 	private Activity activity;
 	private Sprite root;
 	private Texture iconTexture;
 	private float fTitleHeight;
+	protected StateHandler settings;
 
 	public Activity getActivity() {
 		return activity;
@@ -61,7 +82,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.
 	 * khronos.opengles.GL10)
@@ -69,7 +90,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 	@Override
 	public synchronized void onDrawFrame(GL10 gl) {
 		// Clears the screen and depth buffer.
-		gl.glClearColor(0.1f, 0.4f, 0.2f, 1.0f);
+		gl.glClearColor(r, g, b, 1.0f);
 		// Clears the screen and depth buffer.
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		// Replace the current matrix with the identity matrix
@@ -111,7 +132,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * android.opengl.GLSurfaceView.Renderer#onSurfaceChanged(javax.microedition
 	 * .khronos.opengles.GL10, int, int)
@@ -149,7 +170,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * android.opengl.GLSurfaceView.Renderer#onSurfaceCreated(javax.microedition
 	 * .khronos.opengles.GL10, javax.microedition.khronos.egl.EGLConfig)
@@ -191,6 +212,9 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		iconTexture = new Texture(gl, bitmapIcon, 1, 1);
 		bitmapIcon.recycle();
 
+		settings = new StateHandler(new File(activity.getFilesDir(),
+				"Gui.Settings.xml"));
+
 		// init the textures
 		initTextures(gl, width, height, statusBarHeight);
 
@@ -201,7 +225,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 	protected void initApplication() {
 
 		stateHandler = new StateHandler(new File(activity.getFilesDir(),
-				getApplicationName() + ".conf.xml"));
+				getApplicationName() + ".xml"));
 
 		root = new Sprite();
 		Sprite title = new Sprite();

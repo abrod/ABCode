@@ -2,11 +2,11 @@ package de.brod.gui.shape;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import de.brod.gui.Texture;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import de.brod.gui.Texture;
 
 public class Rectangle extends Sprite {
 
@@ -24,6 +24,6 @@ public class Rectangle extends Sprite {
 		super(texture, width, height);
 		setCenter(false);
 		setPosition(px, py);
-		setCell(1, 1);
+		setCell(1, 1, 1, 1);
 	}
 }
