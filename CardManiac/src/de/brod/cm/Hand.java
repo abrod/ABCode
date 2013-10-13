@@ -23,6 +23,7 @@ public class Hand {
 	private boolean bCenter = false;
 	private boolean bLandScape;
 	private float angle = 0;
+	private XmlObject settings = null;
 
 	/**
 	 * Create a Hand object. The
@@ -129,6 +130,12 @@ public class Hand {
 			card.setValue(Integer.parseInt(sCard));
 			add(card);
 		}
+		XmlObject[] arrSettings = xmlHand.getObjects("Settings");
+		if (arrSettings.length > 0) {
+			settings = arrSettings[0];
+		} else {
+			settings = null;
+		}
 	}
 
 	public void organize() {
@@ -191,9 +198,19 @@ public class Hand {
 			sb.append(String.valueOf(c.getValueId()));
 		}
 		xmlHand.setAttribute("cards", sb.toString());
+		XmlObject[] objects = xmlHand.getObjects("Settings");
+		if (objects.length == 0 && settings == null) {
+			// no settings
+		} else {
+			// remove settings
+			xmlHand.deleteObjects("Settings");
+			if (settings != null) {
+				xmlHand.addObject(settings);
+			}
+		}
 	}
 
-	private void shuffleCards() {
+	public void shuffleCards() {
 		Collections.shuffle(lstCards);
 	}
 
@@ -220,5 +237,12 @@ public class Hand {
 			sb.append(c.toString());
 		}
 		return sb.toString();
+	}
+
+	public XmlObject getSettings() {
+		if (settings == null) {
+			settings = new XmlObject("Settings");
+		}
+		return settings;
 	}
 }

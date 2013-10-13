@@ -8,6 +8,7 @@ import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
+import de.brod.xml.XmlObject;
 
 public class MauMau extends Game {
 
@@ -17,6 +18,54 @@ public class MauMau extends Game {
 
 	@Override
 	public IAction getNextAction() {
+
+		final Hand h0 = hands.get(0);
+		// move stack
+		if (h0.getCardCount() == 0 && hands.get(5).getCardCount() > 1) {
+			return new IAction() {
+
+				@Override
+				public void action() {
+					// update stack
+					Card[] cards = hands.get(5).getCards().toArray(new Card[0]);
+					for (int i = 0; i < cards.length - 1; i++) {
+						cards[i].moveTo(h0);
+					}
+					h0.shuffleCards();
+				}
+			};
+		}
+		final XmlObject settings = h0.getSettings();
+		final int iPlayer = settings.getAttributeAsInt("player");
+		if (iPlayer > 0) {
+			return new IAction() {
+
+				@Override
+				public void action() {
+					Hand hand = hands.get(iPlayer);
+					Card cPlay = null;
+					for (Card c : hand.getCards()) {
+						if (matchesStack(c)) {
+							cPlay = c;
+							break;
+						}
+					}
+					if (cPlay != null) {
+						cPlay.moveTo(hands.get(5));
+						hands.get(5).organize();
+					} else {
+						Card lastCard = h0.getLastCard();
+						if (lastCard != null) {
+							lastCard.moveTo(hand);
+						}
+						h0.organize();
+					}
+					hand.organize();
+					// set the next player
+					settings.setAttribute("player", (iPlayer + 1) % 4);
+				}
+			};
+		}
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -29,6 +78,7 @@ public class MauMau extends Game {
 				hands[0].getLastCard().moveTo(hands[i]);
 			}
 		}
+		hands[0].getLastCard().moveTo(hands[5]);
 	}
 
 	@Override
@@ -77,14 +127,55 @@ public class MauMau extends Game {
 	public void mouseUp(List<Card> pLstMoves, Hand handTo) {
 		Card card = pLstMoves.get(0);
 		Hand h0 = card.getHand();
+		int hFrom = h0.getId();
 		if (handTo == null || h0 == handTo) {
-			if (h0.getId() == 4) {
+			if (hFrom == 4) {
 				handTo = hands.get(5);
-			} else if (h0.getId() == 0) {
+			} else if (hFrom == 0) {
 				handTo = hands.get(4);
+			} else {
+				return;
 			}
 		}
+		int hTo = handTo.getId();
+		XmlObject settings = hands.get(0).getSettings();
+		int iPlayer = settings.getAttributeAsInt("player");
+		if (iPlayer == 0) {
+			// draw a card or play a card
+			if (hFrom == 0 && hTo == 4) {
+				// draw a card
+				settings.setAttribute("player", iPlayer + 1);
+			} else if (hFrom == 4 && hTo == 5) {
+				// play a card
+				if (!matchesStack(card)) {
+					return;
+				}
+				settings.setAttribute("player", iPlayer + 1);
+			} else {
+				return;
+			}
+		} else {
+			return;
+		}
 		super.mouseUp(pLstMoves, handTo);
+	}
+
+	private boolean matchesStack(Card card) {
+		// jack is the joker
+		if (card.getValue().equals(Values.Jack)) {
+			return true;
+		}
+
+		Card lastCard = hands.get(5).getLastCard();
+
+		if (lastCard.getValue().equals(card.getValue())) {
+			return true;
+		}
+		if (lastCard.getColor().equals(card.getColor())) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
