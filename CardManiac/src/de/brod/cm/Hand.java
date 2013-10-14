@@ -93,6 +93,19 @@ public class Hand {
 		return lstCards.toArray(new Card[0]);
 	}
 
+	public Card[] create32Cards() {
+		for (int i = 0; i < 13; i++) {
+			for (int j = 0; j < 4; j++) {
+				createCard(Values.getValue(i), Colors.getValue(j));
+			}
+			if (i == 0) {
+				i += 5;
+			}
+		}
+		shuffleCards();
+		return lstCards.toArray(new Card[0]);
+	}
+
 	public Card createCard(Card.Values value, Card.Colors color) {
 		Card c = new Card(this);
 		c.setPosition(pos[0], pos[1]);

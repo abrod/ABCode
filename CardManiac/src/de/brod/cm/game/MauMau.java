@@ -20,18 +20,21 @@ public class MauMau extends Game {
 	public IAction getNextAction() {
 
 		final Hand h0 = hands.get(0);
+		final Hand h5 = hands.get(5);
 		// move stack
-		if (h0.getCardCount() == 0 && hands.get(5).getCardCount() > 1) {
+		if (h0.getCardCount() == 0 && h5.getCardCount() > 1) {
 			return new IAction() {
 
 				@Override
 				public void action() {
 					// update stack
-					Card[] cards = hands.get(5).getCards().toArray(new Card[0]);
+					Card[] cards = h5.getCards().toArray(new Card[0]);
 					for (int i = 0; i < cards.length - 1; i++) {
 						cards[i].moveTo(h0);
 					}
 					h0.shuffleCards();
+					h0.organize();
+					h5.organize();
 				}
 			};
 		}
@@ -51,8 +54,8 @@ public class MauMau extends Game {
 						}
 					}
 					if (cPlay != null) {
-						cPlay.moveTo(hands.get(5));
-						hands.get(5).organize();
+						cPlay.moveTo(h5);
+						h5.organize();
 					} else {
 						Card lastCard = h0.getLastCard();
 						if (lastCard != null) {
@@ -72,7 +75,7 @@ public class MauMau extends Game {
 
 	@Override
 	public void initNewCards(Hand[] hands) {
-		hands[0].create52Cards();
+		hands[0].create32Cards();
 		for (int i = 1; i <= 4; i++) {
 			for (int j = 0; j < 6; j++) {
 				hands[0].getLastCard().moveTo(hands[i]);
@@ -157,18 +160,21 @@ public class MauMau extends Game {
 		} else {
 			return;
 		}
-		super.mouseUp(pLstMoves, handTo);
+		card.moveTo(handTo);
 	}
 
 	private boolean matchesStack(Card card) {
+
+		Card lastCard = hands.get(5).getLastCard();
+		Values lcValue = lastCard.getValue();
+		Values cValue = card.getValue();
+
 		// jack is the joker
-		if (card.getValue().equals(Values.Jack)) {
+		if (cValue.equals(Values.Jack)) {
 			return true;
 		}
 
-		Card lastCard = hands.get(5).getLastCard();
-
-		if (lastCard.getValue().equals(card.getValue())) {
+		if (lcValue.equals(cValue)) {
 			return true;
 		}
 		if (lastCard.getColor().equals(card.getColor())) {
