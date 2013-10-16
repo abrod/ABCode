@@ -5,25 +5,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import android.graphics.Color;
 import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.gui.shape.Sprite;
-import de.brod.gui.shape.Text;
 import de.brod.xml.XmlObject;
 
-public class Hand {
+public class Hand extends CardContainer {
 
 	List<Card> lstCards = new ArrayList<Card>();
-	private float[] pos;
 	private int iCardCount;
 	private Card c0;
-	private int id;
-	private Text text = null;
 	private boolean bCenter = false;
-	private boolean bLandScape;
 	private float angle = 0;
-	private XmlObject settings = null;
 
 	/**
 	 * Create a Hand object. The
@@ -37,13 +30,7 @@ public class Hand {
 	 */
 	public Hand(int piId, float px1, float py1, float px2, float py2,
 			int piCardCount) {
-		id = piId;
-		float x1 = Card.getX(px1);
-		float y1 = Card.getY(py1);
-		float x2 = Card.getX(px2);
-		float y2 = Card.getY(py2);
-		pos = new float[] { x1, y1, x2 - x1, y2 - y1 };
-		bLandScape = Math.abs(pos[2]) > Math.abs(pos[3]);
+		super(piId, px1, py1, px2, py2);
 		iCardCount = piCardCount;
 		c0 = createCard(Card.Values.Ace, Card.Colors.Empty);
 		c0.setMoveable(false);
@@ -56,29 +43,16 @@ public class Hand {
 		card.setAngle(angle);
 	}
 
+	@Override
 	public void addAllCards(Sprite sprite) {
 		sprite.add(c0);
 		for (Card c : lstCards) {
 			sprite.add(c);
 		}
-		if (text != null) {
-			sprite.add(text);
-		}
+		super.addAllCards(sprite);
 	}
 
-	public void setText(String psText) {
-		if (psText.length() == 0) {
-			text = null;
-		} else {
-			float fTitleHeight = Card.getCardHeight() / 4;
-			text = Text.createText(psText, pos[0],
-					pos[1] - pos[3] - Card.getCardHeight() / 2 - fTitleHeight,
-					fTitleHeight);
-			text.setMoveable(false);
-			text.setColor(Color.WHITE);
-		}
-	}
-
+	@Override
 	public void clear() {
 		lstCards.clear();
 	}
@@ -122,10 +96,6 @@ public class Hand {
 		return lstCards;
 	}
 
-	public int getId() {
-		return id;
-	}
-
 	public Card getLastCard() {
 		int size = lstCards.size();
 		if (size > 0) {
@@ -134,6 +104,7 @@ public class Hand {
 		return null;
 	}
 
+	@Override
 	public void loadState(XmlObject xmlHand) {
 		StringTokenizer st = new StringTokenizer(xmlHand.getAttribute("cards"),
 				" ");
@@ -143,14 +114,10 @@ public class Hand {
 			card.setValue(Integer.parseInt(sCard));
 			add(card);
 		}
-		XmlObject[] arrSettings = xmlHand.getObjects("Settings");
-		if (arrSettings.length > 0) {
-			settings = arrSettings[0];
-		} else {
-			settings = null;
-		}
+		super.loadState(xmlHand);
 	}
 
+	@Override
 	public void organize() {
 		if (lstCards.size() > 0) {
 			float x = pos[0];
@@ -164,7 +131,7 @@ public class Hand {
 				dx = dx / size;
 				dy = dy / size;
 			}
-			int pId = id * 1000;
+			int pId = getId() * 1000;
 			c0.setId(pId);
 			if (bCenter) {
 				if (bLandScape) {
@@ -202,6 +169,7 @@ public class Hand {
 		lstCards.remove(card);
 	}
 
+	@Override
 	public void saveState(XmlObject xmlHand) {
 		StringBuilder sb = new StringBuilder();
 		for (Card c : lstCards) {
@@ -211,16 +179,7 @@ public class Hand {
 			sb.append(String.valueOf(c.getValueId()));
 		}
 		xmlHand.setAttribute("cards", sb.toString());
-		XmlObject[] objects = xmlHand.getObjects("Settings");
-		if (objects.length == 0 && settings == null) {
-			// no settings
-		} else {
-			// remove settings
-			xmlHand.deleteObjects("Settings");
-			if (settings != null) {
-				xmlHand.addObject(settings);
-			}
-		}
+		super.saveState(xmlHand);
 	}
 
 	public void shuffleCards() {
@@ -252,10 +211,4 @@ public class Hand {
 		return sb.toString();
 	}
 
-	public XmlObject getSettings() {
-		if (settings == null) {
-			settings = new XmlObject("Settings");
-		}
-		return settings;
-	}
 }

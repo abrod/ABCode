@@ -98,11 +98,11 @@ public class FreeCell extends Game {
 	}
 
 	@Override
-	public void initNewCards(Hand[] hands) {
-		Card[] cards = hands[0].create52Cards();
+	public void initNewCards() {
+		Card[] cards = hands.get(0).create52Cards();
 		int iPos = 1;
 		for (Card card : cards) {
-			card.moveTo(hands[iPos]);
+			card.moveTo(hands.get(iPos));
 			iPos += 2;
 			if (iPos >= 16) {
 				iPos = 1;

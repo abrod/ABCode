@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.brod.cm.Card;
+import de.brod.cm.CardContainer;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
@@ -25,9 +26,9 @@ public abstract class Game {
 
 	public abstract IAction getNextAction();
 
-	public abstract void initNewCards(Hand[] hands);
+	public abstract void initNewCards();
 
-	public abstract Hand[] initHands(boolean bLandscape);
+	public abstract CardContainer[] initHands(boolean bLandscape);
 
 	public abstract void mouseDown(List<Card> plstMoves);
 

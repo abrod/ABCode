@@ -21,9 +21,9 @@ public class CardManiac extends Game {
 	}
 
 	@Override
-	public void initNewCards(Hand[] hands) {
-		for (int i = 0; i < hands.length; i++) {
-			Hand hand = hands[i];
+	public void initNewCards() {
+		for (int i = 0; i < hands.size(); i++) {
+			Hand hand = hands.get(i);
 			games[i].createTitleCards(hand);
 		}
 	}

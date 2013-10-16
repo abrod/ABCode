@@ -74,14 +74,15 @@ public class MauMau extends Game {
 	}
 
 	@Override
-	public void initNewCards(Hand[] hands) {
-		hands[0].create32Cards();
+	public void initNewCards() {
+		Hand h0 = hands.get(0);
+		h0.create32Cards();
 		for (int i = 1; i <= 4; i++) {
 			for (int j = 0; j < 6; j++) {
-				hands[0].getLastCard().moveTo(hands[i]);
+				h0.getLastCard().moveTo(hands.get(i));
 			}
 		}
-		hands[0].getLastCard().moveTo(hands[5]);
+		h0.getLastCard().moveTo(hands.get(5));
 	}
 
 	@Override

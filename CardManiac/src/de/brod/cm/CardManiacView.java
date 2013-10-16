@@ -21,7 +21,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	Game game;
 
-	private Hand[] hands;
+	private CardContainer[] hands;
 
 	private int _width;
 
@@ -54,16 +54,16 @@ public class CardManiacView extends GuiRendererView<Card> {
 	@Override
 	public void initGroup(Sprite root, XmlObject lastHistoryEntry) {
 		// clear the hands
-		for (Hand hand : hands) {
+		for (CardContainer hand : hands) {
 			hand.clear();
 		}
 		System.out.println("Init hand");
 		// init the hands
 		if (lastHistoryEntry == null || !game.hasHistory()) {
-			game.initNewCards(hands);
+			game.initNewCards();
 		} else {
 			// load the last state
-			for (Hand hand : hands) {
+			for (CardContainer hand : hands) {
 				XmlObject xmlHand = lastHistoryEntry.getObject("Hand", "id", ""
 						+ hand.getId(), false);
 				if (xmlHand != null) {
@@ -75,7 +75,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 		}
 
 		System.out.println("Organize hand");
-		for (Hand hand : hands) {
+		for (CardContainer hand : hands) {
 			hand.organize();
 			hand.addAllCards(root);
 			System.out.println(hand.toString());
@@ -139,7 +139,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 				game.mouseUp(pLstMoves, null);
 			}
 			// organize the hands
-			for (Hand hand : hands) {
+			for (CardContainer hand : hands) {
 				hand.organize();
 			}
 		}
@@ -149,7 +149,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 	@Override
 	protected void saveState(XmlObject historyEntry) {
 		System.out.println("Save State");
-		for (Hand hand : hands) {
+		for (CardContainer hand : hands) {
 			XmlObject xmlHand = historyEntry.getObject("Hand", "id",
 					"" + hand.getId(), true);
 			hand.saveState(xmlHand);
