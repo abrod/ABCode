@@ -42,7 +42,6 @@ public class CardManiac extends Game {
 	@Override
 	public Hand[] initHands(boolean bLandscape) {
 
-		Hand[] h = new Hand[classes.length];
 		games = new Game[classes.length];
 
 		for (int i = 0; i < classes.length; i++) {
@@ -54,13 +53,14 @@ public class CardManiac extends Game {
 				e.printStackTrace();
 			}
 
-			h[i] = newHand(i);
+			Hand h = newHand(i);
 			String name = classes[i].getName();
-			h[i].setText(name.substring(name.lastIndexOf(".") + 1));
+			h.setText(name.substring(name.lastIndexOf(".") + 1));
+			hands.add(h);
 		}
 		// init the hands
 
-		return h;
+		return hands.toArray(new Hand[0]);
 	}
 
 	private Hand newHand(int i) {
