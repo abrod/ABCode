@@ -22,8 +22,8 @@ public class CardManiac extends Game {
 
 	@Override
 	public void initNewCards() {
-		for (int i = 0; i < hands.size(); i++) {
-			Hand hand = hands.get(i);
+		for (int i = 0; i < size(); i++) {
+			Hand hand = get(i);
 			games[i].createTitleCards(hand);
 		}
 	}
@@ -40,7 +40,7 @@ public class CardManiac extends Game {
 	private Game[] games;
 
 	@Override
-	public Hand[] initHands(boolean bLandscape) {
+	public void initHands(boolean bLandscape) {
 
 		games = new Game[classes.length];
 
@@ -56,11 +56,8 @@ public class CardManiac extends Game {
 			Hand h = newHand(i);
 			String name = classes[i].getName();
 			h.setText(name.substring(name.lastIndexOf(".") + 1));
-			hands.add(h);
+			add(h);
 		}
-		// init the hands
-
-		return hands.toArray(new Hand[0]);
 	}
 
 	private Hand newHand(int i) {

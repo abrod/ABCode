@@ -44,7 +44,7 @@ public class FreeCell extends Game {
 				if (iMinValue == 0) {
 					// search empty entry
 					for (int j = 4; j < 8; j++) {
-						Hand h = hands.get(j * 2);
+						Hand h = get(j * 2);
 						Card c1 = h.getLastCard();
 						if (c1 == null) {
 							return new FinishAction(c, h);
@@ -53,7 +53,7 @@ public class FreeCell extends Game {
 				} else {
 					// search empty entry
 					for (int j = 4; j < 8; j++) {
-						Hand h = hands.get(j * 2);
+						Hand h = get(j * 2);
 						Card c1 = h.getLastCard();
 						if (c1 != null
 								&& c1.getColor().getId() == c.getColor()
@@ -73,7 +73,7 @@ public class FreeCell extends Game {
 		// check the min value
 		int iMinValue = 100;
 		for (int i = 4; i < 8; i++) {
-			Hand hand = hands.get(i * 2);
+			Hand hand = get(i * 2);
 			Card c = hand.getLastCard();
 			if (c != null) {
 				iMinValue = Math.min(c.getValue().getId() + 1, iMinValue);
@@ -84,12 +84,12 @@ public class FreeCell extends Game {
 		}
 		for (int i = 0; i < 8; i++) {
 			if (i < 4) {
-				FinishAction a = getAction(hands.get(i * 2), iMinValue);
+				FinishAction a = getAction(get(i * 2), iMinValue);
 				if (a != null) {
 					return a;
 				}
 			}
-			FinishAction a = getAction(hands.get(i * 2 + 1), iMinValue);
+			FinishAction a = getAction(get(i * 2 + 1), iMinValue);
 			if (a != null) {
 				return a;
 			}
@@ -99,10 +99,10 @@ public class FreeCell extends Game {
 
 	@Override
 	public void initNewCards() {
-		Card[] cards = hands.get(0).create52Cards();
+		Card[] cards = get(0).create52Cards();
 		int iPos = 1;
 		for (Card card : cards) {
-			card.moveTo(hands.get(iPos));
+			card.moveTo(get(iPos));
 			iPos += 2;
 			if (iPos >= 16) {
 				iPos = 1;
@@ -111,30 +111,29 @@ public class FreeCell extends Game {
 	}
 
 	@Override
-	public Hand[] initHands(boolean bLandscape) {
+	public void initHands(boolean bLandscape) {
 		if (!bLandscape) {
 			for (int i = 0; i < 8; i++) {
 				if (i < 4) {
-					hands.add(new Hand(i * 2, i - 0.1f, 0, i - 0.1f, 0, 13));
+					add(new Hand(i * 2, i - 0.1f, 0, i - 0.1f, 0, 13));
 				} else {
-					hands.add(new Hand(i * 2, i + 0.1f, 0, i + 0.1f, 0, 100));
+					add(new Hand(i * 2, i + 0.1f, 0, i + 0.1f, 0, 100));
 				}
-				hands.add(new Hand(i * 2 + 1, i, 1, i, Card.maxCardY, 15));
+				add(new Hand(i * 2 + 1, i, 1, i, Card.maxCardY, 15));
 			}
 		} else {
 			for (int i = 0; i < 8; i++) {
 				if (i < 4) {
-					hands.add(new Hand(i * 2, -1.5f, i, -1.5f, i, 13));
+					add(new Hand(i * 2, -1.5f, i, -1.5f, i, 13));
 				} else {
-					hands.add(new Hand(i * 2, 8.5f, i - 4, 9, i - 4, 13));
+					add(new Hand(i * 2, 8.5f, i - 4, 9, i - 4, 13));
 				}
-				hands.add(new Hand(i * 2 + 1, i, 0, i, Card.maxCardY, 10));
+				add(new Hand(i * 2 + 1, i, 0, i, Card.maxCardY, 10));
 			}
 		}
 		for (int i = 4; i < 8; i++) {
-			hands.get(i * 2).getStackCard().setValue(13 * 4 + 1);
+			get(i * 2).getStackCard().setValue(13 * 4 + 1);
 		}
-		return hands.toArray(new Hand[0]);
 	}
 
 	private boolean matches(Card cLastCard, Card cFirstCardOfMovingStack) {
@@ -164,13 +163,13 @@ public class FreeCell extends Game {
 			// get amount of free cards
 			int iFree = 1;
 			for (int i = 0; i < 8; i += 2) {
-				if (hands.get(i).getCardCount() == 0) {
+				if (get(i).getCardCount() == 0) {
 					iFree++;
 				}
 			}
 			int iFree1 = 0;
 			for (int i = 1; i < 16; i += 2) {
-				if (hands.get(i).getCardCount() == 0) {
+				if (get(i).getCardCount() == 0) {
 					iFree1++;
 				}
 			}

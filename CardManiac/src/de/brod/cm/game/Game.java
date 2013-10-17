@@ -28,7 +28,7 @@ public abstract class Game {
 
 	public abstract void initNewCards();
 
-	public abstract CardContainer[] initHands(boolean bLandscape);
+	public abstract void initHands(boolean bLandscape);
 
 	public abstract void mouseDown(List<Card> plstMoves);
 
@@ -54,7 +54,27 @@ public abstract class Game {
 		lst.add(Type.undo);
 	}
 
-	protected ArrayList<Hand> hands = new ArrayList<Hand>();
+	private ArrayList<Hand> hands = new ArrayList<Hand>();
+	private ArrayList<CardContainer> cardContainer = new ArrayList<CardContainer>();
+
+	protected void add(CardContainer cc) {
+		cardContainer.add(cc);
+		if (cc instanceof Hand) {
+			hands.add((Hand) cc);
+		}
+	}
+
+	public int size() {
+		return hands.size();
+	}
+
+	public Hand get(int i) {
+		return hands.get(i);
+	}
+
+	public CardContainer[] getCardContainer() {
+		return cardContainer.toArray(new CardContainer[cardContainer.size()]);
+	}
 
 	protected abstract void createTitleCards(Hand hand);
 

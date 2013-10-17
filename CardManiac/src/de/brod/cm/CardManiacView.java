@@ -105,7 +105,9 @@ public class CardManiacView extends GuiRendererView<Card> {
 		settings.setAttibute("game", game.getName());
 
 		// set the correct game
-		hands = game.initHands(_width > _height);
+		game.initHands(_width > _height);
+
+		hands = game.getCardContainer();
 		// init the application (menu, etc.)
 		super.initApplication();
 	}

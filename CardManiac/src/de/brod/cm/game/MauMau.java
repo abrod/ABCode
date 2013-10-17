@@ -19,8 +19,8 @@ public class MauMau extends Game {
 	@Override
 	public IAction getNextAction() {
 
-		final Hand h0 = hands.get(0);
-		final Hand h5 = hands.get(5);
+		final Hand h0 = get(0);
+		final Hand h5 = get(5);
 		// move stack
 		if (h0.getCardCount() == 0 && h5.getCardCount() > 1) {
 			return new IAction() {
@@ -45,7 +45,7 @@ public class MauMau extends Game {
 
 				@Override
 				public void action() {
-					Hand hand = hands.get(iPlayer);
+					Hand hand = get(iPlayer);
 					Card cPlay = null;
 					for (Card c : hand.getCards()) {
 						if (matchesStack(c)) {
@@ -75,18 +75,18 @@ public class MauMau extends Game {
 
 	@Override
 	public void initNewCards() {
-		Hand h0 = hands.get(0);
+		Hand h0 = get(0);
 		h0.create32Cards();
 		for (int i = 1; i <= 4; i++) {
 			for (int j = 0; j < 6; j++) {
-				h0.getLastCard().moveTo(hands.get(i));
+				h0.getLastCard().moveTo(get(i));
 			}
 		}
-		h0.getLastCard().moveTo(hands.get(5));
+		h0.getLastCard().moveTo(get(5));
 	}
 
 	@Override
-	public Hand[] initHands(boolean bLandscape) {
+	public void initHands(boolean bLandscape) {
 
 		float y2 = Card.maxCardY / 2;
 
@@ -100,21 +100,19 @@ public class MauMau extends Game {
 			top = 0;
 			maxCount = 10;
 		}
-		hands.add(new Hand(0, 2, y2, 3, y2, 16));
+		add(new Hand(0, 2, y2, 3, y2, 16));
 		// add the players
-		hands.add(new Hand(1, left - 1, top, left - 1, Card.maxCardY - top,
+		add(new Hand(1, left - 1, top, left - 1, Card.maxCardY - top, maxCount));
+		add(new Hand(2, left, 0, right, 0, maxCount));
+		add(new Hand(3, right + 1, top, right + 1, Card.maxCardY - top,
 				maxCount));
-		hands.add(new Hand(2, left, 0, right, 0, maxCount));
-		hands.add(new Hand(3, right + 1, top, right + 1, Card.maxCardY - top,
-				maxCount));
-		hands.add(new Hand(4, left, Card.maxCardY, right, Card.maxCardY,
-				maxCount));
+		add(new Hand(4, left, Card.maxCardY, right, Card.maxCardY, maxCount));
 
 		// add the stacks
-		hands.add(new Hand(5, 4, y2, 5, y2, 16));
+		add(new Hand(5, 4, y2, 5, y2, 16));
 
-		for (int i = 0; i < hands.size(); i++) {
-			Hand hand = hands.get(i);
+		for (int i = 0; i < size(); i++) {
+			Hand hand = get(i);
 			hand.setCenter(i > 0 && i < 5);
 			if (i < 4) {
 				hand.setAngle(180);
@@ -122,8 +120,6 @@ public class MauMau extends Game {
 				hand.setAngle(0);
 			}
 		}
-
-		return hands.toArray(new Hand[hands.size()]);
 
 	}
 
@@ -134,15 +130,15 @@ public class MauMau extends Game {
 		int hFrom = h0.getId();
 		if (handTo == null || h0 == handTo) {
 			if (hFrom == 4) {
-				handTo = hands.get(5);
+				handTo = get(5);
 			} else if (hFrom == 0) {
-				handTo = hands.get(4);
+				handTo = get(4);
 			} else {
 				return;
 			}
 		}
 		int hTo = handTo.getId();
-		XmlObject settings = hands.get(0).getSettings();
+		XmlObject settings = get(0).getSettings();
 		int iPlayer = settings.getAttributeAsInt("player");
 		if (iPlayer == 0) {
 			// draw a card or play a card
@@ -166,7 +162,7 @@ public class MauMau extends Game {
 
 	private boolean matchesStack(Card card) {
 
-		Card lastCard = hands.get(5).getLastCard();
+		Card lastCard = get(5).getLastCard();
 		Values lcValue = lastCard.getValue();
 		Values cValue = card.getValue();
 
