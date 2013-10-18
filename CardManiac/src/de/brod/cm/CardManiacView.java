@@ -132,20 +132,21 @@ public class CardManiacView extends GuiRendererView<Card> {
 	}
 
 	@Override
-	protected void mouseUp(List<Card> pLstMoves, Card cardTo) {
+	protected boolean mouseUp(List<Card> pLstMoves, Card cardTo) {
+		boolean bChanged = false;
 		if (pLstMoves.size() > 0) {
 			if (cardTo != null) {
 				Hand handTo = cardTo.getHand();
-				game.mouseUp(pLstMoves, handTo);
+				bChanged = game.mouseUp(pLstMoves, handTo);
 			} else {
-				game.mouseUp(pLstMoves, null);
+				bChanged = game.mouseUp(pLstMoves, null);
 			}
 			// organize the hands
 			for (CardContainer hand : hands) {
 				hand.organize();
 			}
 		}
-
+		return bChanged;
 	}
 
 	@Override

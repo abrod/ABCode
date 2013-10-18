@@ -7,6 +7,7 @@ import java.util.List;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 import de.brod.gui.shape.Button;
@@ -55,6 +56,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 
 	private List<Container> lstSprites;
 	private List<SPRITE> lstMoves = new ArrayList<SPRITE>();
+	private List<SPRITE> lstSelected = new ArrayList<SPRITE>();
 	private List<Container> lstSlides = new ArrayList<Container>();
 	Sprite area;
 	Menu menu;
@@ -132,15 +134,20 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 				}
 			}
 		}
+
 		for (int i = lstSprites.size() - 1; i >= 0; i--) {
 			Container sprite = lstSprites.get(i);
 			if (sprite.touches(eventX, eventY)) {
 				if (isInstanceOf(sprite) && sprite.isMoveable()) {
 					System.out.println("touch " + i + " " + sprite.toString());
 					lstMoves.add((SPRITE) sprite);
+					for (SPRITE sprite1 : lstSelected) {
+						sprite1.setColor(Color.WHITE);
+					}
 					mouseDown(lstMoves);
 					for (Sprite moveItem : lstMoves) {
 						moveItem.setMoving(true);
+						moveItem.setColor(Color.LTGRAY);
 					}
 					return true;
 				}
@@ -182,6 +189,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			for (Container sprite : lstSprites) {
 				sprite.savePosition();
 			}
+			lstSelected.clear();
+			lstSelected.addAll(lstMoves);
 			for (Sprite moveItem : lstMoves) {
 				moveItem.setMoving(false);
 			}
@@ -196,7 +205,12 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 					break;
 				}
 			}
-			mouseUp(lstMoves, selected);
+			if (mouseUp(lstMoves, selected)) {
+				for (SPRITE sprite : lstSelected) {
+					sprite.setColor(Color.WHITE);
+				}
+				lstSelected.clear();
+			}
 
 			resetSlidePositions();
 			return true;
@@ -204,7 +218,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		return false;
 	}
 
-	protected abstract void mouseUp(List<SPRITE> plstMoves, SPRITE sprite);
+	protected abstract boolean mouseUp(List<SPRITE> plstMoves, SPRITE sprite);
 
 	@Override
 	public synchronized boolean onTouchEvent(MotionEvent event) {

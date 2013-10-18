@@ -203,9 +203,9 @@ public class FreeCell extends Game {
 	}
 
 	@Override
-	public void mouseUp(List<Card> pLstMoves, Hand handTo) {
+	public boolean mouseUp(List<Card> pLstMoves, Hand handTo) {
 		if (handTo == null) {
-			return;
+			return false;
 		}
 		int id = handTo.getId();
 		int y = id % 2;
@@ -215,29 +215,29 @@ public class FreeCell extends Game {
 		if (y == 0) {
 			// only one card allowed
 			if (pLstMoves.size() > 1) {
-				return;
+				return false;
 			}
 			if (x < 4) {
 				if (c != null) {
-					return;
+					return false;
 				}
 			} else {
 				if (c == null) {
 					if (!c0.getValue().equals(Values.Ace)) {
-						return;
+						return false;
 					}
 				} else if (!c.getColor().equals(c0.getColor())
 						|| c.getValue().getId() != c0.getValue().getId() - 1) {
-					return;
+					return false;
 				}
 			}
 		} else {
 			if (c != null && !matches(c, c0)) {
-				return;
+				return false;
 			}
 		}
 
-		super.mouseUp(pLstMoves, handTo);
+		return super.mouseUp(pLstMoves, handTo);
 	}
 
 	@Override

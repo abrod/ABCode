@@ -32,16 +32,19 @@ public abstract class Game {
 
 	public abstract void mouseDown(List<Card> plstMoves);
 
-	public void mouseUp(List<Card> pLstMoves, Hand handTo) {
+	public boolean mouseUp(List<Card> pLstMoves, Hand handTo) {
 		if (handTo == null) {
-			return;
+			return false;
 		}
+		boolean bChanged = false;
 		Hand handFrom = pLstMoves.get(0).getHand();
 		if (handFrom != handTo) {
 			for (Card card : pLstMoves) {
 				card.moveTo(handTo);
+				bChanged = true;
 			}
 		}
+		return bChanged;
 	}
 
 	public void openGame(Game pGame) {

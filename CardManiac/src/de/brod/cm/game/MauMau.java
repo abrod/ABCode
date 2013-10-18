@@ -124,7 +124,7 @@ public class MauMau extends Game {
 	}
 
 	@Override
-	public void mouseUp(List<Card> pLstMoves, Hand handTo) {
+	public boolean mouseUp(List<Card> pLstMoves, Hand handTo) {
 		Card card = pLstMoves.get(0);
 		Hand h0 = card.getHand();
 		int hFrom = h0.getId();
@@ -134,7 +134,7 @@ public class MauMau extends Game {
 			} else if (hFrom == 0) {
 				handTo = get(4);
 			} else {
-				return;
+				return false;
 			}
 		}
 		int hTo = handTo.getId();
@@ -148,16 +148,17 @@ public class MauMau extends Game {
 			} else if (hFrom == 4 && hTo == 5) {
 				// play a card
 				if (!matchesStack(card)) {
-					return;
+					return false;
 				}
 				settings.setAttribute("player", iPlayer + 1);
 			} else {
-				return;
+				return false;
 			}
 		} else {
-			return;
+			return false;
 		}
 		card.moveTo(handTo);
+		return true;
 	}
 
 	private boolean matchesStack(Card card) {
