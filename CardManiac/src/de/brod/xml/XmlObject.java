@@ -340,6 +340,10 @@ public class XmlObject {
 		setAttribute(psAttributeName, String.valueOf(i));
 	}
 
+	public void setAttribute(String psAttributeName, boolean b) {
+		setAttribute(psAttributeName, String.valueOf(b));
+	}
+
 	public boolean setAttribute(String psAttributeName, String psAttributeValue) {
 		for (XmlAttribute atr : subAtr) {
 			if (atr.equalsName(psAttributeName)) {
@@ -413,5 +417,13 @@ public class XmlObject {
 		}
 		out.write('>');
 		out.write('\n');
+	}
+
+	public boolean getAttributeAsBoolean(String psAttributeName) {
+		String sAttribute = getAttribute(psAttributeName);
+		if (sAttribute.equalsIgnoreCase("true") || sAttribute.equals("1")) {
+			return true;
+		}
+		return false;
 	}
 }

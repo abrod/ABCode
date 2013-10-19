@@ -1,6 +1,6 @@
 package de.brod.cm.game;
 
-import java.util.List;
+import java.util.*;
 
 import de.brod.cm.Card;
 import de.brod.cm.Card.Colors;
@@ -8,6 +8,7 @@ import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
+import de.brod.cm.game.FreeCell.*;
 
 public class FreeCell extends Game {
 
@@ -19,14 +20,29 @@ public class FreeCell extends Game {
 
 		private Hand h;
 		private Card c;
+		List<FinishAction> lst;
 
+		public FinishAction(){
+			lst = new ArrayList<FinishAction>();
+		}
 		public FinishAction(Card c, Hand h) {
+			lst=null;
 			this.c = c;
 			this.h = h;
 		}
 
+		public void add(FreeCell.FinishAction a)
+		{
+			lst.add(a);
+		}
+
 		@Override
 		public void action() {
+			if (lst!=null){
+				for (FinishAction f:lst)
+					f.action();
+				return;
+			}
 			Hand oldHand = c.getHand();
 			if (h != oldHand) {
 				c.moveTo(h);
@@ -82,19 +98,22 @@ public class FreeCell extends Game {
 				break;
 			}
 		}
+		FinishAction f= new FinishAction();
 		for (int i = 0; i < 8; i++) {
 			if (i < 4) {
 				FinishAction a = getAction(get(i * 2), iMinValue);
 				if (a != null) {
-					return a;
+					f.add(a);
 				}
 			}
 			FinishAction a = getAction(get(i * 2 + 1), iMinValue);
 			if (a != null) {
-				return a;
+				f.add(a);
 			}
 		}
-		return null;
+		if (f.lst.size()==0)
+			return null;
+		return f;
 	}
 
 	@Override

@@ -2,15 +2,20 @@ package de.brod.cm.game;
 
 import java.util.List;
 
+import de.brod.cm.Buttons;
 import de.brod.cm.Card;
 import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
+import de.brod.gui.shape.Button;
 import de.brod.xml.XmlObject;
 
 public class MauMau extends Game {
+
+	private Buttons buttons;
+	private Button skipButton;
 
 	public MauMau(CardManiacView pCardManiacView) {
 		super(pCardManiacView);
@@ -19,6 +24,9 @@ public class MauMau extends Game {
 	@Override
 	public IAction getNextAction() {
 
+		if (isFinished()) {
+			return null;
+		}
 		final Hand h0 = get(0);
 		final Hand h5 = get(5);
 		// move stack
@@ -38,14 +46,33 @@ public class MauMau extends Game {
 				}
 			};
 		}
-		final XmlObject settings = h0.getSettings();
+		final XmlObject settings = getSettings();
 		final int iPlayer = settings.getAttributeAsInt("player");
+
 		if (iPlayer > 0) {
 			return new IAction() {
 
 				@Override
 				public void action() {
 					Hand hand = get(iPlayer);
+					// if card could not be played
+					if (!playCard(hand)) {
+						// draw a card
+						Card lastCard = h0.getLastCard();
+						if (lastCard != null) {
+							lastCard.moveTo(hand);
+						}
+						h0.organize();
+						// and try to play again
+						playCard(hand);
+					}
+					hand.organize();
+					// set the next player
+					settings.setAttribute("player", (iPlayer + 1) % 4);
+					settings.setAttribute("drawCard", true);
+				}
+
+				private boolean playCard(Hand hand) {
 					Card cPlay = null;
 					for (Card c : hand.getCards()) {
 						if (matchesStack(c)) {
@@ -56,21 +83,23 @@ public class MauMau extends Game {
 					if (cPlay != null) {
 						cPlay.moveTo(h5);
 						h5.organize();
-					} else {
-						Card lastCard = h0.getLastCard();
-						if (lastCard != null) {
-							lastCard.moveTo(hand);
-						}
-						h0.organize();
+						return true;
 					}
-					hand.organize();
-					// set the next player
-					settings.setAttribute("player", (iPlayer + 1) % 4);
+					return false;
 				}
 			};
 		}
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private boolean isFinished() {
+		for (int i = 1; i <= 4; i++) {
+			if (get(i).getCardCount() == 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -83,6 +112,10 @@ public class MauMau extends Game {
 			}
 		}
 		h0.getLastCard().moveTo(get(5));
+
+		XmlObject settings = getSettings();
+		settings.setAttribute("player", 0);
+		settings.setAttribute("drawCard", true);
 	}
 
 	@Override
@@ -121,44 +154,86 @@ public class MauMau extends Game {
 			}
 		}
 
+		// add a ButtonContainer
+		buttons = new Buttons(99);
+		IAction action = new IAction() {
+
+			@Override
+			public void action() {
+				XmlObject settings = getSettings();
+				int iPlayer = settings.getAttributeAsInt("player");
+				if (iPlayer == 0 && !settings.getAttributeAsBoolean("drawCard")) {
+					settings.setAttribute("player", iPlayer + 1);
+					settings.setAttribute("drawCard", true);
+				}
+			}
+		};
+		skipButton = Button.Type.no.createButton(0,
+				Card.getY(Card.maxCardY * 3 / 4), action);
+		buttons.add(skipButton);
+		add(buttons);
+
 	}
 
 	@Override
 	public boolean mouseUp(List<Card> pLstMoves, Hand handTo) {
-		Card card = pLstMoves.get(0);
-		Hand h0 = card.getHand();
-		int hFrom = h0.getId();
-		if (handTo == null || h0 == handTo) {
-			if (hFrom == 4) {
-				handTo = get(5);
-			} else if (hFrom == 0) {
+		XmlObject settings = getSettings();
+		int iPlayer = settings.getAttributeAsInt("player");
+		if (iPlayer != 0) {
+			// it's not your turn
+			return false;
+		}
+		Card selectedCard = pLstMoves.get(0);
+		Hand selectedHand = selectedCard.getHand();
+		int hSelectedId = selectedHand.getId();
+		if (selectedHand == handTo) {
+			if (hSelectedId == 0 && settings.getAttributeAsBoolean("drawCard")) {
+				// draw a card to hand (from stack)
 				handTo = get(4);
 			} else {
 				return false;
 			}
 		}
-		int hTo = handTo.getId();
-		XmlObject settings = get(0).getSettings();
-		int iPlayer = settings.getAttributeAsInt("player");
-		if (iPlayer == 0) {
-			// draw a card or play a card
-			if (hFrom == 0 && hTo == 4) {
-				// draw a card
-				settings.setAttribute("player", iPlayer + 1);
-			} else if (hFrom == 4 && hTo == 5) {
-				// play a card
-				if (!matchesStack(card)) {
-					return false;
-				}
-				settings.setAttribute("player", iPlayer + 1);
+		if (handTo == null) {
+			// ignore this
+			return false;
+		}
+		int hToId = handTo.getId();
+		// draw a card or play a card
+		if (hSelectedId == 0 && hToId == 4) {
+			// draw a card
+			if (settings.getAttributeAsBoolean("drawCard")) {
+				settings.setAttribute("drawCard", false);
 			} else {
 				return false;
 			}
+		} else if (hSelectedId == 4 && hToId == 5) {
+			// play a card
+			if (!matchesStack(selectedCard)) {
+				return false;
+			}
+			settings.setAttribute("player", iPlayer + 1);
+			settings.setAttribute("drawCard", true);
 		} else {
+			// no valid move
 			return false;
 		}
-		card.moveTo(handTo);
+		selectedCard.moveTo(handTo);
 		return true;
+	}
+
+	@Override
+	public void prepareUpdate() {
+		XmlObject settings = getSettings();
+		if (settings.getAttributeAsInt("player") == 0) {
+			skipButton.setEnabled(!settings.getAttributeAsBoolean("drawCard"));
+		} else {
+			skipButton.setEnabled(false);
+		}
+	}
+
+	private XmlObject getSettings() {
+		return buttons.getSettings();
 	}
 
 	private boolean matchesStack(Card card) {
@@ -184,6 +259,9 @@ public class MauMau extends Game {
 
 	@Override
 	public void mouseDown(List<Card> plstMoves) {
+		if (isFinished()) {
+			plstMoves.clear();
+		}
 	}
 
 	@Override

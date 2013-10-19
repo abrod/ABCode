@@ -81,6 +81,9 @@ public class Sprite extends Container {
 	 */
 	@Override
 	public void draw(GL10 gl) {
+		if (!isVisible()) {
+			return;
+		}
 		if (mVerticesBuffer != null) {
 			// coordinates to use when rendering.
 			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, mVerticesBuffer);

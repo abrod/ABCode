@@ -35,7 +35,7 @@ public abstract class CardContainer {
 		}
 	}
 
-	public void addAllCards(Sprite sprite) {
+	public void addAllSpritesTo(Sprite sprite) {
 		if (text != null) {
 			sprite.add(text);
 		}
@@ -77,5 +77,7 @@ public abstract class CardContainer {
 	public abstract void clear();
 
 	public abstract void organize();
+
+	public abstract String getName();
 
 }

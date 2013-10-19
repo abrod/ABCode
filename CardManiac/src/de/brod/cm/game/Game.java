@@ -87,4 +87,8 @@ public abstract class Game {
 
 	public abstract boolean hasHistory();
 
+	public void prepareUpdate() {
+		// make nothing
+	}
+
 }

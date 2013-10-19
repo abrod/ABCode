@@ -13,6 +13,8 @@ public abstract class Container implements Comparable<Container> {
 
 	protected Texture tex;
 
+	private boolean visible = true;
+
 	public void add(int location, Container object) {
 		lstChildren.add(location, object);
 	}
@@ -93,7 +95,7 @@ public abstract class Container implements Comparable<Container> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see java.util.Vector#clear()
 	 */
 	public void clear() {
@@ -172,6 +174,14 @@ public abstract class Container implements Comparable<Container> {
 
 	public void setSliding(boolean sliding) {
 		this.sliding = sliding;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 }

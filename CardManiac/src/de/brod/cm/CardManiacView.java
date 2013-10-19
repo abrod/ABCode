@@ -21,7 +21,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	Game game;
 
-	private CardContainer[] hands;
+	private CardContainer[] _cardContainers;
 
 	private int _width;
 
@@ -53,34 +53,33 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	public void initGroup(Sprite root, XmlObject lastHistoryEntry) {
-		// clear the hands
-		for (CardContainer hand : hands) {
-			hand.clear();
+		// clear the cardContainers
+		for (CardContainer cc : _cardContainers) {
+			cc.clear();
 		}
-		System.out.println("Init hand");
-		// init the hands
+		System.out.println("Init Containers");
+		// init the Containers
 		if (lastHistoryEntry == null || !game.hasHistory()) {
 			game.initNewCards();
 		} else {
 			// load the last state
-			for (CardContainer hand : hands) {
-				XmlObject xmlHand = lastHistoryEntry.getObject("Hand", "id", ""
-						+ hand.getId(), false);
-				if (xmlHand != null) {
-					hand.loadState(xmlHand);
-					System.out.println(xmlHand.toString());
-					System.out.println(hand.toString());
+			for (CardContainer cc : _cardContainers) {
+				XmlObject xmlObject = lastHistoryEntry.getObject(cc.getName(),
+						"id", "" + cc.getId(), false);
+				if (xmlObject != null) {
+					cc.loadState(xmlObject);
 				}
 			}
 		}
 
-		System.out.println("Organize hand");
-		for (CardContainer hand : hands) {
-			hand.organize();
-			hand.addAllCards(root);
-			System.out.println(hand.toString());
+		System.out.println("Organize CardContainers");
+		for (CardContainer cc : _cardContainers) {
+			cc.organize();
+			cc.addAllSpritesTo(root);
+			System.out.println(cc.toString());
 		}
 
+		game.prepareUpdate();
 	}
 
 	@Override
@@ -107,7 +106,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 		// set the correct game
 		game.initHands(_width > _height);
 
-		hands = game.getCardContainer();
+		_cardContainers = game.getCardContainer();
 		// init the application (menu, etc.)
 		super.initApplication();
 	}
@@ -132,6 +131,12 @@ public class CardManiacView extends GuiRendererView<Card> {
 	}
 
 	@Override
+	public void update(boolean pbSetUndoPoint) {
+		game.prepareUpdate();
+		super.update(pbSetUndoPoint);
+	}
+
+	@Override
 	protected boolean mouseUp(List<Card> pLstMoves, Card cardTo) {
 		boolean bChanged = false;
 		if (pLstMoves.size() > 0) {
@@ -142,8 +147,8 @@ public class CardManiacView extends GuiRendererView<Card> {
 				bChanged = game.mouseUp(pLstMoves, null);
 			}
 			// organize the hands
-			for (CardContainer hand : hands) {
-				hand.organize();
+			for (CardContainer cc : _cardContainers) {
+				cc.organize();
 			}
 		}
 		return bChanged;
@@ -152,12 +157,10 @@ public class CardManiacView extends GuiRendererView<Card> {
 	@Override
 	protected void saveState(XmlObject historyEntry) {
 		System.out.println("Save State");
-		for (CardContainer hand : hands) {
-			XmlObject xmlHand = historyEntry.getObject("Hand", "id",
-					"" + hand.getId(), true);
-			hand.saveState(xmlHand);
-			System.out.println(xmlHand);
-			System.out.println(hand);
+		for (CardContainer cc : _cardContainers) {
+			XmlObject xmlObject = historyEntry.getObject(cc.getName(), "id", ""
+					+ cc.getId(), true);
+			cc.saveState(xmlObject);
 		}
 	}
 

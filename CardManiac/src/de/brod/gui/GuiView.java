@@ -137,21 +137,57 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 
 		for (int i = lstSprites.size() - 1; i >= 0; i--) {
 			Container sprite = lstSprites.get(i);
-			if (sprite.touches(eventX, eventY)) {
-				if (isInstanceOf(sprite) && sprite.isMoveable()) {
+			if (sprite.isVisible() && sprite.touches(eventX, eventY)) {
+				if (isInstanceOf(sprite)) {
 					System.out.println("touch " + i + " " + sprite.toString());
-					lstMoves.add((SPRITE) sprite);
-					for (SPRITE sprite1 : lstSelected) {
-						sprite1.setColor(Color.WHITE);
+					if (lstSelected.size() > 0) {
+						for (SPRITE sprite1 : lstSelected) {
+							sprite1.setColor(Color.WHITE);
+						}
+						// reset the slides
+						for (Container spritec : lstSprites) {
+							spritec.savePosition();
+						}
+						for (Sprite moveItem : lstSelected) {
+							moveItem.setMoving(false);
+						}
+						if (mouseUp(lstSelected, (SPRITE) sprite)) {
+							for (SPRITE spritec : lstSelected) {
+								spritec.setColor(Color.WHITE);
+							}
+							lstSelected.clear();
+
+							resetSlidePositions();
+							return true;
+						}
+						for (SPRITE spritec : lstSelected) {
+							spritec.setColor(Color.WHITE);
+						}
+						lstSelected.clear();
 					}
-					mouseDown(lstMoves);
-					for (Sprite moveItem : lstMoves) {
-						moveItem.setMoving(true);
-						moveItem.setColor(Color.LTGRAY);
+					if (sprite.isMoveable()) {
+						lstMoves.add((SPRITE) sprite);
+						mouseDown(lstMoves);
+						for (Sprite moveItem : lstMoves) {
+							moveItem.setMoving(true);
+							moveItem.setColor(Color.LTGRAY);
+						}
+						return true;
 					}
+				} else if (sprite instanceof Button) {
+					Button button = (Button) sprite;
+					System.out.println("Button " + button + " pressed");
+					button.pressed();
 					return true;
 				}
 			}
+		}
+		if (lstSelected.size() > 0) {
+			for (SPRITE spritec : lstSelected) {
+				spritec.setColor(Color.WHITE);
+			}
+			lstSelected.clear();
+			return true;
 		}
 		return false;
 	}

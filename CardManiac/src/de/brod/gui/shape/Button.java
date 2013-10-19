@@ -31,7 +31,7 @@ public class Button extends Sprite {
 
 		public Button createButton(float px, float py, IAction action) {
 			Button button = new Button(this.toString(), action);
-			button.setCell(x, y, x, y);
+			button.setCell(x, y, x + 6, y);
 			button.setPosition(px, py);
 			return button;
 		}
@@ -90,6 +90,7 @@ public class Button extends Sprite {
 
 	private String type;
 	IAction action;
+	private boolean enabled = true;
 
 	private Button(String psType, IAction action) {
 		this(texture, width, height, psType, action);
@@ -105,7 +106,7 @@ public class Button extends Sprite {
 
 	public void pressed() {
 		// setColor(Color.BLUE);
-		if (action != null) {
+		if (enabled && action != null) {
 			action.action();
 		}
 	}
@@ -121,5 +122,16 @@ public class Button extends Sprite {
 
 	public void resize(float f) {
 		setSize(width * f, height * f);
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean pbEnabled) {
+		if (enabled != pbEnabled) {
+			this.enabled = pbEnabled;
+			setAngle(pbEnabled ? 0 : 180);
+		}
 	}
 }

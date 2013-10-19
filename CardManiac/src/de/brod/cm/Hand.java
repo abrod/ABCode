@@ -44,12 +44,12 @@ public class Hand extends CardContainer {
 	}
 
 	@Override
-	public void addAllCards(Sprite sprite) {
+	public void addAllSpritesTo(Sprite sprite) {
 		sprite.add(c0);
 		for (Card c : lstCards) {
 			sprite.add(c);
 		}
-		super.addAllCards(sprite);
+		super.addAllSpritesTo(sprite);
 	}
 
 	@Override
@@ -209,6 +209,11 @@ public class Hand extends CardContainer {
 			sb.append(c.toString());
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public String getName() {
+		return "Hand";
 	}
 
 }
