@@ -21,8 +21,8 @@ public abstract class Container implements Comparable<Container> {
 
 	@Override
 	public int compareTo(Container another) {
-		if (isSliding() != another.isSliding()) {
-			if (!another.isSliding()) {
+		if (sliding != another.sliding) {
+			if (!another.sliding) {
 				return 1;
 			}
 			return -1;

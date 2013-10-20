@@ -79,7 +79,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 			System.out.println(cc.toString());
 		}
 
-		game.prepareUpdate();
+		game.prepareUpdate(applicationStateHandler, htTitleButtons);
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 		float fOffsetTop = _piOffsetTop * 2f / Math.min(_width, _height);
 		Card.init(_gl, _width, _height, fOffsetTop);
 		// create the game
-		String sGame = settings.getAttribute("game");
+		String sGame = globalStateHandler.getAttribute("game");
 
 		CardManiac cardManiac = new CardManiac(this);
 
@@ -101,7 +101,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected void initApplication() {
-		settings.setAttibute("game", game.getName());
+		globalStateHandler.setAttibute("game", game.getName());
 
 		// set the correct game
 		game.initHands(_width > _height);
@@ -131,9 +131,9 @@ public class CardManiacView extends GuiRendererView<Card> {
 	}
 
 	@Override
-	public void update(boolean pbSetUndoPoint) {
-		game.prepareUpdate();
-		super.update(pbSetUndoPoint);
+	public void requestRender() {
+		game.prepareUpdate(applicationStateHandler, htTitleButtons);
+		super.requestRender();
 	}
 
 	@Override
@@ -173,11 +173,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected void buttonPressed(Type type) {
-		if (type.equals(Type.undo)) {
-			stateHandler.undo();
-			reload();
-		} else if (type.equals(Type.redo)) {
-			stateHandler.redo();
+		if (game.buttonPressed(type, applicationStateHandler)) {
 			reload();
 		} else {
 			super.buttonPressed(type);

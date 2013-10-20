@@ -1,5 +1,6 @@
 package de.brod.cm.game;
 
+import java.util.Hashtable;
 import java.util.List;
 
 import de.brod.cm.Buttons;
@@ -9,6 +10,7 @@ import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
+import de.brod.gui.StateHandler;
 import de.brod.gui.shape.Button;
 import de.brod.xml.XmlObject;
 
@@ -223,13 +225,15 @@ public class MauMau extends Game {
 	}
 
 	@Override
-	public void prepareUpdate() {
+	public void prepareUpdate(StateHandler stateHandler,
+			Hashtable<Button.Type, Button> htTitleButtons) {
 		XmlObject settings = getSettings();
 		if (settings.getAttributeAsInt("player") == 0) {
 			skipButton.setEnabled(!settings.getAttributeAsBoolean("drawCard"));
 		} else {
 			skipButton.setEnabled(false);
 		}
+		super.prepareUpdate(stateHandler, htTitleButtons);
 	}
 
 	private XmlObject getSettings() {

@@ -14,7 +14,7 @@ public class Menu extends Sprite {
 		if (size() == 0) {
 			back = new Rectangle(-Button.maxWidth, -Button.maxHeight,
 					Button.maxWidth * 2, Button.maxHeight * 2);
-			back.setColor(Color.argb(128, 0, 0, 0));
+			back.setColor(Color.argb(64, 0, 0, 0));
 			add(back);
 			back2 = new Rectangle(-Button.maxWidth, -Button.maxHeight,
 					Button.maxWidth * 2, Button.maxHeight * 2);
@@ -42,18 +42,18 @@ public class Menu extends Sprite {
 		}
 		float fTitleHeight = Button.height;
 		float border = fTitleHeight / 30;
-		float yMin = 0, yMax = 0;
 		float x = Button.maxWidth - maxWidth - border;
+		float y = Button.maxHeight - (border + fTitleHeight);
 		for (int i = 0; i < lstMenuItems.size(); i++) {
 			MenuItem menuItem = lstMenuItems.get(i);
-			float y = Button.maxHeight - (border + fTitleHeight) * (2 + i);
+			y -= fTitleHeight;
 			menuItem.setDimension(x, y, maxWidth, fTitleHeight);
-			if (i == 0) {
-				yMin = y;
-			}
-			yMax = y + fTitleHeight;
+			y -= border;
 		}
-		back2.setDimension(x, yMin, maxWidth, yMax - yMin);
+		float fTotalTitleHeight = lstMenuItems.size() * (border + fTitleHeight)
+				+ border * 2;
+		back2.setDimension(x - border, y, maxWidth + border * 2,
+				fTotalTitleHeight);
 		plstMenuItems.clear();
 		plstMenuItems.addAll(lstMenuItems);
 	}

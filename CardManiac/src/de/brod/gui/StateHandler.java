@@ -49,6 +49,7 @@ public class StateHandler {
 		if (xmlState == null || !xmlState.getName().equals("State")) {
 			xmlState = new XmlObject("<State />");
 		}
+
 		setValues();
 	}
 
@@ -167,5 +168,16 @@ public class StateHandler {
 
 	public String getAttribute(String psAttributeName) {
 		return xmlState.getAttribute(psAttributeName);
+	}
+
+	public boolean isEOF() {
+		int iCounter = xmlState.getAttributeAsInt("counter");
+		int iMaxCounter = xmlState.getAttributeAsInt("maxcounter");
+		boolean EOF = iCounter >= iMaxCounter;
+		return EOF;
+	}
+
+	public int getEntriesCount() {
+		return xmlState.getAttributeAsInt("maxcounter");
 	}
 }

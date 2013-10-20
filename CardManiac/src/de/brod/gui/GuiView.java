@@ -49,9 +49,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	}
 
 	/** The OpenGL view */
-	protected StateHandler stateHandler;
-	List<Container> lstButtons;
-
+	protected StateHandler applicationStateHandler;
+	List<Container> lstTitleItems;
 	List<MenuItem> lstMenuItems;
 
 	private List<Container> lstSprites;
@@ -115,13 +114,13 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			menu.clear();
 			lstMenuItems.clear();
 			if (sMenuItem.length() > 0) {
-				menuPressed(sMenuItem, stateHandler);
+				menuPressed(sMenuItem, applicationStateHandler);
 				reload();
 			}
 			return true;
 		}
-		for (int i = lstButtons.size() - 1; i >= 0; i--) {
-			Container sprite = lstButtons.get(i);
+		for (int i = lstTitleItems.size() - 1; i >= 0; i--) {
+			Container sprite = lstTitleItems.get(i);
 			if (sprite.touches(eventX, eventY)) {
 				if (sprite instanceof Button) {
 					System.out.println("Button " + sprite + " pressed");
@@ -141,14 +140,12 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 				if (isInstanceOf(sprite)) {
 					System.out.println("touch " + i + " " + sprite.toString());
 					if (lstSelected.size() > 0) {
-						for (SPRITE sprite1 : lstSelected) {
-							sprite1.setColor(Color.WHITE);
-						}
 						// reset the slides
 						for (Container spritec : lstSprites) {
 							spritec.savePosition();
 						}
 						for (Sprite moveItem : lstSelected) {
+							moveItem.setColor(Color.WHITE);
 							moveItem.setMoving(false);
 						}
 						if (mouseUp(lstSelected, (SPRITE) sprite)) {
@@ -156,8 +153,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 								spritec.setColor(Color.WHITE);
 							}
 							lstSelected.clear();
-
 							resetSlidePositions();
+							update(true);
 							return true;
 						}
 						for (SPRITE spritec : lstSelected) {
@@ -305,7 +302,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 
 	public void processNextStep() {
 		if (lstSlides.size() > 0) {
-			float d = (System.currentTimeMillis() - startSlidingTime) / 500f;
+			float d = (System.currentTimeMillis() - startSlidingTime) / 3500f;
 			for (int i = 0; i < lstSlides.size();) {
 				if (lstSlides.get(i).slide(d)) {
 					lstSlides.remove(i);
@@ -320,6 +317,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		} else if (!isThinking()) {
 			IAction action = getNextAction();
 			if (action != null) {
+				sortSprites();
 				// if thread is not active
 				actionThread = new ActionThread(action);
 				actionThread.start();
@@ -330,7 +328,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	public void reload() {
 		area.clear();
 		lstMoves.clear();
-		XmlObject lastHistoryEntry = stateHandler.getLastHistoryEntry();
+		XmlObject lastHistoryEntry = applicationStateHandler
+				.getLastHistoryEntry();
 		initGroup(area, lastHistoryEntry);
 		lstSprites = area.getChildren();
 		sortSprites();
@@ -339,17 +338,19 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		}
 	}
 
-	private void resetSlidePositions() {
+	protected boolean resetSlidePositions() {
 		lstSlides.clear();
 		for (Container sprite : lstSprites) {
 			if (sprite.resetPosition()) {
 				lstSlides.add(sprite);
 			}
 		}
+		lstMoves.clear();
 		if (lstSlides.size() > 0) {
 			startSlidingTime = System.currentTimeMillis();
+			return true;
 		}
-		lstMoves.clear();
+		return false;
 	}
 
 	protected abstract void saveState(XmlObject historyEntry);
@@ -361,9 +362,10 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	public void update(boolean pbSetUndoPoint) {
 		sortSprites();
 
-		XmlObject historyEntry = stateHandler.createEmptyHistoryEntry();
+		XmlObject historyEntry = applicationStateHandler
+				.createEmptyHistoryEntry();
 		saveState(historyEntry);
-		stateHandler.addHistory(historyEntry, pbSetUndoPoint);
+		applicationStateHandler.addHistory(historyEntry, pbSetUndoPoint);
 
 		requestRender();
 	}

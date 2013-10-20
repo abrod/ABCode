@@ -2,6 +2,7 @@ package de.brod.gui;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -55,7 +56,8 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 	private Sprite root;
 	private Texture iconTexture;
 	private float fTitleHeight;
-	protected StateHandler settings;
+	protected StateHandler globalStateHandler;
+	protected Hashtable<Button.Type, Button> htTitleButtons = new Hashtable<Button.Type, Button>();
 
 	public Activity getActivity() {
 		return activity;
@@ -82,7 +84,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.
 	 * khronos.opengles.GL10)
@@ -132,7 +134,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * android.opengl.GLSurfaceView.Renderer#onSurfaceChanged(javax.microedition
 	 * .khronos.opengles.GL10, int, int)
@@ -170,7 +172,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * android.opengl.GLSurfaceView.Renderer#onSurfaceCreated(javax.microedition
 	 * .khronos.opengles.GL10, javax.microedition.khronos.egl.EGLConfig)
@@ -212,7 +214,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		iconTexture = new Texture(gl, bitmapIcon, 1, 1);
 		bitmapIcon.recycle();
 
-		settings = new StateHandler(new File(activity.getFilesDir(),
+		globalStateHandler = new StateHandler(new File(activity.getFilesDir(),
 				"Gui.Settings.xml"));
 
 		// init the textures
@@ -222,12 +224,35 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	}
 
+	Sprite createButton(Hashtable<Type, Button> htTitleButtons, Type pType,
+			int i, int maxCount, boolean bTop, Align align) {
+		ButtonAction buttonAction = new ButtonAction(pType);
+		Button createButton = pType.createButton(i, maxCount, bTop, align,
+				buttonAction);
+		htTitleButtons.put(pType, createButton);
+		return createButton;
+
+	}
+
+	private class ButtonAction implements IAction {
+		public Type type;
+
+		public ButtonAction(Type pType) {
+			type = pType;
+		}
+
+		@Override
+		public void action() {
+			buttonPressed(type);
+		}
+
+	}
+
 	protected void initApplication() {
-
-		stateHandler = new StateHandler(new File(activity.getFilesDir(),
-				getApplicationName() + ".xml"));
-
+		applicationStateHandler = new StateHandler(new File(
+				activity.getFilesDir(), getApplicationName() + ".xml"));
 		root = new Sprite();
+
 		Sprite title = new Sprite();
 		root.add(title);
 		area = new Sprite();
@@ -289,17 +314,9 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 			title.add(titleBar2);
 			int maxCount = lstButtonBottom.size();
 			for (int i = 0; i < maxCount; i++) {
-				final Type type = lstButtonBottom.get(i);
-				IAction action = new IAction() {
-					@Override
-					public void action() {
-						buttonPressed(type);
-					}
-				};
-				title.add(type.createButton(i, maxCount, false, Align.CENTER,
-						action));
+				title.add(createButton(htTitleButtons, lstButtonBottom.get(i),
+						i, maxCount, false, Align.CENTER));
 			}
-
 		} else {
 			lstButtonTop.addAll(lstButtonBottom);
 			lstButtonBottom.clear();
@@ -307,17 +324,11 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		int maxCount = Math.min(lstButtonTop.size(), 5);
 
 		for (int i = 0; i < lstButtonTop.size(); i++) {
-			final Type type = lstButtonTop.get(i);
-			IAction action = new IAction() {
-				@Override
-				public void action() {
-					buttonPressed(type);
-				}
-			};
-			title.add(type.createButton(i, maxCount, true, Align.RIGHT, action));
+			title.add(createButton(htTitleButtons, lstButtonTop.get(i), i,
+					maxCount, true, Align.RIGHT));
 		}
 
-		lstButtons = title.getChildren();
+		lstTitleItems = title.getChildren();
 		lstMenuItems = new ArrayList<MenuItem>();
 		reload();
 

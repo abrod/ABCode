@@ -128,8 +128,9 @@ public class Sprite extends Container {
 
 	@Override
 	public boolean resetPosition() {
-		setSliding(x != xSave || y != ySave || angle != angleSave);
-		if (isSliding()) {
+		boolean sliding = x != xSave || y != ySave || angle != angleSave;
+		setSliding(sliding);
+		if (sliding) {
 			dx = x - xSave;
 			dy = y - ySave;
 			da = angle - angleSave;
@@ -142,7 +143,7 @@ public class Sprite extends Container {
 			}
 			setPosition(xSave, ySave);
 		}
-		return isSliding();
+		return sliding;
 	}
 
 	@Override

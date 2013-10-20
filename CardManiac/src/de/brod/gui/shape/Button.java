@@ -36,7 +36,7 @@ public class Button extends Sprite {
 			return button;
 		}
 
-		public Sprite createButton(int i, int piCount, boolean bTop,
+		public Button createButton(int i, int piCount, boolean bTop,
 				Align align, IAction action) {
 			float px;
 			float py;

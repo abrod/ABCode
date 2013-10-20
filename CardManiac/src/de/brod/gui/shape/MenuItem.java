@@ -10,7 +10,7 @@ public class MenuItem extends Rectangle {
 
 	public MenuItem(float px, float py, float width, float height, String sText) {
 		super(px, py, width, height);
-		setColor(Color.argb(194, 0, 0, 0));
+		setColor(Color.argb(64, 0, 0, 0));
 		fontHeight = height * 0.7f;
 		textMenu = Text.createText(sText, px, py + (height - fontHeight) / 2,
 				fontHeight);

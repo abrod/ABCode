@@ -1,6 +1,7 @@
 package de.brod.cm.game;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import de.brod.cm.Card;
@@ -8,6 +9,8 @@ import de.brod.cm.CardContainer;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
+import de.brod.gui.StateHandler;
+import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Button.Type;
 
 public abstract class Game {
@@ -87,8 +90,26 @@ public abstract class Game {
 
 	public abstract boolean hasHistory();
 
-	public void prepareUpdate() {
-		// make nothing
+	public void prepareUpdate(StateHandler stateHandler,
+			Hashtable<Button.Type, Button> htTitleButtons) {
+		try {
+			htTitleButtons.get(Type.undo).setEnabled(
+					stateHandler.getEntriesCount() > 0);
+			htTitleButtons.get(Type.redo).setEnabled(!stateHandler.isEOF());
+		} catch (Exception ex) {
+			// button not found ... which should not happen
+		}
+	}
+
+	public boolean buttonPressed(Type type, StateHandler stateHandler) {
+		if (type.equals(Type.undo)) {
+			stateHandler.undo();
+		} else if (type.equals(Type.redo)) {
+			stateHandler.redo();
+		} else {
+			return false;
+		}
+		return true;
 	}
 
 }
