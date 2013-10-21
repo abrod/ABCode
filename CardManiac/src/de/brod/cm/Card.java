@@ -173,6 +173,7 @@ public class Card extends Sprite {
 	public void moveTo(Hand pHand) {
 		hand.remove(this);
 		pHand.add(this);
+		setMoving(true);
 	}
 
 	public void setValue(int parseInt) {

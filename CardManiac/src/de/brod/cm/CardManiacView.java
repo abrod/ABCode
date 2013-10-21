@@ -76,7 +76,6 @@ public class CardManiacView extends GuiRendererView<Card> {
 		for (CardContainer cc : _cardContainers) {
 			cc.organize();
 			cc.addAllSpritesTo(root);
-			System.out.println(cc.toString());
 		}
 
 		game.prepareUpdate(applicationStateHandler, htTitleButtons);

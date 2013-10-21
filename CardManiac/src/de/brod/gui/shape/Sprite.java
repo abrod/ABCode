@@ -151,6 +151,7 @@ public class Sprite extends Container {
 		xSave = x;
 		ySave = y;
 		angleSave = angle;
+		moving = false;
 		setSliding(false);
 	}
 

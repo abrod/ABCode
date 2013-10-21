@@ -133,17 +133,17 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 				}
 			}
 		}
-
+		// reset the slides
+		for (Container spritec : lstSprites) {
+			spritec.savePosition();
+		}
 		for (int i = lstSprites.size() - 1; i >= 0; i--) {
 			Container sprite = lstSprites.get(i);
 			if (sprite.isVisible() && sprite.touches(eventX, eventY)) {
 				if (isInstanceOf(sprite)) {
 					System.out.println("touch " + i + " " + sprite.toString());
 					if (lstSelected.size() > 0) {
-						// reset the slides
-						for (Container spritec : lstSprites) {
-							spritec.savePosition();
-						}
+
 						for (Sprite moveItem : lstSelected) {
 							moveItem.setColor(Color.WHITE);
 							moveItem.setMoving(false);
@@ -186,7 +186,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			lstSelected.clear();
 			return true;
 		}
-		return false;
+		return true;
 	}
 
 	protected abstract void mouseDown(List<SPRITE> plstMoves);
@@ -302,7 +302,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 
 	public void processNextStep() {
 		if (lstSlides.size() > 0) {
-			float d = (System.currentTimeMillis() - startSlidingTime) / 3500f;
+			float d = (System.currentTimeMillis() - startSlidingTime) / 500f;
 			for (int i = 0; i < lstSlides.size();) {
 				if (lstSlides.get(i).slide(d)) {
 					lstSlides.remove(i);
@@ -348,6 +348,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		lstMoves.clear();
 		if (lstSlides.size() > 0) {
 			startSlidingTime = System.currentTimeMillis();
+			sortSprites();
 			return true;
 		}
 		return false;

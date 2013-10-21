@@ -20,7 +20,7 @@ public class Hand extends CardContainer {
 
 	/**
 	 * Create a Hand object. The
-	 *
+	 * 
 	 * @param piId
 	 * @param px1
 	 * @param py1
@@ -119,49 +119,46 @@ public class Hand extends CardContainer {
 
 	@Override
 	public void organize() {
-		if (lstCards.size() > 0) {
-			float x = pos[0];
-			float y = pos[1];
+		float x = pos[0];
+		float y = pos[1];
 
-			float dx = pos[2];
-			float dy = pos[3];
+		float dx = pos[2];
+		float dy = pos[3];
 
-			int size = Math.max(iCardCount - 1, lstCards.size() - 1);
-			if (size > 0) {
-				dx = dx / size;
-				dy = dy / size;
-			}
-			int pId = getId() * 1000;
-			c0.setId(pId);
-			if (bCenter) {
-				if (bLandScape) {
-					c0.setPosition(x + pos[2] / 2, y);
-					float offSetX = pos[2] - dx * (lstCards.size() - 1);
-					if (offSetX > 0) {
-						x += offSetX / 2;
-					}
-				} else {
-					c0.setPosition(x, y + pos[3] / 2);
-					float offSetY = pos[3] - dy * (lstCards.size() - 1);
-					if (offSetY > 0 && pos[3] > 0) {
-						y += offSetY / 2;
-					} else if (offSetY < 0 && pos[3] < 0) {
-						y += offSetY / 2;
-					}
-
+		int size = Math.max(iCardCount - 1, lstCards.size() - 1);
+		if (size > 0) {
+			dx = dx / size;
+			dy = dy / size;
+		}
+		int pId = getId() * 1000;
+		c0.setId(pId);
+		if (bCenter) {
+			if (bLandScape) {
+				c0.setPosition(x + pos[2] / 2, y);
+				float offSetX = pos[2] - dx * (lstCards.size() - 1);
+				if (offSetX > 0) {
+					x += offSetX / 2;
+				}
+			} else {
+				c0.setPosition(x, y + pos[3] / 2);
+				float offSetY = pos[3] - dy * (lstCards.size() - 1);
+				if (offSetY > 0 && pos[3] > 0) {
+					y += offSetY / 2;
+				} else if (offSetY < 0 && pos[3] < 0) {
+					y += offSetY / 2;
 				}
 
-			} else {
-				c0.setPosition(x, y);
 			}
-			for (int i = 0; i < lstCards.size(); i++) {
-				Card c = lstCards.get(i);
-				pId++;
-				c0.setId(pId);
-				c.setPosition(x, y);
-				x += dx;
-				y += dy;
-			}
+
+		} else {
+			c0.setPosition(x, y);
+		}
+		for (Card c : lstCards) {
+			pId++;
+			c.setId(pId);
+			c.setPosition(x, y);
+			x += dx;
+			y += dy;
 		}
 	}
 
