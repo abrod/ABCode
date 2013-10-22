@@ -1,6 +1,7 @@
 package de.brod.cm;
 
 import android.graphics.Color;
+import de.brod.gui.shape.Container;
 import de.brod.gui.shape.Sprite;
 import de.brod.gui.shape.Text;
 import de.brod.xml.XmlObject;
@@ -10,7 +11,7 @@ public abstract class CardContainer {
 	private int id;
 	protected float[] pos;
 	protected boolean bLandScape;
-	private Text text;
+	private Container textContainer;
 
 	public CardContainer(int piId, float px1, float py1, float px2, float py2) {
 		id = piId;
@@ -36,8 +37,8 @@ public abstract class CardContainer {
 	}
 
 	public void addAllSpritesTo(Sprite sprite) {
-		if (text != null) {
-			sprite.add(text);
+		if (textContainer != null) {
+			sprite.add(textContainer);
 		}
 	}
 
@@ -54,17 +55,46 @@ public abstract class CardContainer {
 		}
 	}
 
-	public void setText(String psText) {
-		if (psText.length() == 0) {
-			text = null;
+	public Container setText(String psText) {
+		if (psText == null) {
+			textContainer = null;
 		} else {
-			float fTitleHeight = Card.getCardHeight() / 4;
-			text = Text.createText(psText, pos[0],
-					pos[1] - pos[3] - Card.getCardHeight() / 2 - fTitleHeight,
-					fTitleHeight);
-			text.setMoveable(false);
-			text.setColor(Color.WHITE);
+			if (textContainer == null) {
+				textContainer = new Container() {
+
+					@Override
+					public boolean slide(float f) {
+						// TODO Auto-generated method stub
+						return false;
+					}
+
+					@Override
+					public void savePosition() {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public boolean resetPosition() {
+						// TODO Auto-generated method stub
+						return false;
+					}
+				};
+			} else {
+				textContainer.clear();
+			}
+			if (psText.length() > 0) {
+				float fTitleHeight = Card.getCardHeight() / 4;
+				Text text = Text
+						.createText(psText, pos[0],
+								pos[1] - pos[3] - Card.getCardHeight() / 2
+										- fTitleHeight, fTitleHeight);
+				text.setMoveable(false);
+				text.setColor(Color.WHITE);
+				textContainer.add(text);
+			}
 		}
+		return textContainer;
 	}
 
 	public XmlObject getSettings() {

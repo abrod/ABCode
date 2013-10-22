@@ -88,7 +88,7 @@ public class FreeCell extends Game {
 	@Override
 	public IAction getNextAction() {
 		// check the min value
-		int iMinValue = 100;
+		int iMinValue = 10000;
 		for (int i = 4; i < 8; i++) {
 			Hand hand = get(i * 2);
 			Card c = hand.getLastCard();

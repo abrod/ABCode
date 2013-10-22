@@ -229,7 +229,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			}
 			SPRITE selected = null;
 			for (int i = lstSprites.size() - 1; i >= 0; i--) {
-				Sprite sprite = (Sprite) lstSprites.get(i);
+				Container sprite = lstSprites.get(i);
 				if (!isInstanceOf(sprite)) {
 					// ignore
 				} else if (!lstMoves.contains(sprite)

@@ -4,7 +4,6 @@ import java.util.Hashtable;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import de.brod.gui.Texture;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -13,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import de.brod.gui.Texture;
 
 public class Text extends Sprite {
 
@@ -74,6 +74,9 @@ public class Text extends Sprite {
 	private static int wd;
 
 	private static Text createText(String psText, float fHeight) {
+		if (psText.length() == 0) {
+			psText = " ";
+		}
 		CharType charType = ht.get(psText.substring(0, 1));
 		if (charType == null) {
 			charType = ht.get(" ");

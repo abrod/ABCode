@@ -1,11 +1,14 @@
 package de.brod.cm.game;
 
+import java.util.Hashtable;
 import java.util.List;
 
 import de.brod.cm.Card;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
+import de.brod.gui.StateHandler;
+import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Button.Type;
 
 public class CardManiac extends Game {
@@ -18,6 +21,18 @@ public class CardManiac extends Game {
 	public IAction getNextAction() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void prepareUpdate(StateHandler stateHandler,
+			Hashtable<Button.Type, Button> htTitleButtons) {
+		try {
+			htTitleButtons.get(Type.next).setEnabled(false);
+			htTitleButtons.get(Type.previous).setEnabled(false);
+		} catch (Exception ex) {
+			// button not found ... which should not happen
+		}
+		super.prepareUpdate(stateHandler, htTitleButtons);
 	}
 
 	@Override

@@ -57,21 +57,23 @@ public class MauMau extends Game {
 				@Override
 				public void action() {
 					Hand hand = get(iPlayer);
+					Card lastCard = null;
 					// if card could not be played
 					if (!playCard(hand)) {
-						// draw a card
-						Card lastCard = h0.getLastCard();
-						if (lastCard != null) {
-							lastCard.moveTo(hand);
+						if (settings.getAttributeAsBoolean("drawCard")) {
+							// draw a card
+							lastCard = h0.getLastCard();
+							if (lastCard != null) {
+								lastCard.moveTo(hand);
+							}
+							h0.organize();
+							// and try to play again
+							playCard(hand);
 						}
-						h0.organize();
-						// and try to play again
-						playCard(hand);
 					}
 					hand.organize();
 					// set the next player
-					settings.setAttribute("player", (iPlayer + 1) % 4);
-					settings.setAttribute("drawCard", true);
+					setNextPlayer(lastCard, settings);
 				}
 
 				private boolean playCard(Hand hand) {
@@ -165,8 +167,7 @@ public class MauMau extends Game {
 				XmlObject settings = getSettings();
 				int iPlayer = settings.getAttributeAsInt("player");
 				if (iPlayer == 0 && !settings.getAttributeAsBoolean("drawCard")) {
-					settings.setAttribute("player", iPlayer + 1);
-					settings.setAttribute("drawCard", true);
+					setNextPlayer(null, settings);
 				}
 			}
 		};
@@ -174,6 +175,7 @@ public class MauMau extends Game {
 				Card.getY(Card.maxCardY * 3 / 4), action);
 		buttons.add(skipButton);
 		add(buttons);
+		get(0).setText("");
 
 	}
 
@@ -214,14 +216,38 @@ public class MauMau extends Game {
 			if (!matchesStack(selectedCard)) {
 				return false;
 			}
-			settings.setAttribute("player", iPlayer + 1);
-			settings.setAttribute("drawCard", true);
+			setNextPlayer(selectedCard, settings);
 		} else {
 			// no valid move
 			return false;
 		}
 		selectedCard.moveTo(handTo);
 		return true;
+	}
+
+	private void setNextPlayer(Card selectedCard, XmlObject settings) {
+		int iPlayer = settings.getAttributeAsInt("player");
+		int iDrawCardCount = settings.getAttributeAsInt("drawCardCount");
+		boolean bNextPlayerMayDrawCard = true;
+		if (selectedCard != null) {
+			Values value = selectedCard.getValue();
+			if (value.equals(Values.C7)) {
+				iDrawCardCount += 2;
+			} else if (value.equals(Values.C8)) {
+				bNextPlayerMayDrawCard = false;
+			}
+		} else {
+			iDrawCardCount = 0;
+		}
+		settings.setAttribute("drawCardCount", iDrawCardCount);
+		if (iDrawCardCount > 0) {
+			get(0).setText("+" + iDrawCardCount);
+		} else {
+			get(0).setText(null);
+		}
+		settings.setAttribute("player", (iPlayer + 1) % 4);
+		settings.setAttribute("drawCard", bNextPlayerMayDrawCard);
+
 	}
 
 	@Override
