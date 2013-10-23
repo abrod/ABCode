@@ -1,1 +1,1 @@
-CardManiac root directory
+CardManiac root directory.
