@@ -143,7 +143,6 @@ public class MauMau extends Game {
 
 		for (int i = 0; i < size(); i++) {
 			Hand hand = get(i);
-			hand.setCenter(i > 0 && i < 5);
 			if (i < 4) {
 				hand.setAngle(180);
 			} else {
@@ -151,6 +150,11 @@ public class MauMau extends Game {
 			}
 		}
 
+		for (int i = 1; i < 5; i++) {
+			Hand hand = get(i);
+			hand.setCenter(true);
+			// hand.setText(""+i);
+		}
 		// add a ButtonContainer
 		buttons = new Buttons(99);
 		IAction skipAction = new IAction() {
@@ -187,6 +191,9 @@ public class MauMau extends Game {
 		XmlObject settings = getSettings();
 		settings.setAttribute("player", 0);
 		settings.setAttribute("drawCard", true);
+		settings.setAttribute("drawCardCount", 0);
+		settings.setAttribute("matchValue", false);
+		h0.setText("");
 	}
 
 	private boolean isFinished() {
@@ -203,6 +210,11 @@ public class MauMau extends Game {
 
 		if (settings.getAttributeAsInt("drawCardCount") > 0) {
 			if (!cValue.equals(Values.C7)) {
+				return false;
+			}
+		}
+		if (settings.getAttributeAsBoolean("matchValue")) {
+			if (!cValue.equals(get(5).getLastCard().getValue())) {
 				return false;
 			}
 		}
@@ -302,6 +314,7 @@ public class MauMau extends Game {
 		h0.setText("");
 		settings.setAttribute("drawCardCount", 0);
 		settings.setAttribute("drawCard", false);
+		settings.setAttribute("matchValue", false);
 		handTo.organize();
 		h0.organize();
 	}
@@ -322,12 +335,14 @@ public class MauMau extends Game {
 		int iPlayer = settings.getAttributeAsInt("player");
 		int iDrawCardCount = settings.getAttributeAsInt("drawCardCount");
 		boolean bNextPlayerMayDrawCard = true;
+		settings.setAttribute("matchValue", false);
 		if (playedCard != null) {
 			Values value = playedCard.getValue();
 			if (value.equals(Values.C7)) {
 				iDrawCardCount += 2;
 			} else if (value.equals(Values.C8)) {
 				bNextPlayerMayDrawCard = false;
+				settings.setAttribute("matchValue", true);
 			}
 		} else {
 			iDrawCardCount = 0;
