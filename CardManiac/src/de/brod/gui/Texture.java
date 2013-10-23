@@ -9,6 +9,33 @@ import android.opengl.GLUtils;
 
 public class Texture {
 
+	public static Bitmap base2image(Bitmap bmp) {
+		float fW = getBase2(bmp.getWidth());
+		float fH = getBase2(bmp.getHeight());
+		if (fW != 1 || fH != 1) {
+			Bitmap bmp2 = Bitmap.createScaledBitmap(bmp,
+					Math.round(bmp.getWidth() * fW / 4) * 4,
+					Math.round(bmp.getHeight() * fH / 4) * 4, false);
+			bmp.recycle();
+			return bmp2;
+		}
+		return bmp;
+	}
+
+	private static float getBase2(int piValue) {
+		float i = 256;
+		float f = i / piValue;
+		while (f < 0.75) {
+			i *= 2;
+			f = i / piValue;
+		}
+		while (f > 1.5f && i > 8) {
+			i /= 2;
+			f = i / piValue;
+		}
+		return f;
+	}
+
 	// Our texture id.
 	int mTextureId = -1; // New variable.
 
@@ -110,33 +137,6 @@ public class Texture {
 		mTextureBuffer.put(x1);
 		mTextureBuffer.put(y1);
 		return mTextureId;
-	}
-
-	public static Bitmap base2image(Bitmap bmp) {
-		float fW = getBase2(bmp.getWidth());
-		float fH = getBase2(bmp.getHeight());
-		if (fW != 1 || fH != 1) {
-			Bitmap bmp2 = Bitmap.createScaledBitmap(bmp,
-					Math.round(bmp.getWidth() * fW / 4) * 4,
-					Math.round(bmp.getHeight() * fH / 4) * 4, false);
-			bmp.recycle();
-			return bmp2;
-		}
-		return bmp;
-	}
-
-	private static float getBase2(int piValue) {
-		float i = 256;
-		float f = i / piValue;
-		while (f < 0.75) {
-			i *= 2;
-			f = i / piValue;
-		}
-		while (f > 1.5f && i > 8) {
-			i /= 2;
-			f = i / piValue;
-		}
-		return f;
 	}
 
 }

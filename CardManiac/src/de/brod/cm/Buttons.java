@@ -14,6 +14,10 @@ public class Buttons extends CardContainer {
 		super(piId, -1, -1, 1, 1);
 	}
 
+	public void add(Button button) {
+		lstButtons.add(button);
+	}
+
 	@Override
 	public void addAllSpritesTo(Sprite sprite) {
 		for (Button c : lstButtons) {
@@ -22,23 +26,19 @@ public class Buttons extends CardContainer {
 		super.addAllSpritesTo(sprite);
 	}
 
-	public void add(Button button) {
-		lstButtons.add(button);
-	}
-
 	@Override
 	public void clear() {
 		// make nothing
 	}
 
 	@Override
-	public void organize() {
-		// make nothing
+	public String getName() {
+		return "Buttons";
 	}
 
 	@Override
-	public String getName() {
-		return "Buttons";
+	public void organize() {
+		// make nothing
 	}
 
 }

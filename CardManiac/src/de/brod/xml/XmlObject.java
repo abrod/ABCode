@@ -238,6 +238,14 @@ public class XmlObject {
 		return "";
 	}
 
+	public boolean getAttributeAsBoolean(String psAttributeName) {
+		String sAttribute = getAttribute(psAttributeName);
+		if (sAttribute.equalsIgnoreCase("true") || sAttribute.equals("1")) {
+			return true;
+		}
+		return false;
+	}
+
 	public int getAttributeAsInt(String psAttributeName) {
 		try {
 			return Integer.parseInt(getAttribute(psAttributeName));
@@ -336,12 +344,12 @@ public class XmlObject {
 
 	}
 
-	public void setAttribute(String psAttributeName, int i) {
-		setAttribute(psAttributeName, String.valueOf(i));
-	}
-
 	public void setAttribute(String psAttributeName, boolean b) {
 		setAttribute(psAttributeName, String.valueOf(b));
+	}
+
+	public void setAttribute(String psAttributeName, int i) {
+		setAttribute(psAttributeName, String.valueOf(i));
 	}
 
 	public boolean setAttribute(String psAttributeName, String psAttributeValue) {
@@ -417,13 +425,5 @@ public class XmlObject {
 		}
 		out.write('>');
 		out.write('\n');
-	}
-
-	public boolean getAttributeAsBoolean(String psAttributeName) {
-		String sAttribute = getAttribute(psAttributeName);
-		if (sAttribute.equalsIgnoreCase("true") || sAttribute.equals("1")) {
-			return true;
-		}
-		return false;
 	}
 }

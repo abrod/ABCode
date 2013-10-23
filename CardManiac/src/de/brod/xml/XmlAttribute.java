@@ -8,16 +8,6 @@ public class XmlAttribute {
 		setValue(psValue);
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(sAName);
-		sb.append("=\"");
-		sb.append(sAValue);
-		sb.append("\"");
-		return sb.toString();
-	}
-
 	public boolean equalsName(String psAttributeName) {
 		return psAttributeName.equals(sAName);
 	}
@@ -32,6 +22,16 @@ public class XmlAttribute {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(sAName);
+		sb.append("=\"");
+		sb.append(sAValue);
+		sb.append("\"");
+		return sb.toString();
 	}
 
 }

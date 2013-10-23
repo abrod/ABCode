@@ -16,14 +16,6 @@ import de.brod.gui.Texture;
 
 public class Text extends Sprite {
 
-	@Override
-	public int compareTo(Container another) {
-		if (!(another instanceof Text)) {
-			return 1;
-		}
-		return super.compareTo(another);
-	}
-
 	private static class CharType {
 		Rect bounds = new Rect();
 		private int x, y, h, ox, size;
@@ -68,11 +60,11 @@ public class Text extends Sprite {
 	}
 
 	public float width;
+
 	private Text next = null;
 	private static Texture textTex;
 	private static Hashtable<String, CharType> ht;
 	private static int wd;
-
 	private static Text createText(String psText, float fHeight) {
 		if (psText.length() == 0) {
 			psText = " ";
@@ -142,6 +134,14 @@ public class Text extends Sprite {
 	public Text(float pWidth, float pHeight) {
 		super(textTex, pWidth, pHeight);
 		setCenter(false);
+	}
+
+	@Override
+	public int compareTo(Container another) {
+		if (!(another instanceof Text)) {
+			return 1;
+		}
+		return super.compareTo(another);
 	}
 
 	public float getTextWdith() {

@@ -7,7 +7,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import de.brod.gui.Texture;
 
-public abstract class Container implements Comparable<Container> {
+public class Container implements Comparable<Container> {
 
 	private final List<Container> lstChildren = new Vector<Container>();
 
@@ -15,8 +15,31 @@ public abstract class Container implements Comparable<Container> {
 
 	private boolean visible = true;
 
+	private int id, sid;
+
+	private boolean moveable = true;
+
+	private boolean sliding;
+	protected boolean moving;
+	/**
+	 * @param object
+	 * @return
+	 * @see java.util.Vector#add(java.lang.Object)
+	 */
+	public boolean add(Container object) {
+		return lstChildren.add(object);
+	}
+
 	public void add(int location, Container object) {
 		lstChildren.add(location, object);
+	}
+
+	/**
+	 *
+	 * @see java.util.Vector#clear()
+	 */
+	public void clear() {
+		lstChildren.clear();
 	}
 
 	@Override
@@ -47,61 +70,6 @@ public abstract class Container implements Comparable<Container> {
 		return c;
 	}
 
-	private int id, sid;
-	private boolean moveable = true;
-	private boolean sliding;
-
-	public void setSid(int piSid) {
-		sid = piSid;
-	}
-
-	public void setId(int pId) {
-		id = pId;
-	}
-
-	/**
-	 * @param location
-	 * @return
-	 * @see java.util.Vector#remove(int)
-	 */
-	public Container remove(int location) {
-		return lstChildren.remove(location);
-	}
-
-	/**
-	 * @return
-	 * @see java.util.Vector#size()
-	 */
-	public int size() {
-		return lstChildren.size();
-	}
-
-	/**
-	 * @param object
-	 * @return
-	 * @see java.util.Vector#remove(java.lang.Object)
-	 */
-	public boolean remove(Object object) {
-		return lstChildren.remove(object);
-	}
-
-	/**
-	 * @param object
-	 * @return
-	 * @see java.util.Vector#add(java.lang.Object)
-	 */
-	public boolean add(Container object) {
-		return lstChildren.add(object);
-	}
-
-	/**
-	 *
-	 * @see java.util.Vector#clear()
-	 */
-	public void clear() {
-		lstChildren.clear();
-	}
-
 	public void draw(GL10 gl) {
 		// ... end new part.
 		// draw the children
@@ -127,6 +95,47 @@ public abstract class Container implements Comparable<Container> {
 		return lstChildren;
 	}
 
+	public boolean isMoveable() {
+		return moveable;
+	}
+
+	public boolean isMoving() {
+		return moving;
+	}
+
+	public boolean isSliding() {
+		return sliding;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	/**
+	 * @param location
+	 * @return
+	 * @see java.util.Vector#remove(int)
+	 */
+	public Container remove(int location) {
+		return lstChildren.remove(location);
+	}
+
+	/**
+	 * @param object
+	 * @return
+	 * @see java.util.Vector#remove(java.lang.Object)
+	 */
+	public boolean remove(Object object) {
+		return lstChildren.remove(object);
+	}
+
+	public boolean resetPosition() {
+		return false;
+	}
+
+	public void savePosition() {
+	}
+
 	public void setColor(float red, float green, float blue, float alpha) {
 		for (Container child : lstChildren) {
 			child.setColor(red, green, blue, alpha);
@@ -139,49 +148,44 @@ public abstract class Container implements Comparable<Container> {
 		}
 	}
 
-	public boolean touches(float eventX, float eventY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public abstract void savePosition();
-
-	public boolean isMoving() {
-		return moving;
-	}
-
-	public void setMoving(boolean moving) {
-		this.moving = moving;
-	}
-
-	protected boolean moving;
-
-	public abstract boolean slide(float f);
-
-	public abstract boolean resetPosition();
-
-	public boolean isMoveable() {
-		return moveable;
+	public void setId(int pId) {
+		id = pId;
 	}
 
 	public void setMoveable(boolean moveable) {
 		this.moveable = moveable;
 	}
 
-	public boolean isSliding() {
-		return sliding;
+	public void setMoving(boolean moving) {
+		this.moving = moving;
+	}
+
+	public void setSid(int piSid) {
+		sid = piSid;
 	}
 
 	public void setSliding(boolean sliding) {
 		this.sliding = sliding;
 	}
 
-	public boolean isVisible() {
-		return visible;
-	}
-
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+
+	/**
+	 * @return
+	 * @see java.util.Vector#size()
+	 */
+	public int size() {
+		return lstChildren.size();
+	}
+
+	public boolean slide(float f) {
+		return false;
+	}
+
+	public boolean touches(float eventX, float eventY) {
+		return false;
 	}
 
 }

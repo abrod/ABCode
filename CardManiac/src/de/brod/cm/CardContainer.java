@@ -23,8 +23,25 @@ public abstract class CardContainer {
 		bLandScape = Math.abs(pos[2]) > Math.abs(pos[3]);
 	}
 
+	public void addAllSpritesTo(Sprite sprite) {
+		if (textContainer != null) {
+			sprite.add(textContainer);
+		}
+	}
+
+	public abstract void clear();
+
 	public int getId() {
 		return id;
+	}
+
+	public abstract String getName();
+
+	public XmlObject getSettings() {
+		if (settings == null) {
+			settings = new XmlObject("Settings");
+		}
+		return settings;
 	}
 
 	public void loadState(XmlObject xmlHand) {
@@ -36,11 +53,7 @@ public abstract class CardContainer {
 		}
 	}
 
-	public void addAllSpritesTo(Sprite sprite) {
-		if (textContainer != null) {
-			sprite.add(textContainer);
-		}
-	}
+	public abstract void organize();
 
 	public void saveState(XmlObject xmlHand) {
 		XmlObject[] objects = xmlHand.getObjects("Settings");
@@ -57,29 +70,12 @@ public abstract class CardContainer {
 
 	public Container setText(String psText) {
 		if (psText == null) {
-			textContainer = null;
+			if (textContainer != null) {
+				textContainer.clear();
+			}
 		} else {
 			if (textContainer == null) {
-				textContainer = new Container() {
-
-					@Override
-					public boolean slide(float f) {
-						// TODO Auto-generated method stub
-						return false;
-					}
-
-					@Override
-					public void savePosition() {
-						// TODO Auto-generated method stub
-
-					}
-
-					@Override
-					public boolean resetPosition() {
-						// TODO Auto-generated method stub
-						return false;
-					}
-				};
+				textContainer = new Container();
 			} else {
 				textContainer.clear();
 			}
@@ -96,18 +92,5 @@ public abstract class CardContainer {
 		}
 		return textContainer;
 	}
-
-	public XmlObject getSettings() {
-		if (settings == null) {
-			settings = new XmlObject("Settings");
-		}
-		return settings;
-	}
-
-	public abstract void clear();
-
-	public abstract void organize();
-
-	public abstract String getName();
 
 }

@@ -104,16 +104,15 @@ public class Button extends Sprite {
 		setMoveable(false);
 	}
 
+	public boolean isEnabled() {
+		return enabled;
+	}
+
 	public void pressed() {
 		// setColor(Color.BLUE);
 		if (enabled && action != null) {
 			action.action();
 		}
-	}
-
-	@Override
-	public String toString() {
-		return type;
 	}
 
 	public void release() {
@@ -124,14 +123,15 @@ public class Button extends Sprite {
 		setSize(width * f, height * f);
 	}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
-
 	public void setEnabled(boolean pbEnabled) {
 		if (enabled != pbEnabled) {
 			this.enabled = pbEnabled;
 			setAngle(pbEnabled ? 0 : 180);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return type;
 	}
 }

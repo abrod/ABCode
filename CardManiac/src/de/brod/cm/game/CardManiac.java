@@ -13,34 +13,12 @@ import de.brod.gui.shape.Button.Type;
 
 public class CardManiac extends Game {
 
+	private Class<?>[] classes = { FreeCell.class, MauMau.class };
+
+	private Game[] games;
+
 	public CardManiac(CardManiacView pCardManiacView) {
 		super(pCardManiacView);
-	}
-
-	@Override
-	public IAction getNextAction() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void prepareUpdate(StateHandler stateHandler,
-			Hashtable<Button.Type, Button> htTitleButtons) {
-		try {
-			htTitleButtons.get(Type.next).setEnabled(false);
-			htTitleButtons.get(Type.previous).setEnabled(false);
-		} catch (Exception ex) {
-			// button not found ... which should not happen
-		}
-		super.prepareUpdate(stateHandler, htTitleButtons);
-	}
-
-	@Override
-	public void initNewCards() {
-		for (int i = 0; i < size(); i++) {
-			Hand hand = get(i);
-			games[i].createTitleCards(hand);
-		}
 	}
 
 	@Override
@@ -50,9 +28,21 @@ public class CardManiac extends Game {
 		lst.add(Type.previous);
 	}
 
-	private Class[] classes = { FreeCell.class, MauMau.class };
+	@Override
+	protected void createTitleCards(Hand hand) {
+		// make nothing
+	}
 
-	private Game[] games;
+	@Override
+	public IAction getNextAction() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasHistory() {
+		return false;
+	}
 
 	@Override
 	public void initHands(boolean bLandscape) {
@@ -75,10 +65,12 @@ public class CardManiac extends Game {
 		}
 	}
 
-	private Hand newHand(int i) {
-		int x = (i % 4) * 2;
-		float y = (i / 4) * 1.4f;
-		return new Hand(i, x, y, x + 1, y, 2);
+	@Override
+	public void initNewCards() {
+		for (int i = 0; i < size(); i++) {
+			Hand hand = get(i);
+			games[i].createTitleCards(hand);
+		}
 	}
 
 	@Override
@@ -89,14 +81,10 @@ public class CardManiac extends Game {
 		}
 	}
 
-	@Override
-	protected void createTitleCards(Hand hand) {
-		// make nothing
-	}
-
-	@Override
-	public boolean hasHistory() {
-		return false;
+	private Hand newHand(int i) {
+		int x = (i % 4) * 2;
+		float y = (i / 4) * 1.4f;
+		return new Hand(i, x, y, x + 1, y, 2);
 	}
 
 	public Game openGame(String sName) {
@@ -114,6 +102,18 @@ public class CardManiac extends Game {
 			}
 		}
 		return this;
+	}
+
+	@Override
+	public void prepareUpdate(StateHandler stateHandler,
+			Hashtable<Button.Type, Button> htTitleButtons) {
+		try {
+			htTitleButtons.get(Type.next).setEnabled(false);
+			htTitleButtons.get(Type.previous).setEnabled(false);
+		} catch (Exception ex) {
+			// button not found ... which should not happen
+		}
+		super.prepareUpdate(stateHandler, htTitleButtons);
 	}
 
 }

@@ -36,8 +36,32 @@ public class CardManiacView extends GuiRendererView<Card> {
 	}
 
 	@Override
+	protected void backButtonPressed() {
+		Game prevGame = game.getPreviousGame(this);
+		if (prevGame != null) {
+			openGame(prevGame);
+		}
+	}
+
+	@Override
+	protected void buttonPressed(Type type) {
+		if (game.buttonPressed(type, applicationStateHandler)) {
+			reload();
+		} else {
+			super.buttonPressed(type);
+		}
+	}
+
+	@Override
 	protected String getApplicationName() {
 		return game.getName();
+	}
+
+	@Override
+	protected List<Type> getButtonsBottom() {
+		List<Type> lst = new ArrayList<Button.Type>();
+		game.addButtonTypes(lst);
+		return lst;
 	}
 
 	@Override
@@ -49,6 +73,18 @@ public class CardManiacView extends GuiRendererView<Card> {
 	@Override
 	protected IAction getNextAction() {
 		return game.getNextAction();
+	}
+
+	@Override
+	protected void initApplication() {
+		globalStateHandler.setAttibute("game", game.getName());
+
+		// set the correct game
+		game.initHands(_width > _height);
+
+		_cardContainers = game.getCardContainer();
+		// init the application (menu, etc.)
+		super.initApplication();
 	}
 
 	@Override
@@ -99,18 +135,6 @@ public class CardManiacView extends GuiRendererView<Card> {
 	}
 
 	@Override
-	protected void initApplication() {
-		globalStateHandler.setAttibute("game", game.getName());
-
-		// set the correct game
-		game.initHands(_width > _height);
-
-		_cardContainers = game.getCardContainer();
-		// init the application (menu, etc.)
-		super.initApplication();
-	}
-
-	@Override
 	protected boolean isInstanceOf(Container sprite) {
 		return sprite instanceof Card;
 	}
@@ -127,12 +151,6 @@ public class CardManiacView extends GuiRendererView<Card> {
 	@Override
 	protected void mouseDown(List<Card> plstMoves) {
 		game.mouseDown(plstMoves);
-	}
-
-	@Override
-	public void requestRender() {
-		game.prepareUpdate(applicationStateHandler, htTitleButtons);
-		super.requestRender();
 	}
 
 	@Override
@@ -153,6 +171,17 @@ public class CardManiacView extends GuiRendererView<Card> {
 		return bChanged;
 	}
 
+	public void openGame(Game pGame) {
+		game = pGame;
+		initApplication();
+	}
+
+	@Override
+	public void requestRender() {
+		game.prepareUpdate(applicationStateHandler, htTitleButtons);
+		super.requestRender();
+	}
+
 	@Override
 	protected void saveState(XmlObject historyEntry) {
 		System.out.println("Save State");
@@ -164,37 +193,8 @@ public class CardManiacView extends GuiRendererView<Card> {
 	}
 
 	@Override
-	protected List<Type> getButtonsBottom() {
-		List<Type> lst = new ArrayList<Button.Type>();
-		game.addButtonTypes(lst);
-		return lst;
-	}
-
-	@Override
-	protected void buttonPressed(Type type) {
-		if (game.buttonPressed(type, applicationStateHandler)) {
-			reload();
-		} else {
-			super.buttonPressed(type);
-		}
-	}
-
-	public void openGame(Game pGame) {
-		game = pGame;
-		initApplication();
-	}
-
-	@Override
 	protected boolean showBackButton() {
 		return game == null || !(game instanceof CardManiac);
-	}
-
-	@Override
-	protected void backButtonPressed() {
-		Game prevGame = game.getPreviousGame(this);
-		if (prevGame != null) {
-			openGame(prevGame);
-		}
 	}
 
 }

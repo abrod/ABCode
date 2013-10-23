@@ -44,6 +44,10 @@ public class Sprite extends Container {
 
 	private boolean bShowBackSide = false;
 
+	private float pxCell, pyCell, pxCellBack, pyCellBack;
+
+	private float cos = 1;
+
 	public Sprite() {
 		// this(null, 0, 0);
 		tex = null;
@@ -155,22 +159,9 @@ public class Sprite extends Container {
 		setSliding(false);
 	}
 
-	private float pxCell, pyCell, pxCellBack, pyCellBack;
-
-	private float cos = 1;
-
-	/**
-	 * Set the texture coordinates.
-	 *
-	 * @param textureCoords
-	 */
-	public void setCell(float px, float py, float pxBack, float pyBack) {
-
-		pxCell = px;
-		pyCell = py;
-		pxCellBack = pxBack;
-		pyCellBack = pyBack;
-		setCell();
+	public void setAngle(float angle2) {
+		setInternalAngle(angle2);
+		setPosition(x, y);
 	}
 
 	private void setCell() {
@@ -193,6 +184,20 @@ public class Sprite extends Container {
 			mTextureId = tex.setBuffer(mTextureBuffer, pxCell, pyCell);
 		}
 		mTextureBuffer.position(0);
+	}
+
+	/**
+	 * Set the texture coordinates.
+	 *
+	 * @param textureCoords
+	 */
+	public void setCell(float px, float py, float pxBack, float pyBack) {
+
+		pxCell = px;
+		pyCell = py;
+		pxCellBack = pxBack;
+		pyCellBack = pyBack;
+		setCell();
 	}
 
 	public void setCenter(boolean center) {
@@ -263,6 +268,22 @@ public class Sprite extends Container {
 		mNumOfIndices = indices.length;
 	}
 
+	public void setInternalAngle(float angle2) {
+		if (angle != angle2) {
+			angle = angle2;
+			cos = (float) Math.cos(Math.toRadians(angle2));
+			boolean bCos0 = cos < 0;
+			if (bCos0 != bShowBackSide) {
+				bShowBackSide = bCos0;
+				setCell();
+			}
+			if (bCos0) {
+				cos = -cos;
+			}
+		}
+		w = wd * cos;
+	}
+
 	public void setPosition(float px, float py) {
 		x = px;
 		y = py;
@@ -300,27 +321,6 @@ public class Sprite extends Container {
 		h = height / 2;
 
 		setAngle(angle);
-	}
-
-	public void setAngle(float angle2) {
-		setInternalAngle(angle2);
-		setPosition(x, y);
-	}
-
-	public void setInternalAngle(float angle2) {
-		if (angle != angle2) {
-			angle = angle2;
-			cos = (float) Math.cos(Math.toRadians(angle2));
-			boolean bCos0 = cos < 0;
-			if (bCos0 != bShowBackSide) {
-				bShowBackSide = bCos0;
-				setCell();
-			}
-			if (bCos0) {
-				cos = -cos;
-			}
-		}
-		w = wd * cos;
 	}
 
 	protected void setTextureBuffer(int x1, int y1, int x2, int y2) {

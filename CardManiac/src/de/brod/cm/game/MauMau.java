@@ -24,6 +24,14 @@ public class MauMau extends Game {
 	}
 
 	@Override
+	protected void createTitleCards(Hand hand) {
+		hand.createCard(Values.C7, Colors.Clubs);
+		hand.createCard(Values.C8, Colors.Spades);
+		hand.createCard(Values.C7, Colors.Diamonds);
+		hand.createCard(Values.C8, Colors.Hearts);
+	}
+
+	@Override
 	public IAction getNextAction() {
 
 		if (isFinished()) {
@@ -58,8 +66,9 @@ public class MauMau extends Game {
 				public void action() {
 					Hand hand = get(iPlayer);
 					Card lastCard = null;
+					Card playedCard = null;
 					// if card could not be played
-					if (!playCard(hand)) {
+					if ((playedCard = playCard(hand)) == null) {
 						if (settings.getAttributeAsBoolean("drawCard")) {
 							// draw a card
 							lastCard = h0.getLastCard();
@@ -68,18 +77,19 @@ public class MauMau extends Game {
 							}
 							h0.organize();
 							// and try to play again
-							playCard(hand);
+							playedCard = playCard(hand);
 						}
 					}
 					hand.organize();
 					// set the next player
-					setNextPlayer(lastCard, settings);
+					setNextPlayer(playedCard, settings);
 				}
 
-				private boolean playCard(Hand hand) {
+				private Card playCard(Hand hand) {
 					Card cPlay = null;
+					XmlObject xmlSettings = getSettings();
 					for (Card c : hand.getCards()) {
-						if (matchesStack(c)) {
+						if (matchesStack(c, xmlSettings)) {
 							cPlay = c;
 							break;
 						}
@@ -87,9 +97,8 @@ public class MauMau extends Game {
 					if (cPlay != null) {
 						cPlay.moveTo(h5);
 						h5.organize();
-						return true;
 					}
-					return false;
+					return cPlay;
 				}
 			};
 		}
@@ -97,29 +106,13 @@ public class MauMau extends Game {
 		return null;
 	}
 
-	private boolean isFinished() {
-		for (int i = 1; i <= 4; i++) {
-			if (get(i).getCardCount() == 0) {
-				return true;
-			}
-		}
-		return false;
+	private XmlObject getSettings() {
+		return buttons.getSettings();
 	}
 
 	@Override
-	public void initNewCards() {
-		Hand h0 = get(0);
-		h0.create32Cards();
-		for (int i = 1; i <= 4; i++) {
-			for (int j = 0; j < 6; j++) {
-				h0.getLastCard().moveTo(get(i));
-			}
-		}
-		h0.getLastCard().moveTo(get(5));
-
-		XmlObject settings = getSettings();
-		settings.setAttribute("player", 0);
-		settings.setAttribute("drawCard", true);
+	public boolean hasHistory() {
+		return true;
 	}
 
 	@Override
@@ -160,7 +153,7 @@ public class MauMau extends Game {
 
 		// add a ButtonContainer
 		buttons = new Buttons(99);
-		IAction action = new IAction() {
+		IAction skipAction = new IAction() {
 
 			@Override
 			public void action() {
@@ -172,105 +165,59 @@ public class MauMau extends Game {
 			}
 		};
 		skipButton = Button.Type.no.createButton(0,
-				Card.getY(Card.maxCardY * 3 / 4), action);
+				Card.getY(Card.maxCardY * 3 / 4), skipAction);
 		buttons.add(skipButton);
 		add(buttons);
+		// init the text
 		get(0).setText("");
 
 	}
 
 	@Override
-	public boolean mouseUp(List<Card> pLstMoves, Hand handTo) {
+	public void initNewCards() {
+		Hand h0 = get(0);
+		h0.create32Cards();
+		for (int i = 1; i <= 4; i++) {
+			for (int j = 0; j < 6; j++) {
+				h0.getLastCard().moveTo(get(i));
+			}
+		}
+		h0.getLastCard().moveTo(get(5));
+
 		XmlObject settings = getSettings();
-		int iPlayer = settings.getAttributeAsInt("player");
-		if (iPlayer != 0) {
-			// it's not your turn
-			return false;
+		settings.setAttribute("player", 0);
+		settings.setAttribute("drawCard", true);
+	}
+
+	private boolean isFinished() {
+		for (int i = 1; i <= 4; i++) {
+			if (get(i).getCardCount() == 0) {
+				return true;
+			}
 		}
-		Card selectedCard = pLstMoves.get(0);
-		Hand selectedHand = selectedCard.getHand();
-		int hSelectedId = selectedHand.getId();
-		if (selectedHand == handTo) {
-			if (hSelectedId == 0 && settings.getAttributeAsBoolean("drawCard")) {
-				// draw a card to hand (from stack)
-				handTo = get(4);
-			} else {
+		return false;
+	}
+
+	private boolean matchesStack(Card card, XmlObject settings) {
+		Values cValue = card.getValue();
+
+		if (settings.getAttributeAsInt("drawCardCount") > 0) {
+			if (!cValue.equals(Values.C7)) {
 				return false;
 			}
 		}
-		if (handTo == null) {
-			// ignore this
-			return false;
+		// jack is the joker
+		if (cValue.equals(Values.Jack)) {
+			return true;
 		}
-		int hToId = handTo.getId();
-		// draw a card or play a card
-		if (hSelectedId == 0 && hToId == 4) {
-			// draw a card
-			if (settings.getAttributeAsBoolean("drawCard")) {
-				settings.setAttribute("drawCard", false);
-			} else {
-				return false;
-			}
-		} else if (hSelectedId == 4 && hToId == 5) {
-			// play a card
-			if (!matchesStack(selectedCard)) {
-				return false;
-			}
-			setNextPlayer(selectedCard, settings);
-		} else {
-			// no valid move
-			return false;
+
+		// jack is the joker
+		if (cValue.equals(Values.Jack)) {
+			return true;
 		}
-		selectedCard.moveTo(handTo);
-		return true;
-	}
-
-	private void setNextPlayer(Card selectedCard, XmlObject settings) {
-		int iPlayer = settings.getAttributeAsInt("player");
-		int iDrawCardCount = settings.getAttributeAsInt("drawCardCount");
-		boolean bNextPlayerMayDrawCard = true;
-		if (selectedCard != null) {
-			Values value = selectedCard.getValue();
-			if (value.equals(Values.C7)) {
-				iDrawCardCount += 2;
-			} else if (value.equals(Values.C8)) {
-				bNextPlayerMayDrawCard = false;
-			}
-		} else {
-			iDrawCardCount = 0;
-		}
-		settings.setAttribute("drawCardCount", iDrawCardCount);
-		if (iDrawCardCount > 0) {
-			get(0).setText("+" + iDrawCardCount);
-		} else {
-			get(0).setText(null);
-		}
-		settings.setAttribute("player", (iPlayer + 1) % 4);
-		settings.setAttribute("drawCard", bNextPlayerMayDrawCard);
-
-	}
-
-	@Override
-	public void prepareUpdate(StateHandler stateHandler,
-			Hashtable<Button.Type, Button> htTitleButtons) {
-		XmlObject settings = getSettings();
-		if (settings.getAttributeAsInt("player") == 0) {
-			skipButton.setEnabled(!settings.getAttributeAsBoolean("drawCard"));
-		} else {
-			skipButton.setEnabled(false);
-		}
-		super.prepareUpdate(stateHandler, htTitleButtons);
-	}
-
-	private XmlObject getSettings() {
-		return buttons.getSettings();
-	}
-
-	private boolean matchesStack(Card card) {
 
 		Card lastCard = get(5).getLastCard();
 		Values lcValue = lastCard.getValue();
-		Values cValue = card.getValue();
 
 		// jack is the joker
 		if (cValue.equals(Values.Jack)) {
@@ -295,16 +242,94 @@ public class MauMau extends Game {
 	}
 
 	@Override
-	protected void createTitleCards(Hand hand) {
-		hand.createCard(Values.C7, Colors.Clubs);
-		hand.createCard(Values.C8, Colors.Spades);
-		hand.createCard(Values.C7, Colors.Diamonds);
-		hand.createCard(Values.C8, Colors.Hearts);
+	public boolean mouseUp(List<Card> pLstMoves, Hand handTo) {
+		XmlObject settings = getSettings();
+		int iPlayer = settings.getAttributeAsInt("player");
+		if (iPlayer != 0) {
+			// it's not your turn
+			return false;
+		}
+		Card selectedCard = pLstMoves.get(0);
+		Hand selectedHand = selectedCard.getHand();
+		int hSelectedId = selectedHand.getId();
+		if (selectedHand == handTo) {
+			if (hSelectedId == 0 && settings.getAttributeAsBoolean("drawCard")) {
+				// draw a card to hand (from stack)
+				handTo = get(4);
+				drawStack(handTo, settings);
+				return true;
+			} else {
+				return false;
+			}
+		}
+		if (handTo == null) {
+			// ignore this
+			return false;
+		}
+		int hToId = handTo.getId();
+		// draw a card or play a card
+		if (hSelectedId == 0 && hToId == 4) {
+			// draw a card
+			if (settings.getAttributeAsBoolean("drawCard")) {
+				settings.setAttribute("drawCard", false);
+			} else {
+				return false;
+			}
+		} else if (hSelectedId == 4 && hToId == 5) {
+			// play a card
+			if (!matchesStack(selectedCard, settings)) {
+				return false;
+			}
+			setNextPlayer(selectedCard, settings);
+		} else {
+			// no valid move
+			return false;
+		}
+		selectedCard.moveTo(handTo);
+		return true;
+	}
+
+	private void drawStack(Hand handTo, XmlObject settings) {
+		get(0).getLastCard().moveTo(handTo);
+		get(0).setText("");
+		settings.setAttribute("drawCardCount", 0);
 	}
 
 	@Override
-	public boolean hasHistory() {
-		return true;
+	public void prepareUpdate(StateHandler stateHandler,
+			Hashtable<Button.Type, Button> htTitleButtons) {
+		XmlObject settings = getSettings();
+		if (settings.getAttributeAsInt("player") == 0) {
+			skipButton.setEnabled(!settings.getAttributeAsBoolean("drawCard"));
+		} else {
+			skipButton.setEnabled(false);
+		}
+		super.prepareUpdate(stateHandler, htTitleButtons);
+	}
+
+	private void setNextPlayer(Card playedCard, XmlObject settings) {
+		int iPlayer = settings.getAttributeAsInt("player");
+		int iDrawCardCount = settings.getAttributeAsInt("drawCardCount");
+		boolean bNextPlayerMayDrawCard = true;
+		if (playedCard != null) {
+			Values value = playedCard.getValue();
+			if (value.equals(Values.C7)) {
+				iDrawCardCount += 2;
+			} else if (value.equals(Values.C8)) {
+				bNextPlayerMayDrawCard = false;
+			}
+		} else {
+			iDrawCardCount = 0;
+		}
+		settings.setAttribute("drawCardCount", iDrawCardCount);
+		if (iDrawCardCount > 0) {
+			get(0).setText("+" + iDrawCardCount);
+		} else {
+			get(0).setText("");
+		}
+		settings.setAttribute("player", (iPlayer + 1) % 4);
+		settings.setAttribute("drawCard", bNextPlayerMayDrawCard);
+
 	}
 
 }

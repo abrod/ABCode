@@ -9,34 +9,11 @@ import de.brod.xml.XmlObject;
 
 public class StateHandler {
 
-	private void saveState() {
-		try {
-			saveXml(file, xmlState);
-			if (lastHistoryEntry != null) {
-				File f = getHistoryFile();
-				if (f != null) {
-					saveXml(f, lastHistoryEntry);
-				}
-			}
-
-		} catch (IOException e) {
-			// invalid file
-			e.printStackTrace();
-		}
-	}
-
-	private void saveXml(File pFile, XmlObject pXml) throws IOException {
-		System.out.println("Save File " + pFile.getAbsolutePath());
-		FileOutputStream out = new FileOutputStream(pFile);
-		String sXml = pXml.toString();
-		out.write(sXml.getBytes());
-		out.close();
-	}
-
 	private XmlObject xmlState;
-	private XmlObject lastHistoryEntry;
-	private File file;
 
+	private XmlObject lastHistoryEntry;
+
+	private File file;
 	public StateHandler(File pFile) {
 		xmlState = null;
 		file = pFile;
@@ -52,15 +29,6 @@ public class StateHandler {
 
 		setValues();
 	}
-
-	private XmlObject loadXml(File pFile) throws IOException {
-		System.out.println("load File " + pFile.getAbsolutePath());
-		FileInputStream pxStream = new FileInputStream(pFile);
-		XmlObject ret = new XmlObject(pxStream);
-		pxStream.close();
-		return ret;
-	}
-
 	public synchronized void addHistory(XmlObject historyEntry,
 			boolean pbSetUndoPoint) {
 		historyEntry.setAttribute("undoPoint", "" + pbSetUndoPoint);
@@ -86,8 +54,89 @@ public class StateHandler {
 		return history;
 	}
 
+	public String getAttribute(String psAttributeName) {
+		return xmlState.getAttribute(psAttributeName);
+	}
+
+	public int getEntriesCount() {
+		return xmlState.getAttributeAsInt("maxcounter");
+	}
+
+	private File getHistoryFile() {
+		int iCounter = xmlState.getAttributeAsInt("counter");
+		if (iCounter > 0) {
+			String name = file.getName();
+			File f = new File(file.getParent(), name.substring(0,
+					name.lastIndexOf(".") + 1)
+					+ "h" + iCounter + ".xml");
+			return f;
+		}
+		return null;
+	}
+
 	public XmlObject getLastHistoryEntry() {
 		return lastHistoryEntry;
+	}
+
+	public boolean isEOF() {
+		int iCounter = xmlState.getAttributeAsInt("counter");
+		int iMaxCounter = xmlState.getAttributeAsInt("maxcounter");
+		boolean EOF = iCounter >= iMaxCounter;
+		return EOF;
+	}
+
+	private XmlObject loadXml(File pFile) throws IOException {
+		System.out.println("load File " + pFile.getAbsolutePath());
+		FileInputStream pxStream = new FileInputStream(pFile);
+		XmlObject ret = new XmlObject(pxStream);
+		pxStream.close();
+		return ret;
+	}
+
+	public void redo() {
+		int iCounter = xmlState.getAttributeAsInt("counter");
+		int iMaxCounter = xmlState.getAttributeAsInt("maxcounter");
+		while (iCounter < iMaxCounter) {
+			iCounter++;
+			xmlState.setAttribute("counter", iCounter);
+			setValues();
+			if (lastHistoryEntry == null
+					|| !lastHistoryEntry.getAttribute("undoPoint").equals(
+							"false")) {
+				break;
+			}
+		}
+		saveState();
+	}
+
+	private void saveState() {
+		try {
+			saveXml(file, xmlState);
+			if (lastHistoryEntry != null) {
+				File f = getHistoryFile();
+				if (f != null) {
+					saveXml(f, lastHistoryEntry);
+				}
+			}
+
+		} catch (IOException e) {
+			// invalid file
+			e.printStackTrace();
+		}
+	}
+
+	private void saveXml(File pFile, XmlObject pXml) throws IOException {
+		System.out.println("Save File " + pFile.getAbsolutePath());
+		FileOutputStream out = new FileOutputStream(pFile);
+		String sXml = pXml.toString();
+		out.write(sXml.getBytes());
+		out.close();
+	}
+
+	public void setAttibute(String psAttributeName, String psAttributeValue) {
+		if (xmlState.setAttribute(psAttributeName, psAttributeValue)) {
+			saveState();
+		}
 	}
 
 	private void setValues() {
@@ -101,18 +150,6 @@ public class StateHandler {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	private File getHistoryFile() {
-		int iCounter = xmlState.getAttributeAsInt("counter");
-		if (iCounter > 0) {
-			String name = file.getName();
-			File f = new File(file.getParent(), name.substring(0,
-					name.lastIndexOf(".") + 1)
-					+ "h" + iCounter + ".xml");
-			return f;
-		}
-		return null;
 	}
 
 	public void undo() {
@@ -142,42 +179,5 @@ public class StateHandler {
 			xmlState.setAttribute("maxcounter", 0);
 			clear();
 		}
-	}
-
-	public void redo() {
-		int iCounter = xmlState.getAttributeAsInt("counter");
-		int iMaxCounter = xmlState.getAttributeAsInt("maxcounter");
-		while (iCounter < iMaxCounter) {
-			iCounter++;
-			xmlState.setAttribute("counter", iCounter);
-			setValues();
-			if (lastHistoryEntry == null
-					|| !lastHistoryEntry.getAttribute("undoPoint").equals(
-							"false")) {
-				break;
-			}
-		}
-		saveState();
-	}
-
-	public void setAttibute(String psAttributeName, String psAttributeValue) {
-		if (xmlState.setAttribute(psAttributeName, psAttributeValue)) {
-			saveState();
-		}
-	}
-
-	public String getAttribute(String psAttributeName) {
-		return xmlState.getAttribute(psAttributeName);
-	}
-
-	public boolean isEOF() {
-		int iCounter = xmlState.getAttributeAsInt("counter");
-		int iMaxCounter = xmlState.getAttributeAsInt("maxcounter");
-		boolean EOF = iCounter >= iMaxCounter;
-		return EOF;
-	}
-
-	public int getEntriesCount() {
-		return xmlState.getAttributeAsInt("maxcounter");
 	}
 }

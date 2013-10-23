@@ -57,16 +57,6 @@ public class Hand extends CardContainer {
 		lstCards.clear();
 	}
 
-	public Card[] create52Cards() {
-		for (int i = 0; i < 13; i++) {
-			for (int j = 0; j < 4; j++) {
-				createCard(Values.getValue(i), Colors.getValue(j));
-			}
-		}
-		shuffleCards();
-		return lstCards.toArray(new Card[0]);
-	}
-
 	public Card[] create32Cards() {
 		for (int i = 0; i < 13; i++) {
 			for (int j = 0; j < 4; j++) {
@@ -74,6 +64,16 @@ public class Hand extends CardContainer {
 			}
 			if (i == 0) {
 				i += 5;
+			}
+		}
+		shuffleCards();
+		return lstCards.toArray(new Card[0]);
+	}
+
+	public Card[] create52Cards() {
+		for (int i = 0; i < 13; i++) {
+			for (int j = 0; j < 4; j++) {
+				createCard(Values.getValue(i), Colors.getValue(j));
 			}
 		}
 		shuffleCards();
@@ -102,6 +102,15 @@ public class Hand extends CardContainer {
 			return lstCards.get(size - 1);
 		}
 		return null;
+	}
+
+	@Override
+	public String getName() {
+		return "Hand";
+	}
+
+	public Card getStackCard() {
+		return c0;
 	}
 
 	@Override
@@ -179,14 +188,6 @@ public class Hand extends CardContainer {
 		super.saveState(xmlHand);
 	}
 
-	public void shuffleCards() {
-		Collections.shuffle(lstCards);
-	}
-
-	public void setCenter(boolean b) {
-		bCenter = b;
-	}
-
 	public void setAngle(float pAngle) {
 		angle = pAngle;
 		for (Card c : lstCards) {
@@ -194,8 +195,12 @@ public class Hand extends CardContainer {
 		}
 	}
 
-	public Card getStackCard() {
-		return c0;
+	public void setCenter(boolean b) {
+		bCenter = b;
+	}
+
+	public void shuffleCards() {
+		Collections.shuffle(lstCards);
 	}
 
 	@Override
@@ -206,11 +211,6 @@ public class Hand extends CardContainer {
 			sb.append(c.toString());
 		}
 		return sb.toString();
-	}
-
-	@Override
-	public String getName() {
-		return "Hand";
 	}
 
 }

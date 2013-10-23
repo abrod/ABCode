@@ -30,9 +30,23 @@ import de.brod.gui.shape.Text;
 public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		GuiView<SPRITE> implements Renderer {
 
+	private class ButtonAction implements IAction {
+		public Type type;
+
+		public ButtonAction(Type pType) {
+			type = pType;
+		}
+
+		@Override
+		public void action() {
+			buttonPressed(type);
+		}
+
+	}
 	private static float r = 0.1f;
 	private static float g = 0.4f;
 	private static float b = 0.2f;
+
 	private static int backColor;
 
 	static {
@@ -49,7 +63,6 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		b = Color.blue(pBackColor) / 255f;
 		backColor = pBackColor;
 	}
-
 	private int width, height;
 	float wd, hg;
 	private Activity activity;
@@ -57,11 +70,8 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 	private Texture iconTexture;
 	private float fTitleHeight;
 	protected StateHandler globalStateHandler;
-	protected Hashtable<Button.Type, Button> htTitleButtons = new Hashtable<Button.Type, Button>();
 
-	public Activity getActivity() {
-		return activity;
-	}
+	protected Hashtable<Button.Type, Button> htTitleButtons = new Hashtable<Button.Type, Button>();
 
 	public GuiRendererView(Activity context) {
 		super(context);
@@ -72,6 +82,36 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
 
+	protected abstract void backButtonPressed();
+
+	protected void buttonPressed(Type type) {
+		if (type.equals(Type.menu)) {
+			openMenu();
+		}
+	}
+
+	Sprite createButton(Hashtable<Type, Button> htTitleButtons, Type pType,
+			int i, int maxCount, boolean bTop, Align align) {
+		ButtonAction buttonAction = new ButtonAction(pType);
+		Button createButton = pType.createButton(i, maxCount, bTop, align,
+				buttonAction);
+		htTitleButtons.put(pType, createButton);
+		return createButton;
+
+	}
+
+	public Activity getActivity() {
+		return activity;
+	}
+
+	protected abstract List<Type> getButtonsBottom();
+
+	public List<Type> getButtonsTop() {
+		ArrayList<Type> arrayList = new ArrayList<Type>();
+		arrayList.add(Button.Type.menu);
+		return arrayList;
+	}
+
 	@Override
 	public float getX(MotionEvent event) {
 		return (event.getX() * 2f * wd / width - wd);
@@ -80,6 +120,92 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 	@Override
 	public float getY(MotionEvent event) {
 		return (hg - event.getY() * 2f * hg / height);
+	}
+
+	protected void initApplication() {
+		applicationStateHandler = new StateHandler(new File(
+				activity.getFilesDir(), getApplicationName() + ".xml"));
+		root = new Sprite();
+
+		Sprite title = new Sprite();
+		root.add(title);
+		area = new Sprite();
+		root.add(area);
+		menu = new Menu();
+		root.add(menu);
+
+		// createa a title bar
+		Rectangle titleBar = new Rectangle(-Button.maxWidth, Button.maxHeight
+				- fTitleHeight, Button.maxWidth * 2, fTitleHeight);
+		titleBar.setColor(Color.argb(128, 0, 0, 0));
+		title.add(titleBar);
+
+		// create a title text
+		float fMoveLeft = 0.5f;
+		// create a title icon
+		IAction backAction = null;
+		if (showBackButton()) {
+			backAction = new IAction() {
+				@Override
+				public void action() {
+					backButtonPressed();
+				}
+			};
+		} else {
+			fMoveLeft = 0;
+		}
+		float fontHeight = fTitleHeight * 0.7f;
+		Text textTitle = Text.createText(getApplicationName(), -Button.maxWidth
+				+ fTitleHeight * (1.1f + fMoveLeft), Button.maxHeight
+				- (fTitleHeight + fontHeight) / 2, fontHeight);
+
+		textTitle.setColor(Color.WHITE);
+		title.add(textTitle);
+
+		Sprite icon = new Button(iconTexture, fTitleHeight, fTitleHeight,
+				"Icon", backAction);
+		icon.setPosition(-Button.maxWidth + fTitleHeight * (0.5f + fMoveLeft),
+				Button.maxHeight - (fTitleHeight / 2));
+		title.add(icon);
+
+		if (fMoveLeft > 0) {
+			Button leftButton = Button.Type.left.createButton(-Button.maxWidth
+					+ fTitleHeight * (0.25f), Button.maxHeight
+					- (fTitleHeight / 2), backAction);
+			leftButton.resize(0.7f);
+			title.add(leftButton);
+		}
+
+		// add the buttons
+		List<Button.Type> lstButtonTop = getButtonsTop();
+		List<Button.Type> lstButtonBottom = getButtonsBottom();
+
+		// portait mode
+		if (width < height) {
+			Rectangle titleBar2 = new Rectangle(-Button.maxWidth,
+					-Button.maxHeight, Button.maxWidth * 2, fTitleHeight);
+			titleBar2.setColor(Color.argb(128, 0, 0, 0));
+			title.add(titleBar2);
+			int maxCount = lstButtonBottom.size();
+			for (int i = 0; i < maxCount; i++) {
+				title.add(createButton(htTitleButtons, lstButtonBottom.get(i),
+						i, maxCount, false, Align.CENTER));
+			}
+		} else {
+			lstButtonTop.addAll(lstButtonBottom);
+			lstButtonBottom.clear();
+		}
+		int maxCount = Math.min(lstButtonTop.size(), 5);
+
+		for (int i = 0; i < lstButtonTop.size(); i++) {
+			title.add(createButton(htTitleButtons, lstButtonTop.get(i), i,
+					maxCount, true, Align.RIGHT));
+		}
+
+		lstTitleItems = title.getChildren();
+		lstMenuItems = new ArrayList<MenuItem>();
+		reload();
+
 	}
 
 	/*
@@ -224,132 +350,6 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	}
 
-	Sprite createButton(Hashtable<Type, Button> htTitleButtons, Type pType,
-			int i, int maxCount, boolean bTop, Align align) {
-		ButtonAction buttonAction = new ButtonAction(pType);
-		Button createButton = pType.createButton(i, maxCount, bTop, align,
-				buttonAction);
-		htTitleButtons.put(pType, createButton);
-		return createButton;
-
-	}
-
-	private class ButtonAction implements IAction {
-		public Type type;
-
-		public ButtonAction(Type pType) {
-			type = pType;
-		}
-
-		@Override
-		public void action() {
-			buttonPressed(type);
-		}
-
-	}
-
-	protected void initApplication() {
-		applicationStateHandler = new StateHandler(new File(
-				activity.getFilesDir(), getApplicationName() + ".xml"));
-		root = new Sprite();
-
-		Sprite title = new Sprite();
-		root.add(title);
-		area = new Sprite();
-		root.add(area);
-		menu = new Menu();
-		root.add(menu);
-
-		// createa a title bar
-		Rectangle titleBar = new Rectangle(-Button.maxWidth, Button.maxHeight
-				- fTitleHeight, Button.maxWidth * 2, fTitleHeight);
-		titleBar.setColor(Color.argb(128, 0, 0, 0));
-		title.add(titleBar);
-
-		// create a title text
-		float fMoveLeft = 0.5f;
-		// create a title icon
-		IAction backAction = null;
-		if (showBackButton()) {
-			backAction = new IAction() {
-				@Override
-				public void action() {
-					backButtonPressed();
-				}
-			};
-		} else {
-			fMoveLeft = 0;
-		}
-		float fontHeight = fTitleHeight * 0.7f;
-		Text textTitle = Text.createText(getApplicationName(), -Button.maxWidth
-				+ fTitleHeight * (1.1f + fMoveLeft), Button.maxHeight
-				- (fTitleHeight + fontHeight) / 2, fontHeight);
-
-		textTitle.setColor(Color.WHITE);
-		title.add(textTitle);
-
-		Sprite icon = new Button(iconTexture, fTitleHeight, fTitleHeight,
-				"Icon", backAction);
-		icon.setPosition(-Button.maxWidth + fTitleHeight * (0.5f + fMoveLeft),
-				Button.maxHeight - (fTitleHeight / 2));
-		title.add(icon);
-
-		if (fMoveLeft > 0) {
-			Button leftButton = Button.Type.left.createButton(-Button.maxWidth
-					+ fTitleHeight * (0.25f), Button.maxHeight
-					- (fTitleHeight / 2), backAction);
-			leftButton.resize(0.7f);
-			title.add(leftButton);
-		}
-
-		// add the buttons
-		List<Button.Type> lstButtonTop = getButtonsTop();
-		List<Button.Type> lstButtonBottom = getButtonsBottom();
-
-		// portait mode
-		if (width < height) {
-			Rectangle titleBar2 = new Rectangle(-Button.maxWidth,
-					-Button.maxHeight, Button.maxWidth * 2, fTitleHeight);
-			titleBar2.setColor(Color.argb(128, 0, 0, 0));
-			title.add(titleBar2);
-			int maxCount = lstButtonBottom.size();
-			for (int i = 0; i < maxCount; i++) {
-				title.add(createButton(htTitleButtons, lstButtonBottom.get(i),
-						i, maxCount, false, Align.CENTER));
-			}
-		} else {
-			lstButtonTop.addAll(lstButtonBottom);
-			lstButtonBottom.clear();
-		}
-		int maxCount = Math.min(lstButtonTop.size(), 5);
-
-		for (int i = 0; i < lstButtonTop.size(); i++) {
-			title.add(createButton(htTitleButtons, lstButtonTop.get(i), i,
-					maxCount, true, Align.RIGHT));
-		}
-
-		lstTitleItems = title.getChildren();
-		lstMenuItems = new ArrayList<MenuItem>();
-		reload();
-
-	}
-
 	protected abstract boolean showBackButton();
-
-	protected abstract void backButtonPressed();
-
-	protected abstract List<Type> getButtonsBottom();
-
-	protected void buttonPressed(Type type) {
-		if (type.equals(Type.menu)) {
-			openMenu();
-		}
-	}
-
-	public List<Type> getButtonsTop() {
-		ArrayList<Type> arrayList = new ArrayList<Type>();
-		arrayList.add(Button.Type.menu);
-		return arrayList;
-	}
 
 }

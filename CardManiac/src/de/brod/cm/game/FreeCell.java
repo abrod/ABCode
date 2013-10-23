@@ -12,10 +12,6 @@ import de.brod.gui.IAction;
 
 public class FreeCell extends Game {
 
-	public FreeCell(CardManiacView pCardManiacView) {
-		super(pCardManiacView);
-	}
-
 	private class FinishAction implements IAction {
 
 		private Hand h;
@@ -30,10 +26,6 @@ public class FreeCell extends Game {
 			lst = null;
 			this.c = c;
 			this.h = h;
-		}
-
-		public void add(FreeCell.FinishAction a) {
-			lst.add(a);
 		}
 
 		@Override
@@ -52,6 +44,22 @@ public class FreeCell extends Game {
 			}
 		}
 
+		public void add(FreeCell.FinishAction a) {
+			lst.add(a);
+		}
+
+	}
+
+	public FreeCell(CardManiacView pCardManiacView) {
+		super(pCardManiacView);
+	}
+
+	@Override
+	protected void createTitleCards(Hand hand) {
+		hand.createCard(Values.Ace, Colors.Clubs);
+		hand.createCard(Values.Ace, Colors.Spades);
+		hand.createCard(Values.Ace, Colors.Hearts);
+		hand.createCard(Values.Ace, Colors.Diamonds);
 	}
 
 	private FinishAction getAction(Hand hand, int iMinValue) {
@@ -125,16 +133,8 @@ public class FreeCell extends Game {
 	}
 
 	@Override
-	public void initNewCards() {
-		Card[] cards = get(0).create52Cards();
-		int iPos = 1;
-		for (Card card : cards) {
-			card.moveTo(get(iPos));
-			iPos += 2;
-			if (iPos >= 16) {
-				iPos = 1;
-			}
-		}
+	public boolean hasHistory() {
+		return true;
 	}
 
 	@Override
@@ -163,6 +163,19 @@ public class FreeCell extends Game {
 		}
 	}
 
+	@Override
+	public void initNewCards() {
+		Card[] cards = get(0).create52Cards();
+		int iPos = 1;
+		for (Card card : cards) {
+			card.moveTo(get(iPos));
+			iPos += 2;
+			if (iPos >= 16) {
+				iPos = 1;
+			}
+		}
+	}
+
 	private boolean matches(Card cLastCard, Card cFirstCardOfMovingStack) {
 		int i = cLastCard.getColor().getId() / 2;
 		int i0 = cFirstCardOfMovingStack.getColor().getId() / 2;
@@ -185,7 +198,6 @@ public class FreeCell extends Game {
 		Hand hand = c.getHand();
 		int id = hand.getId();
 		int y = id % 2;
-		int x = id / 2;
 		if (y == 1) {
 			// get amount of free cards
 			int iFree = 1;
@@ -265,19 +277,6 @@ public class FreeCell extends Game {
 		}
 
 		return super.mouseUp(pLstMoves, handTo);
-	}
-
-	@Override
-	protected void createTitleCards(Hand hand) {
-		hand.createCard(Values.Ace, Colors.Clubs);
-		hand.createCard(Values.Ace, Colors.Spades);
-		hand.createCard(Values.Ace, Colors.Hearts);
-		hand.createCard(Values.Ace, Colors.Diamonds);
-	}
-
-	@Override
-	public boolean hasHistory() {
-		return true;
 	}
 
 }
