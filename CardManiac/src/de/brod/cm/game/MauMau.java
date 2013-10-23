@@ -45,14 +45,7 @@ public class MauMau extends Game {
 
 				@Override
 				public void action() {
-					// update stack
-					Card[] cards = h5.getCards().toArray(new Card[0]);
-					for (int i = 0; i < cards.length - 1; i++) {
-						cards[i].moveTo(h0);
-					}
-					h0.shuffleCards();
-					h0.organize();
-					h5.organize();
+					updateStack();	
 				}
 			};
 		}
@@ -65,17 +58,12 @@ public class MauMau extends Game {
 				@Override
 				public void action() {
 					Hand hand = get(iPlayer);
-					Card lastCard = null;
 					Card playedCard = null;
 					// if card could not be played
 					if ((playedCard = playCard(hand)) == null) {
 						if (settings.getAttributeAsBoolean("drawCard")) {
 							// draw a card
-							lastCard = h0.getLastCard();
-							if (lastCard != null) {
-								lastCard.moveTo(hand);
-							}
-							h0.organize();
+							drawStack(hand,settings);
 							// and try to play again
 							playedCard = playCard(hand);
 						}
@@ -106,6 +94,18 @@ public class MauMau extends Game {
 		return null;
 	}
 
+	private void updateStack(){
+		Hand h0 = get(0);
+		Hand h5 = get(5);
+		Card[] cards = h5.getCards().toArray(new Card[0]);
+		for (int i = 0; i < cards.length - 1; i++) {
+			cards[i].moveTo(h0);
+		}
+		h0.shuffleCards();
+		h0.organize();
+		h5.organize();
+	}
+	
 	private XmlObject getSettings() {
 		return buttons.getSettings();
 	}
@@ -256,8 +256,6 @@ public class MauMau extends Game {
 			if (hSelectedId == 0 && settings.getAttributeAsBoolean("drawCard")) {
 				// draw a card to hand (from stack)
 				handTo = get(4);
-				drawStack(handTo, settings);
-				return true;
 			} else {
 				return false;
 			}
@@ -271,7 +269,8 @@ public class MauMau extends Game {
 		if (hSelectedId == 0 && hToId == 4) {
 			// draw a card
 			if (settings.getAttributeAsBoolean("drawCard")) {
-				settings.setAttribute("drawCard", false);
+				drawStack(handTo, settings);
+				return true;
 			} else {
 				return false;
 			}
@@ -290,9 +289,21 @@ public class MauMau extends Game {
 	}
 
 	private void drawStack(Hand handTo, XmlObject settings) {
-		get(0).getLastCard().moveTo(handTo);
-		get(0).setText("");
+		Hand h0 = get(0);
+		int ic=Math.max(1,
+		settings.getAttributeAsInt("drawCardCount"));
+		for (int i=0;i<ic;i++){
+		if (h0.getCardCount()==0)
+			updateStack();
+		Card c=h0.getLastCard();
+		if (c!=null)
+		c.moveTo(handTo);
+		}
+		h0.setText("");
 		settings.setAttribute("drawCardCount", 0);
+		settings.setAttribute("drawCard", false);
+		handTo.organize();
+		h0.organize();
 	}
 
 	@Override
