@@ -66,7 +66,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected void getMenuItems(List<String> menuItems) {
-		menuItems.add("New");
+		game.getMenuItems(menuItems);
 		menuItems.add("Close");
 	}
 
@@ -133,6 +133,14 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 		game = cardManiac.openGame(sGame);
 	}
+	
+	public String getGlobalSettings(String psName){
+		return globalStateHandler.getObject("Settings",game.getName()).getAttribute(psName);
+	}
+	
+	public void setGlobalSettings(String psName, String psValue){
+		globalStateHandler.setObject("Settings", game.getName(),psName, psValue);
+	}
 
 	@Override
 	protected boolean isInstanceOf(Container sprite) {
@@ -141,11 +149,10 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected void menuPressed(String sItem, StateHandler stateHandler) {
-		if (sItem.equalsIgnoreCase("New")) {
-			stateHandler.clear();
-		} else {
+		if (sItem.equalsIgnoreCase("Close")) {
 			getActivity().finish();
 		}
+		game.menuPressed(sItem,stateHandler);
 	}
 
 	@Override

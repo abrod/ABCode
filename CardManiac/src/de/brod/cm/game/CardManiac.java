@@ -34,6 +34,12 @@ public class CardManiac extends Game {
 	}
 
 	@Override
+	public void getMenuItems(List<String> menuItems)
+	{
+		// make nothing
+	}
+	
+	@Override
 	public IAction getNextAction() {
 		// TODO Auto-generated method stub
 		return null;

@@ -25,6 +25,27 @@ public class MauMau extends Game
 	{
 		super(pCardManiacView);
 	}
+	
+	public void getMenuItems(List<String> menuItems)
+	{
+		super.getMenuItems(menuItems);
+		menuItems.add("Reset score");
+	}
+
+	public void menuPressed(String sItem, StateHandler stateHandler)
+	{
+		if(sItem.equals("Reset score")){
+			for (int i = 1; i <= 4; i++)
+			{
+				Hand hand = get(i);
+				hand.setCenter(true);
+				hand.setText("0");
+				setSettings("points"+i,0);
+			}
+		} else{
+			super.menuPressed(sItem,stateHandler);
+		}
+	}
 
 	@Override
 	protected void createTitleCards(Hand hand)
@@ -76,8 +97,11 @@ public class MauMau extends Game
 						{
 							// draw a card
 							drawStack(hand, settings);
+							hand.organize();
+							settings.setAttribute("drawCard", false);
+							return;
 							// and try to play again
-							playedCard = playCard(hand);
+							// playedCard = playCard(hand);
 						}
 					}
 					hand.organize();
@@ -101,6 +125,7 @@ public class MauMau extends Game
 					{
 						cPlay.moveTo(h5);
 						h5.organize();
+						check4finshed();
 					}
 					return cPlay;
 				}
@@ -184,7 +209,7 @@ public class MauMau extends Game
 		{
 			Hand hand = get(i);
 			hand.setCenter(true);
-			hand.setText("" + i);
+			hand.setText(""+getSettingAsInt("points"+i));
 		}
 		// set order
 		get(4).setCardComperator(getColorOrder());
@@ -366,7 +391,24 @@ public class MauMau extends Game
 			return false;
 		}
 		selectedCard.moveTo(handTo);
+		check4finshed();
 		return true;
+	}
+
+	private void check4finshed()
+	{
+		for (int i = 1; i <= 4; i++)
+		{
+			Hand hand=get(i);
+			if (hand.getCardCount() == 0)
+			{
+				int p=getSettingAsInt("points" + i);
+				p++;
+				setSettings("points" + i,p);
+				hand.setText(""+p);
+				return;
+			}
+		}
 	}
 
 	private void drawStack(Hand handTo, XmlObject settings)

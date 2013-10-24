@@ -26,6 +26,18 @@ public abstract class Game {
 		cardManiacView = pCardManiacView;
 	}
 
+	public void getMenuItems(List<String> menuItems)
+	{
+		menuItems.add("New");
+	}
+
+	public void menuPressed(String sItem, StateHandler stateHandler)
+	{
+		if(sItem.equals("New")){
+			stateHandler.clear();
+		}
+	}
+
 	protected void add(CardContainer cc) {
 		cardContainer.add(cc);
 		if (cc instanceof Hand) {
@@ -138,4 +150,24 @@ public abstract class Game {
 		};
 	}
 
+	public String getSetting(String psName){
+		return cardManiacView.getGlobalSettings(psName);
+	}
+	
+	public int getSettingAsInt(String psName){
+		try{
+		return Integer.parseInt(cardManiacView.getGlobalSettings(psName));
+		} catch (Exception ex){
+			// ignore
+			return 0;
+		}
+	}
+	
+	public void setSettings(String psName,String psValue){
+		cardManiacView.setGlobalSettings(psName,psValue);
+	}
+	
+	public void setSettings(String psName,int piValue){
+		cardManiacView.setGlobalSettings(psName,""+piValue);
+	}
 }
