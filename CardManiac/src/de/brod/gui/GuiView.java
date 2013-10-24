@@ -300,7 +300,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		menu.finish(lstMenuItems);
 	}
 
-	public void processNextStep() {
+	public synchronized void processNextStep() {
 		if (lstSlides.size() > 0) {
 			float d = (System.currentTimeMillis() - startSlidingTime) / 500f;
 			for (int i = 0; i < lstSlides.size();) {

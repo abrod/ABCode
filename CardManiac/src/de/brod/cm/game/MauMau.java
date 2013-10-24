@@ -9,6 +9,7 @@ import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
+import de.brod.cm.TextAlign;
 import de.brod.gui.IAction;
 import de.brod.gui.StateHandler;
 import de.brod.gui.shape.Button;
@@ -45,7 +46,7 @@ public class MauMau extends Game {
 
 				@Override
 				public void action() {
-					updateStack();	
+					updateStack();
 				}
 			};
 		}
@@ -63,7 +64,7 @@ public class MauMau extends Game {
 					if ((playedCard = playCard(hand)) == null) {
 						if (settings.getAttributeAsBoolean("drawCard")) {
 							// draw a card
-							drawStack(hand,settings);
+							drawStack(hand, settings);
 							// and try to play again
 							playedCard = playCard(hand);
 						}
@@ -94,7 +95,7 @@ public class MauMau extends Game {
 		return null;
 	}
 
-	private void updateStack(){
+	private void updateStack() {
 		Hand h0 = get(0);
 		Hand h5 = get(5);
 		Card[] cards = h5.getCards().toArray(new Card[0]);
@@ -105,7 +106,7 @@ public class MauMau extends Game {
 		h0.organize();
 		h5.organize();
 	}
-	
+
 	private XmlObject getSettings() {
 		return buttons.getSettings();
 	}
@@ -150,11 +151,17 @@ public class MauMau extends Game {
 			}
 		}
 
-		for (int i = 1; i < 5; i++) {
+		get(1).initText(TextAlign.RIGHT);
+		get(2).initText(TextAlign.BOTTOM);
+		get(3).initText(TextAlign.LEFT);
+		get(4).initText(TextAlign.TOP);
+		for (int i = 1; i <= 4; i++) {
 			Hand hand = get(i);
 			hand.setCenter(true);
-			// hand.setText(""+i);
+			hand.setText("" + i);
 		}
+		// set order
+		get(4).setCardComperator(getColorOrder());
 		// add a ButtonContainer
 		buttons = new Buttons(99);
 		IAction skipAction = new IAction() {
@@ -302,14 +309,15 @@ public class MauMau extends Game {
 
 	private void drawStack(Hand handTo, XmlObject settings) {
 		Hand h0 = get(0);
-		int ic=Math.max(1,
-		settings.getAttributeAsInt("drawCardCount"));
-		for (int i=0;i<ic;i++){
-		if (h0.getCardCount()==0)
-			updateStack();
-		Card c=h0.getLastCard();
-		if (c!=null)
-		c.moveTo(handTo);
+		int ic = Math.max(1, settings.getAttributeAsInt("drawCardCount"));
+		for (int i = 0; i < ic; i++) {
+			if (h0.getCardCount() == 0) {
+				updateStack();
+			}
+			Card c = h0.getLastCard();
+			if (c != null) {
+				c.moveTo(handTo);
+			}
 		}
 		h0.setText("");
 		settings.setAttribute("drawCardCount", 0);

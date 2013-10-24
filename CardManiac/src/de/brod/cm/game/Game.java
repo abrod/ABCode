@@ -1,6 +1,7 @@
 package de.brod.cm.game;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -64,6 +65,7 @@ public abstract class Game {
 		sName = sName.substring(sName.lastIndexOf(".") + 1);
 		return sName;
 	}
+
 	public abstract IAction getNextAction();
 
 	public Game getPreviousGame(CardManiacView cardManiacView2) {
@@ -110,6 +112,30 @@ public abstract class Game {
 
 	public int size() {
 		return hands.size();
+	}
+
+	public Comparator<? super Card> getColorOrder() {
+		return new Comparator<Card>() {
+
+			@Override
+			public int compare(Card lhs, Card rhs) {
+				int diff = lhs.getColor().getId() - rhs.getColor().getId();
+				if (diff != 0) {
+					return diff;
+				}
+
+				return getValue(lhs) - getValue(rhs);
+			}
+
+			private int getValue(Card rhs) {
+				int id = rhs.getValue().getId();
+				if (id == 0) {
+					// shift ace
+					return 13;
+				}
+				return id;
+			}
+		};
 	}
 
 }

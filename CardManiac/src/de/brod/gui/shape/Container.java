@@ -21,6 +21,7 @@ public class Container implements Comparable<Container> {
 
 	private boolean sliding;
 	protected boolean moving;
+
 	/**
 	 * @param object
 	 * @return
@@ -164,8 +165,13 @@ public class Container implements Comparable<Container> {
 		sid = piSid;
 	}
 
-	public void setSliding(boolean sliding) {
-		this.sliding = sliding;
+	public void setSliding(boolean pbSliding) {
+		if (this.sliding != pbSliding) {
+			this.sliding = pbSliding;
+			if (!pbSliding) {
+				moving = false;
+			}
+		}
 	}
 
 	public void setVisible(boolean visible) {

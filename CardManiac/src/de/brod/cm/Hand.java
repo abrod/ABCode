@@ -2,6 +2,7 @@ package de.brod.cm;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -12,15 +13,16 @@ import de.brod.xml.XmlObject;
 
 public class Hand extends CardContainer {
 
-	List<Card> lstCards = new ArrayList<Card>();
+	private List<Card> lstCards = new ArrayList<Card>();
 	private int iCardCount;
 	private Card c0;
 	private boolean bCenter = false;
 	private float angle = 0;
+	private Comparator<? super Card> cardComperator = null;
 
 	/**
 	 * Create a Hand object. The
-	 * 
+	 *
 	 * @param piId
 	 * @param px1
 	 * @param py1
@@ -38,7 +40,22 @@ public class Hand extends CardContainer {
 	}
 
 	public void add(Card card) {
-		lstCards.add(card);
+		if (cardComperator != null) {
+			int iIndex = -1;
+			for (int i = 0; i < lstCards.size(); i++) {
+				if (cardComperator.compare(lstCards.get(i), card) > 0) {
+					iIndex = i;
+					break;
+				}
+			}
+			if (iIndex >= 0) {
+				lstCards.add(iIndex, card);
+			} else {
+				lstCards.add(card);
+			}
+		} else {
+			lstCards.add(card);
+		}
 		card.hand = this;
 		card.setAngle(angle);
 	}
@@ -124,6 +141,7 @@ public class Hand extends CardContainer {
 			add(card);
 		}
 		super.loadState(xmlHand);
+		organize();
 	}
 
 	@Override
@@ -211,6 +229,10 @@ public class Hand extends CardContainer {
 			sb.append(c.toString());
 		}
 		return sb.toString();
+	}
+
+	public void setCardComperator(Comparator<? super Card> cardComperator) {
+		this.cardComperator = cardComperator;
 	}
 
 }

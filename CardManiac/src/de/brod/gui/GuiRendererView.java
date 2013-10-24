@@ -43,6 +43,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		}
 
 	}
+
 	private static float r = 0.1f;
 	private static float g = 0.4f;
 	private static float b = 0.2f;
@@ -63,6 +64,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		b = Color.blue(pBackColor) / 255f;
 		backColor = pBackColor;
 	}
+
 	private int width, height;
 	float wd, hg;
 	private Activity activity;
@@ -210,7 +212,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.
 	 * khronos.opengles.GL10)
@@ -260,7 +262,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * android.opengl.GLSurfaceView.Renderer#onSurfaceChanged(javax.microedition
 	 * .khronos.opengles.GL10, int, int)
@@ -298,7 +300,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * android.opengl.GLSurfaceView.Renderer#onSurfaceCreated(javax.microedition
 	 * .khronos.opengles.GL10, javax.microedition.khronos.egl.EGLConfig)

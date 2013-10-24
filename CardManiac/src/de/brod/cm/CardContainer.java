@@ -12,6 +12,7 @@ public abstract class CardContainer {
 	protected float[] pos;
 	protected boolean bLandScape;
 	private Container textContainer;
+	private TextAlign _textAlign = TextAlign.BOTTOM;
 
 	public CardContainer(int piId, float px1, float py1, float px2, float py2) {
 		id = piId;
@@ -68,23 +69,49 @@ public abstract class CardContainer {
 		}
 	}
 
+	public void initText(TextAlign pAlign) {
+		if (textContainer == null) {
+			textContainer = new Container();
+		} else {
+			textContainer.clear();
+		}
+		_textAlign = pAlign;
+	}
+
 	public Container setText(String psText) {
+
 		if (psText == null) {
 			if (textContainer != null) {
 				textContainer.clear();
 			}
 		} else {
 			if (textContainer == null) {
-				textContainer = new Container();
+				initText(_textAlign);
 			} else {
 				textContainer.clear();
 			}
 			if (psText.length() > 0) {
 				float fTitleHeight = Card.getCardHeight() / 4;
-				Text text = Text
-						.createText(psText, pos[0],
-								pos[1] - pos[3] - Card.getCardHeight() / 2
-										- fTitleHeight, fTitleHeight);
+				Text text;
+				if (_textAlign.equals(TextAlign.TOP)) {
+					text = Text.createText(psText, pos[0], pos[1] - pos[3]
+							- Card.getCardHeight() / 2 - fTitleHeight,
+							fTitleHeight);
+				} else if (_textAlign.equals(TextAlign.LEFT)) {
+					text = Text.createText(psText, pos[0], pos[1] - pos[3]
+							- Card.getCardHeight() / 2 - fTitleHeight,
+							fTitleHeight);
+				} else if (_textAlign.equals(TextAlign.RIGHT)) {
+					text = Text.createText(psText, pos[0], pos[1] - pos[3]
+							- Card.getCardHeight() / 2 - fTitleHeight,
+							fTitleHeight);
+				} else {
+					// bottom
+					text = Text.createText(psText, pos[0], pos[1] - pos[3]
+							- Card.getCardHeight() / 2 - fTitleHeight,
+							fTitleHeight);
+				}
+
 				text.setMoveable(false);
 				text.setColor(Color.WHITE);
 				textContainer.add(text);
