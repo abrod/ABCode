@@ -34,7 +34,7 @@ public class Sprite extends Container {
 	private float x, y, w, wd, h, touchX, touchY;
 	private float dx, dy, xSave, ySave;
 
-	private float[] position = new float[12];;
+	private float[] position = new float[12];
 
 	private boolean center = true;
 
@@ -164,6 +164,14 @@ public class Sprite extends Container {
 		setPosition(x, y);
 	}
 
+	public float getX(){
+		return x;
+	}
+	
+	public float getY(){
+		return y;
+	}
+	
 	private void setCell() {
 		if (tex == null) {
 			return;

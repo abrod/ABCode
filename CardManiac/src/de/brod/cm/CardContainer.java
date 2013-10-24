@@ -93,25 +93,37 @@ public abstract class CardContainer {
 			if (psText.length() > 0) {
 				float fTitleHeight = Card.getCardHeight() / 4;
 				Text text;
+				int ia=0;
 				if (_textAlign.equals(TextAlign.TOP)) {
-					text = Text.createText(psText, pos[0], pos[1] - pos[3]
-							- Card.getCardHeight() / 2 - fTitleHeight,
+					text = Text.createText(psText, pos[0]+pos[2]/2, pos[1] + pos[3]
+							+ Card.getCardHeight() / 2,
 							fTitleHeight);
+					ia=2;
 				} else if (_textAlign.equals(TextAlign.LEFT)) {
-					text = Text.createText(psText, pos[0], pos[1] - pos[3]
-							- Card.getCardHeight() / 2 - fTitleHeight,
-							fTitleHeight);
+					text = Text.createText(psText, pos[0]-Card.getCardWidth()/2, pos[1] + pos[3]/2
+										   - fTitleHeight/2,
+										   fTitleHeight);
+					ia=1;
 				} else if (_textAlign.equals(TextAlign.RIGHT)) {
-					text = Text.createText(psText, pos[0], pos[1] - pos[3]
-							- Card.getCardHeight() / 2 - fTitleHeight,
+					text = Text.createText(psText, pos[0]+pos[2]+Card.getCardWidth()/2, pos[1] + pos[3]/2
+							- fTitleHeight/2,
 							fTitleHeight);
 				} else {
 					// bottom
-					text = Text.createText(psText, pos[0], pos[1] - pos[3]
+					text = Text.createText(psText, pos[0]+pos[2]/2, pos[1] + pos[3]
 							- Card.getCardHeight() / 2 - fTitleHeight,
 							fTitleHeight);
+					ia=2;
 				}
 
+				if (ia==1){
+					text.setPosition(text.getX()-text.getTextWdith(),
+					  text.getY());
+				}
+				if (ia==2){
+					text.setPosition(text.getX()-text.getTextWdith()/2,
+									 text.getY());
+				}
 				text.setMoveable(false);
 				text.setColor(Color.WHITE);
 				textContainer.add(text);
