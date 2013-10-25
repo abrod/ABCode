@@ -1,3 +1,20 @@
+/*
+ * ******************************************************************************
+ * Copyright (c) 2013 Andreas Brod
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * *****************************************************************************
+ */
 package de.brod.cm.game;
 
 import java.util.ArrayList;
@@ -26,14 +43,12 @@ public abstract class Game {
 		cardManiacView = pCardManiacView;
 	}
 
-	public void getMenuItems(List<String> menuItems)
-	{
+	public void getMenuItems(List<String> menuItems) {
 		menuItems.add("New");
 	}
 
-	public void menuPressed(String sItem, StateHandler stateHandler)
-	{
-		if(sItem.equals("New")){
+	public void menuPressed(String sItem, StateHandler stateHandler) {
+		if (sItem.equals("New")) {
 			stateHandler.clear();
 		}
 	}
@@ -150,24 +165,24 @@ public abstract class Game {
 		};
 	}
 
-	public String getSetting(String psName){
+	public String getSetting(String psName) {
 		return cardManiacView.getGlobalSettings(psName);
 	}
-	
-	public int getSettingAsInt(String psName){
-		try{
-		return Integer.parseInt(cardManiacView.getGlobalSettings(psName));
-		} catch (Exception ex){
+
+	public int getSettingAsInt(String psName) {
+		try {
+			return Integer.parseInt(cardManiacView.getGlobalSettings(psName));
+		} catch (Exception ex) {
 			// ignore
 			return 0;
 		}
 	}
-	
-	public void setSettings(String psName,String psValue){
-		cardManiacView.setGlobalSettings(psName,psValue);
+
+	public void setSettings(String psName, String psValue) {
+		cardManiacView.setGlobalSettings(psName, psValue);
 	}
-	
-	public void setSettings(String psName,int piValue){
-		cardManiacView.setGlobalSettings(psName,""+piValue);
+
+	public void setSettings(String psName, int piValue) {
+		cardManiacView.setGlobalSettings(psName, "" + piValue);
 	}
 }

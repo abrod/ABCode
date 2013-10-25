@@ -1,10 +1,28 @@
+/*
+ * ******************************************************************************
+ * Copyright (c) 2013 Andreas Brod
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * *****************************************************************************
+ */
 package de.brod.gui;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
+import de.brod.tools.IOTools;
 import de.brod.xml.XmlObject;
 
 public class StateHandler {
@@ -14,6 +32,7 @@ public class StateHandler {
 	private XmlObject lastHistoryEntry;
 
 	private File file;
+
 	public StateHandler(File pFile) {
 		xmlState = null;
 		file = pFile;
@@ -30,13 +49,12 @@ public class StateHandler {
 		setValues();
 	}
 
-	public void setObject(String p0, String name, String psName, String psValue)
-	{
-		if (getObject(p0,name).setAttribute(psName,psValue)){
+	public void setObject(String p0, String name, String psName, String psValue) {
+		if (getObject(p0, name).setAttribute(psName, psValue)) {
 			saveState();
 		}
 	}
-	
+
 	public synchronized void addHistory(XmlObject historyEntry,
 			boolean pbSetUndoPoint) {
 		historyEntry.setAttribute("undoPoint", "" + pbSetUndoPoint);
@@ -95,7 +113,7 @@ public class StateHandler {
 
 	private XmlObject loadXml(File pFile) throws IOException {
 		System.out.println("load File " + pFile.getAbsolutePath());
-		FileInputStream pxStream = new FileInputStream(pFile);
+		InputStream pxStream = new ByteArrayInputStream(IOTools.read(pFile));
 		XmlObject ret = new XmlObject(pxStream);
 		pxStream.close();
 		return ret;
@@ -135,21 +153,17 @@ public class StateHandler {
 
 	private void saveXml(File pFile, XmlObject pXml) throws IOException {
 		System.out.println("Save File " + pFile.getAbsolutePath());
-		FileOutputStream out = new FileOutputStream(pFile);
-		String sXml = pXml.toString();
-		out.write(sXml.getBytes());
-		out.close();
+		IOTools.write(pFile, pXml.toString().getBytes());
 	}
 
-	
 	public void setAttibute(String psAttributeName, String psAttributeValue) {
 		if (xmlState.setAttribute(psAttributeName, psAttributeValue)) {
 			saveState();
 		}
 	}
-	
+
 	public XmlObject getObject(String psElement, String psName) {
-		return xmlState.getObject(psElement,"name",psName,true);
+		return xmlState.getObject(psElement, "name", psName, true);
 	}
 
 	private void setValues() {
