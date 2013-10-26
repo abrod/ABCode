@@ -38,7 +38,6 @@ public class CardImage {
 		dst.set((int) (px * dx), (int) (py * dy), (int) (px * dx + w),
 				(int) (py * dy + h));
 		c.drawBitmap(bitmap, src, dst, paint);
-
 	}
 
 	public static Bitmap createBitmap(int piMin, int piOffset,

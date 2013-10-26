@@ -35,13 +35,15 @@ public class Text extends Sprite {
 
 	private static class CharType {
 		Rect bounds = new Rect();
-		private int x, y, h, ox, size;
+		private int x, y, h, ox, size, boundLeft, boundRight;
 
 		public Text create(float pfHeight) {
 			float fact = pfHeight / h;
 			Text text = new Text(size * fact, pfHeight);
 
 			text.width = (size) * fact;
+			text.boundLeft = boundLeft * fact;
+			text.boundRight = boundRight * fact;
 
 			text.setTextureBuffer(x, y + h, x + size, y);
 
@@ -56,6 +58,9 @@ public class Text extends Sprite {
 			String text = String.valueOf(ch);
 			paint.getTextBounds(text, 0, 1, bounds);
 			ox = Math.max(0, -bounds.left);
+			boundLeft = bounds.left;
+			boundRight = bounds.right;
+
 			size = 4 + bounds.left + ox + bounds.width();// (int)
 															// paint.measureText(text);
 			println(ch + " " + x + " " + y + " " + size, bounds);
@@ -77,11 +82,13 @@ public class Text extends Sprite {
 	}
 
 	public float width;
+	private float boundLeft, boundRight;
 
 	private Text next = null;
 	private static Texture textTex;
 	private static Hashtable<String, CharType> ht;
 	private static int wd;
+
 	private static Text createText(String psText, float fHeight) {
 		if (psText.length() == 0) {
 			psText = " ";
@@ -107,7 +114,7 @@ public class Text extends Sprite {
 
 	public static void init(GL10 gl, int pWidth, int pHeight,
 			float pfTitleHeight, Context activity) {
-		int min = Math.min(pWidth, pHeight);
+		int min = Math.min(pWidth, pHeight) * 2;
 		wd = 512;
 		while (wd < min) {
 			wd = wd * 2;
@@ -130,6 +137,10 @@ public class Text extends Sprite {
 		for (char ch = ' '; ch <= 127; ch++) {
 			sb.append(ch);
 		}
+		// Clubs=9827, Spades=9824, Hearts=9829, Diamonds=9830
+		String sAddChar = "" + (char) 9827 + "" + (char) 9824 + ""
+				+ (char) 9829 + "" + (char) 9830;
+		sb.append(sAddChar);
 		paint.getTextBounds(sb.toString(), 0, sb.length(), bounds);
 		paint.setTextSize(w * w / bounds.height());
 		paint.getTextBounds(sb.toString(), 0, sb.length(), bounds);
@@ -137,7 +148,7 @@ public class Text extends Sprite {
 		int iBottom = bounds.bottom;
 		maxHeight = bounds.height() + iBottom;
 
-		for (char ch = ' '; ch <= 127; ch++) {
+		for (char ch : sb.toString().toCharArray()) {
 			CharType charType = new CharType();
 			charType.drawText(c, ch, paint, cursor, wd, maxHeight, iBottom);
 			ht.put(String.valueOf(ch), charType);
@@ -163,9 +174,16 @@ public class Text extends Sprite {
 
 	public float getTextWdith() {
 		if (next != null) {
+			return next.getTextWidth() + width + boundLeft;
+		}
+		return width + boundLeft;
+	}
+
+	public float getTextWidth() {
+		if (next != null) {
 			return next.getTextWdith() + width;
 		}
-		return width;
+		return width + boundRight;
 	}
 
 	private void setNext(Text createText) {

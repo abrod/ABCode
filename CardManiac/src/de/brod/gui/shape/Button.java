@@ -24,8 +24,14 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.graphics.Paint.Style;
+import android.graphics.RectF;
 import de.brod.gui.IAction;
 import de.brod.gui.Texture;
 
@@ -74,7 +80,27 @@ public class Button extends Sprite {
 		}
 	}
 
-	private static Texture texture = null;
+	public static Button createTextButton(float px, float py, String psText,
+			IAction action) {
+
+		Button button = new Button(emptyTexture, width, height, psText, action);
+		button.setCell(0, 0, 0, 0);
+		button.setPosition(px, py);
+		button.setText(psText);
+		return button;
+	}
+
+	public void setText(String psText) {
+		float px = getX();
+		float py = getY();
+		Text createText = Text.createText(psText, px, py, height);
+		createText.setPosition(px - createText.getTextWdith() / 2,
+				createText.getY() - height / 2);
+		clear();
+		add(createText);
+	}
+
+	private static Texture texture = null, emptyTexture = null;
 	static float width = 0;
 	static float height = 0;
 	public static float maxHeight;
@@ -94,8 +120,20 @@ public class Button extends Sprite {
 		height = width;
 		InputStream open;
 		try {
+			// create an empty texture
+			int wdEmpty = 8;
+			int minWd = Math.min(pWidth, pHeight) / 8;
+			while (wdEmpty < minWd) {
+				wdEmpty *= 2;
+			}
+			Bitmap bitmap = Bitmap.createBitmap(wdEmpty, wdEmpty,
+					Config.ARGB_8888);
+			drawEmptyButton(bitmap);
+			emptyTexture = new Texture(gl, bitmap, 1, 1);
+			bitmap.recycle();
+			// open the icons
 			open = assetManager.open("icons.png");
-			Bitmap bitmap = BitmapFactory.decodeStream(open);
+			bitmap = BitmapFactory.decodeStream(open);
 			open.close();
 			texture = new Texture(gl, bitmap, 12, 5);
 			bitmap.recycle();
@@ -103,6 +141,23 @@ public class Button extends Sprite {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private static void drawEmptyButton(Bitmap bitmap) {
+		int h = bitmap.getHeight();
+		Canvas c = new Canvas(bitmap);
+		float r = h / 10f;
+		Paint paint = new Paint();
+		RectF rect = new RectF(r, r, h - r, h - r);
+
+		paint.setColor(Color.argb(128, 128, 128, 128));
+		paint.setStyle(Style.FILL);
+		c.drawRoundRect(rect, r, r, paint);
+
+		paint.setColor(Color.argb(192, 0, 0, 0));
+		paint.setStyle(Style.STROKE);
+		paint.setStrokeWidth(Math.max(1, r / 2));
+		c.drawRoundRect(rect, r, r, paint);
 	}
 
 	private String type;
