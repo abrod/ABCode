@@ -31,6 +31,11 @@ public class Buttons extends CardContainer {
 		super(piId, -1, -1, 1, 1);
 	}
 
+	public void setEnabled(int i, boolean p1)
+	{
+		lstButtons.get(i).setEnabled(p1);
+	}
+
 	public void add(Button button) {
 		lstButtons.add(button);
 	}

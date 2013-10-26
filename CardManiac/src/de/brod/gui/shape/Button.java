@@ -84,7 +84,7 @@ public class Button extends Sprite {
 			IAction action) {
 
 		Button button = new Button(emptyTexture, width, height, psText, action);
-		button.setCell(0, 0, 0, 0);
+		button.setCell(0, 0, 1, 0);
 		button.setPosition(px, py);
 		button.setText(psText);
 		return button;
@@ -93,19 +93,35 @@ public class Button extends Sprite {
 	public void setText(String psText) {
 		float px = getX();
 		float py = getY();
-		Text createText = Text.createText(psText, px, py, height);
+		createText = Text.createText(psText, px, py, height);
 		createText.setPosition(px - createText.getTextWdith() / 2,
 				createText.getY() - height / 2);
 		clear();
 		add(createText);
 	}
+	
+	public void setColor(int col){
+		if (createText == null){
+			super.setColor(col);
+		} else {
+			foreColor=col;
+			createText.setColor(col);
+		}
+	}
 
+	public void setTextColor(int col){
+		foreColor=col;
+		setColor(col);
+	}
 	private static Texture texture = null, emptyTexture = null;
-	static float width = 0;
-	static float height = 0;
+	public static float width = 0;
+	public static float height = 0;
 	public static float maxHeight;
 	public static float maxWidth;
 
+	private Text createText = null;
+	private int foreColor=-1;
+	
 	public static void init(AssetManager assetManager, GL10 gl, int pWidth,
 			int pHeight, float pfTitleHeight) {
 		float ratio = pWidth * 1f / pHeight;
@@ -126,10 +142,10 @@ public class Button extends Sprite {
 			while (wdEmpty < minWd) {
 				wdEmpty *= 2;
 			}
-			Bitmap bitmap = Bitmap.createBitmap(wdEmpty, wdEmpty,
+			Bitmap bitmap = Bitmap.createBitmap(wdEmpty*2, wdEmpty,
 					Config.ARGB_8888);
 			drawEmptyButton(bitmap);
-			emptyTexture = new Texture(gl, bitmap, 1, 1);
+			emptyTexture = new Texture(gl, bitmap, 2, 1);
 			bitmap.recycle();
 			// open the icons
 			open = assetManager.open("icons.png");
@@ -149,15 +165,27 @@ public class Button extends Sprite {
 		float r = h / 10f;
 		Paint paint = new Paint();
 		RectF rect = new RectF(r, r, h - r, h - r);
+		RectF rect2 = new RectF(r+h, r, h - r+h, h - r);
+		
 
-		paint.setColor(Color.argb(128, 128, 128, 128));
+		paint.setColor(Color.argb(64, 255,255,255));
 		paint.setStyle(Style.FILL);
 		c.drawRoundRect(rect, r, r, paint);
 
-		paint.setColor(Color.argb(192, 0, 0, 0));
+		paint.setColor(Color.argb(32, 255,255,255));
+		paint.setStyle(Style.FILL);
+		c.drawRoundRect(rect2, r, r, paint);
+		
+		paint.setColor(Color.argb(128, 0, 0, 0));
 		paint.setStyle(Style.STROKE);
 		paint.setStrokeWidth(Math.max(1, r / 2));
 		c.drawRoundRect(rect, r, r, paint);
+		
+		paint.setColor(Color.argb(64, 0, 0, 0));
+		paint.setStyle(Style.STROKE);
+		paint.setStrokeWidth(Math.max(1, r / 2));
+		c.drawRoundRect(rect2, r, r, paint);
+		
 	}
 
 	private String type;
@@ -199,6 +227,10 @@ public class Button extends Sprite {
 		if (enabled != pbEnabled) {
 			this.enabled = pbEnabled;
 			setAngle(pbEnabled ? 0 : 180);
+		}
+		if (createText != null){
+			createText.setColor(pbEnabled ? 
+				foreColor:Color.argb(128,64,64,64));
 		}
 	}
 

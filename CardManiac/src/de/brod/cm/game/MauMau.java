@@ -31,11 +31,15 @@ import de.brod.gui.IAction;
 import de.brod.gui.StateHandler;
 import de.brod.gui.shape.Button;
 import de.brod.xml.XmlObject;
+import android.graphics.*;
 
 public class MauMau extends Game {
 
 	private Buttons buttons;
 	private Button skipButton;
+	
+	private final Colors[] cls = { Colors.Clubs, Colors.Spades,
+		Colors.Hearts, Colors.Diamonds };
 
 	public MauMau(CardManiacView pCardManiacView) {
 		super(pCardManiacView);
@@ -75,6 +79,12 @@ public class MauMau extends Game {
 		if (isFinished()) {
 			return null;
 		}
+		final XmlObject settings = getSettings();
+		if (settings.getAttributeAsBoolean("jack")){
+			// player has to select color
+			return null;
+		}
+		
 		final Hand h0 = get(0);
 		final Hand h5 = get(5);
 		// move stack
@@ -87,7 +97,7 @@ public class MauMau extends Game {
 				}
 			};
 		}
-		final XmlObject settings = getSettings();
+	
 		final int iPlayer = settings.getAttributeAsInt("player");
 
 		if (iPlayer > 0) {
@@ -127,6 +137,14 @@ public class MauMau extends Game {
 						cPlay.moveTo(h5);
 						h5.organize();
 						check4finshed();
+						if (cPlay.getValue().equals(Card.Values.Jack)){
+							int f=(int)(Math.random()*4);
+							settings.setAttribute("force",f+1);
+							
+						} else {
+							settings.setAttribute("force",0);
+						}
+						showColorButtons(settings);
 					}
 					return cPlay;
 				}
@@ -218,19 +236,27 @@ public class MauMau extends Game {
 						}
 					}
 				});
-		Card.Colors[] cls = { Card.Colors.Clubs, Card.Colors.Spades,
-				Card.Colors.Hearts, Card.Colors.Diamonds };
 		float py = Card.getY(Card.maxCardY * 1 / 4);
+		float px = Card.getX(3.5f)-Button.width*1.5f;
 		for (int i = 0; i < cls.length; i++) {
-			buttons.add(Button.createTextButton(Card.getX(2.5f + i), py,
+			final int bt=i;
+			Button b = Button.createTextButton(px+i*Button.width, py,
 					cls[i].toString(), new IAction() {
 
 						@Override
 						public void action() {
-							// TODO Auto-generated method stub
-
+							XmlObject s=getSettings();
+							s.setAttribute("jack", false);
+							s.setAttribute("force", bt+1);
+							showColorButtons(s);
 						}
-					}));
+					});
+			if (i<2)
+				b.setTextColor(Color.BLACK);
+			else
+				b.setTextColor(Color.RED);
+			b.setEnabled(false);
+			buttons.add(b);
 		}
 
 		buttons.add(skipButton);
@@ -257,9 +283,22 @@ public class MauMau extends Game {
 		settings.setAttribute("drawCard", true);
 		settings.setAttribute("drawCardCount", 0);
 		settings.setAttribute("matchValue", false);
+		settings.setAttribute("jack", false);
+		settings.setAttribute("force", 0);
+		showColorButtons(settings);
 		h0.setText("");
 	}
 
+	private void showColorButtons(XmlObject settings){
+		int rt=settings.getAttributeAsInt("force")-1;
+		if (settings.getAttributeAsBoolean("jack")){
+			for (int i=0;i<4;i++){
+				buttons.setEnabled(i,true);
+			}
+		} else for (int i=0;i<4;i++){
+			buttons.setEnabled(i,rt==i);
+		}
+	}
 	private boolean isFinished() {
 		for (int i = 1; i <= 4; i++) {
 			if (get(i).getCardCount() == 0) {
@@ -287,18 +326,15 @@ public class MauMau extends Game {
 			return true;
 		}
 
-		// jack is the joker
-		if (cValue.equals(Values.Jack)) {
-			return true;
-		}
-
 		Card lastCard = get(5).getLastCard();
-		Values lcValue = lastCard.getValue();
-
-		// jack is the joker
-		if (cValue.equals(Values.Jack)) {
+		
+		int f=settings.getAttributeAsInt("force");
+		if (f>0){
+			if (!card.getColor().equals(cls[f-1]))
+				return false;
 			return true;
 		}
+		Values lcValue = lastCard.getValue();
 
 		if (lcValue.equals(cValue)) {
 			return true;
@@ -321,7 +357,7 @@ public class MauMau extends Game {
 	public boolean mouseUp(List<Card> pLstMoves, Hand handTo) {
 		XmlObject settings = getSettings();
 		int iPlayer = settings.getAttributeAsInt("player");
-		if (iPlayer != 0) {
+		if (iPlayer != 0 || settings.getAttributeAsBoolean("jack")) {
 			// it's not your turn
 			return false;
 		}
@@ -362,6 +398,12 @@ public class MauMau extends Game {
 		}
 		selectedCard.moveTo(handTo);
 		check4finshed();
+		if (selectedCard.getValue().equals(Card.Values.Jack)){
+			settings.setAttribute("jack",true);
+		} else {
+			settings.setAttribute("jack",false);
+		}
+		showColorButtons(settings);
 		return true;
 	}
 
@@ -408,6 +450,7 @@ public class MauMau extends Game {
 			skipButton.setEnabled(false);
 		}
 		super.prepareUpdate(stateHandler, htTitleButtons);
+		showColorButtons(settings);
 	}
 
 	private void setNextPlayer(Card playedCard, XmlObject settings) {
