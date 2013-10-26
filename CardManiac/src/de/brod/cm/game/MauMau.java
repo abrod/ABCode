@@ -403,6 +403,7 @@ public class MauMau extends Game {
 		} else {
 			settings.setAttribute("jack",false);
 		}
+		settings.setAttribute("force",0);
 		showColorButtons(settings);
 		return true;
 	}
