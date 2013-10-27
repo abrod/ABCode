@@ -89,7 +89,7 @@ public class OffizierSkat extends Game {
 	protected boolean cardRightIsHigher(Card cp0, Card cp1) {
 		if (cp0.getValue().equals(Values.Jack)) {
 			if (cp1.getValue().equals(Values.Jack)) {
-				return (cp1.getColor().getId() > cp0.getColor().getId());
+				return (cp1.getColor().getId() < cp0.getColor().getId());
 			}
 			return false;
 		}
@@ -98,10 +98,65 @@ public class OffizierSkat extends Game {
 		}
 
 		if (cp0.getColor().equals(cp1.getColor())) {
-			return (cp0.getValueId() - cp1.getValueId()) > 0;
+			return getVal(cp0) < getVal(cp1);
 		}
 		// if trump
+		int t=getSettings().getAttributeAsInt("trumpf");
+		if (t==0){
+			if (cp1.getColor().equals(Colors.Clubs)){
+				return true;
+			}
+		} else if (t==1){
+			if (cp1.getColor().equals(Colors.Spades)){
+				return true;
+			}
+		} else if (t==2){
+			if (cp1.getColor().equals(Colors.Hearts)){
+				return true;
+			}
+		} else if (t==3){
+			if (cp1.getColor().equals(Colors.Diamonds)){
+				return true;
+			}
+		}
 		return false;
+	}
+	
+	private int getVal(Card c){
+		Card.Values v=c.getValue();
+		if (v.equals(Card.Values.Ace))
+		{
+			return 11;
+		}
+		if (v.equals(Card.Values.C10))
+		{
+			return 10;
+		}
+		if (v.equals(Card.Values.King))
+		{
+			return 4;
+		}
+		if (v.equals(Card.Values.Queen))
+		{
+			return 3;
+		}
+		if (v.equals(Card.Values.Jack))
+		{
+			return 2;
+		}
+		if (v.equals(Card.Values.C9))
+		{
+			return -1;
+		}
+		if (v.equals(Card.Values.C8))
+		{
+			return -2;
+		}
+		if (v.equals(Card.Values.C7))
+		{
+			return -3;
+		}
+		return c.getValueId();
 	}
 
 	@Override
@@ -144,6 +199,8 @@ public class OffizierSkat extends Game {
 			bdx = Button.width;
 			bdy = 0;
 		}
+		get(17).setCovered(99);
+		get(18).setCovered(99);
 
 		for (int i = 0; i < cls.length; i++) {
 			final int bt = i;
@@ -152,10 +209,13 @@ public class OffizierSkat extends Game {
 
 						@Override
 						public void action() {
+							XmlObject settings = getSettings();
+							boolean pickColor = settings.getAttributeAsBoolean("pickColor");
+							if (!pickColor)
+								return;
 							for (int i = 0; i < 5; i++) {
 								buttons.setEnabled(i, i == bt);
 							}
-							XmlObject settings = getSettings();
 							settings.setAttribute("pickColor", false);
 							settings.setAttribute("trumpf", bt);
 							coverCards();
@@ -192,7 +252,7 @@ public class OffizierSkat extends Game {
 			}
 		}
 
-		coverCards();
+		// coverCards();
 	}
 
 	@Override
@@ -273,7 +333,7 @@ public class OffizierSkat extends Game {
 		card.moveTo(handTo);
 		hand.organize();
 		handTo.organize();
-		coverCards();
+		// coverCards();
 		// next players turn
 		settings.setAttribute("player", (playerCard + 1) % 2);
 		return true;
