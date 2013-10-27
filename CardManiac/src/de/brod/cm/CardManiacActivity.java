@@ -24,6 +24,7 @@ public class CardManiacActivity extends GuiActivity {
 
 	@Override
 	protected GuiRendererView<?> createGuiRendererView() {
+
 		return new CardManiacView(this);
 	}
 }

@@ -34,7 +34,7 @@ public class Hand extends CardContainer {
 	private int iCardCount;
 	private Card c0;
 	private boolean bCenter = false;
-	private float angle = 0;
+	private int covered = 0;
 	private Comparator<? super Card> cardComperator = null;
 
 	/**
@@ -67,6 +67,10 @@ public class Hand extends CardContainer {
 			}
 			if (iIndex >= 0) {
 				lstCards.add(iIndex, card);
+				for (int i = 0; i < lstCards.size() - 1; i++) {
+					// reorganize
+					lstCards.get(i).setCovered(i < covered);
+				}
 			} else {
 				lstCards.add(card);
 			}
@@ -74,7 +78,7 @@ public class Hand extends CardContainer {
 			lstCards.add(card);
 		}
 		card.hand = this;
-		card.setAngle(angle);
+		card.setCovered(lstCards.size() <= covered);
 	}
 
 	@Override
@@ -223,13 +227,6 @@ public class Hand extends CardContainer {
 		super.saveState(xmlHand);
 	}
 
-	public void setAngle(float pAngle) {
-		angle = pAngle;
-		for (Card c : lstCards) {
-			c.setAngle(angle);
-		}
-	}
-
 	public void setCenter(boolean b) {
 		bCenter = b;
 	}
@@ -250,6 +247,18 @@ public class Hand extends CardContainer {
 
 	public void setCardComperator(Comparator<? super Card> cardComperator) {
 		this.cardComperator = cardComperator;
+	}
+
+	public int getCovered() {
+		return covered;
+	}
+
+	public void setCovered(int piCovered) {
+		this.covered = piCovered;
+		for (int i = 0; i < lstCards.size(); i++) {
+			// reorganize
+			lstCards.get(i).setCovered(i < piCovered);
+		}
 	}
 
 }

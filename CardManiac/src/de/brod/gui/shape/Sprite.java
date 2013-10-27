@@ -181,11 +181,11 @@ public class Sprite extends Container {
 		setPosition(x, y);
 	}
 
-	public float getX(){
+	public float getX() {
 		return x;
 	}
 
-	public float getY(){
+	public float getY() {
 		return y;
 	}
 
@@ -344,7 +344,6 @@ public class Sprite extends Container {
 	public void setSize(float width, float height) {
 		wd = width / 2;
 		h = height / 2;
-
 		setAngle(angle);
 	}
 

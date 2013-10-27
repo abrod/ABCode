@@ -110,6 +110,7 @@ public class Card extends Sprite {
 	private static float offsetY;
 	public static float maxCardY;
 	private static float ym;
+	private boolean covered = false;
 
 	public static float getCardHeight() {
 		return cardHeight;
@@ -208,5 +209,14 @@ public class Card extends Sprite {
 	@Override
 	public String toString() {
 		return valueId + " " + value.toString() + "" + color.toString();
+	}
+
+	public boolean isCovered() {
+		return covered;
+	}
+
+	public void setCovered(boolean pbCovered) {
+		this.covered = pbCovered;
+		setAngle(pbCovered ? 180 : 0);
 	}
 }

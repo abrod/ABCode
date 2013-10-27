@@ -99,20 +99,22 @@ public class Button extends Sprite {
 		clear();
 		add(createText);
 	}
-	
-	public void setColor(int col){
-		if (createText == null){
+
+	@Override
+	public void setColor(int col) {
+		if (createText == null) {
 			super.setColor(col);
 		} else {
-			foreColor=col;
+			foreColor = col;
 			createText.setColor(col);
 		}
 	}
 
-	public void setTextColor(int col){
-		foreColor=col;
+	public void setTextColor(int col) {
+		foreColor = col;
 		setColor(col);
 	}
+
 	private static Texture texture = null, emptyTexture = null;
 	public static float width = 0;
 	public static float height = 0;
@@ -120,8 +122,8 @@ public class Button extends Sprite {
 	public static float maxWidth;
 
 	private Text createText = null;
-	private int foreColor=-1;
-	
+	private int foreColor = -1;
+
 	public static void init(AssetManager assetManager, GL10 gl, int pWidth,
 			int pHeight, float pfTitleHeight) {
 		float ratio = pWidth * 1f / pHeight;
@@ -142,7 +144,7 @@ public class Button extends Sprite {
 			while (wdEmpty < minWd) {
 				wdEmpty *= 2;
 			}
-			Bitmap bitmap = Bitmap.createBitmap(wdEmpty*2, wdEmpty,
+			Bitmap bitmap = Bitmap.createBitmap(wdEmpty * 2, wdEmpty,
 					Config.ARGB_8888);
 			drawEmptyButton(bitmap);
 			emptyTexture = new Texture(gl, bitmap, 2, 1);
@@ -165,27 +167,26 @@ public class Button extends Sprite {
 		float r = h / 10f;
 		Paint paint = new Paint();
 		RectF rect = new RectF(r, r, h - r, h - r);
-		RectF rect2 = new RectF(r+h, r, h - r+h, h - r);
-		
+		RectF rect2 = new RectF(r + h, r, h - r + h, h - r);
 
-		paint.setColor(Color.argb(64, 255,255,255));
+		paint.setColor(Color.argb(64, 255, 255, 255));
 		paint.setStyle(Style.FILL);
 		c.drawRoundRect(rect, r, r, paint);
 
-		paint.setColor(Color.argb(32, 255,255,255));
-		paint.setStyle(Style.FILL);
-		c.drawRoundRect(rect2, r, r, paint);
-		
+		// paint.setColor(Color.argb(32, 255,255,255));
+		// paint.setStyle(Style.FILL);
+		// c.drawRoundRect(rect2, r, r, paint);
+
 		paint.setColor(Color.argb(128, 0, 0, 0));
 		paint.setStyle(Style.STROKE);
 		paint.setStrokeWidth(Math.max(1, r / 2));
 		c.drawRoundRect(rect, r, r, paint);
-		
-		paint.setColor(Color.argb(64, 0, 0, 0));
+
+		paint.setColor(Color.argb(32, 0, 0, 0));
 		paint.setStyle(Style.STROKE);
 		paint.setStrokeWidth(Math.max(1, r / 2));
 		c.drawRoundRect(rect2, r, r, paint);
-		
+
 	}
 
 	private String type;
@@ -228,9 +229,9 @@ public class Button extends Sprite {
 			this.enabled = pbEnabled;
 			setAngle(pbEnabled ? 0 : 180);
 		}
-		if (createText != null){
-			createText.setColor(pbEnabled ? 
-				foreColor:Color.argb(128,64,64,64));
+		if (createText != null) {
+			createText
+					.setColor(pbEnabled ? foreColor : Color.argb(64, 0, 0, 0));
 		}
 	}
 
