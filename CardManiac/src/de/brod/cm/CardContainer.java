@@ -30,6 +30,7 @@ public abstract class CardContainer {
 	protected boolean bLandScape;
 	private Container textContainer;
 	private TextAlign _textAlign = TextAlign.BOTTOM;
+	private String _sText = "";
 
 	public CardContainer(int piId, float px1, float py1, float px2, float py2) {
 		id = piId;
@@ -69,12 +70,14 @@ public abstract class CardContainer {
 		} else {
 			settings = null;
 		}
+		setText(xmlHand.getAttribute("text"));
 	}
 
 	public abstract void organize();
 
 	public void saveState(XmlObject xmlHand) {
 		XmlObject[] objects = xmlHand.getObjects("Settings");
+		xmlHand.setAttribute("text", _sText);
 		if (objects.length == 0 && settings == null) {
 			// no settings
 		} else {
@@ -101,45 +104,47 @@ public abstract class CardContainer {
 			if (textContainer != null) {
 				textContainer.clear();
 			}
-		} else {
+		} else if (!_sText.equals(psText)) {
+			_sText = psText;
 			if (textContainer == null) {
 				initText(_textAlign);
 			} else {
 				textContainer.clear();
 			}
+			_sText = psText;
 			if (psText.length() > 0) {
 				float fTitleHeight = Card.getCardHeight() / 4;
 				Text text;
-				int ia=0;
+				int ia = 0;
 				if (_textAlign.equals(TextAlign.TOP)) {
-					text = Text.createText(psText, pos[0]+pos[2]/2, pos[1] + pos[3]
-							+ Card.getCardHeight() / 2,
-							fTitleHeight);
-					ia=2;
+					text = Text.createText(psText, pos[0] + pos[2] / 2, pos[1]
+							+ pos[3] + Card.getCardHeight() / 2, fTitleHeight);
+					ia = 2;
 				} else if (_textAlign.equals(TextAlign.LEFT)) {
-					text = Text.createText(psText, pos[0]-Card.getCardWidth()/2, pos[1] + pos[3]/2
-										   - fTitleHeight/2,
-										   fTitleHeight);
-					ia=1;
+					text = Text.createText(psText, pos[0] - Card.getCardWidth()
+							/ 2, pos[1] + pos[3] / 2 - fTitleHeight / 2,
+							fTitleHeight);
+					ia = 1;
 				} else if (_textAlign.equals(TextAlign.RIGHT)) {
-					text = Text.createText(psText, pos[0]+pos[2]+Card.getCardWidth()/2, pos[1] + pos[3]/2
-							- fTitleHeight/2,
+					text = Text.createText(psText,
+							pos[0] + pos[2] + Card.getCardWidth() / 2, pos[1]
+									+ pos[3] / 2 - fTitleHeight / 2,
 							fTitleHeight);
 				} else {
 					// bottom
-					text = Text.createText(psText, pos[0]+pos[2]/2, pos[1] + pos[3]
-							- Card.getCardHeight() / 2 - fTitleHeight,
+					text = Text.createText(psText, pos[0] + pos[2] / 2, pos[1]
+							+ pos[3] - Card.getCardHeight() / 2 - fTitleHeight,
 							fTitleHeight);
-					ia=2;
+					ia = 2;
 				}
 
-				if (ia==1){
-					text.setPosition(text.getX()-text.getTextWdith(),
-					  text.getY());
+				if (ia == 1) {
+					text.setPosition(text.getX() - text.getTextWdith(),
+							text.getY());
 				}
-				if (ia==2){
-					text.setPosition(text.getX()-text.getTextWdith()/2,
-									 text.getY());
+				if (ia == 2) {
+					text.setPosition(text.getX() - text.getTextWdith() / 2,
+							text.getY());
 				}
 				text.setMoveable(false);
 				text.setColor(Color.WHITE);

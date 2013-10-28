@@ -205,15 +205,6 @@ public class MauMau extends Game {
 		// add the stacks
 		add(new Hand(5, 4, y2, 5, y2, 16));
 
-		for (int i = 0; i < size(); i++) {
-			Hand hand = get(i);
-			if (i < 4) {
-				hand.setCovered(999);
-			} else {
-				hand.setCovered(0);
-			}
-		}
-
 		get(1).initText(TextAlign.RIGHT);
 		get(2).initText(TextAlign.BOTTOM);
 		get(3).initText(TextAlign.LEFT);
@@ -282,6 +273,15 @@ public class MauMau extends Game {
 			}
 		}
 		h0.getLastCard().moveTo(get(5));
+
+		for (int i = 0; i < size(); i++) {
+			Hand hand = get(i);
+			if (i < 4) {
+				hand.setCovered(999);
+			} else {
+				hand.setCovered(0);
+			}
+		}
 
 		XmlObject settings = getSettings();
 		settings.setAttribute("player", 0);

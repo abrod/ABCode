@@ -27,6 +27,7 @@ import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
+import de.brod.cm.TextAlign;
 import de.brod.gui.IAction;
 import de.brod.gui.StateHandler;
 import de.brod.gui.shape.Button;
@@ -101,59 +102,51 @@ public class OffizierSkat extends Game {
 			return getVal(cp0) < getVal(cp1);
 		}
 		// if trump
-		int t=getSettings().getAttributeAsInt("trumpf");
-		if (t==0){
-			if (cp1.getColor().equals(Colors.Clubs)){
+		int t = getSettings().getAttributeAsInt("trumpf");
+		if (t == 0) {
+			if (cp1.getColor().equals(Colors.Clubs)) {
 				return true;
 			}
-		} else if (t==1){
-			if (cp1.getColor().equals(Colors.Spades)){
+		} else if (t == 1) {
+			if (cp1.getColor().equals(Colors.Spades)) {
 				return true;
 			}
-		} else if (t==2){
-			if (cp1.getColor().equals(Colors.Hearts)){
+		} else if (t == 2) {
+			if (cp1.getColor().equals(Colors.Hearts)) {
 				return true;
 			}
-		} else if (t==3){
-			if (cp1.getColor().equals(Colors.Diamonds)){
+		} else if (t == 3) {
+			if (cp1.getColor().equals(Colors.Diamonds)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
-	private int getVal(Card c){
-		Card.Values v=c.getValue();
-		if (v.equals(Card.Values.Ace))
-		{
+
+	private int getVal(Card c) {
+		Card.Values v = c.getValue();
+		if (v.equals(Card.Values.Ace)) {
 			return 11;
 		}
-		if (v.equals(Card.Values.C10))
-		{
+		if (v.equals(Card.Values.C10)) {
 			return 10;
 		}
-		if (v.equals(Card.Values.King))
-		{
+		if (v.equals(Card.Values.King)) {
 			return 4;
 		}
-		if (v.equals(Card.Values.Queen))
-		{
+		if (v.equals(Card.Values.Queen)) {
 			return 3;
 		}
-		if (v.equals(Card.Values.Jack))
-		{
+		if (v.equals(Card.Values.Jack)) {
 			return 2;
 		}
-		if (v.equals(Card.Values.C9))
-		{
+		if (v.equals(Card.Values.C9)) {
 			return -1;
 		}
-		if (v.equals(Card.Values.C8))
-		{
+		if (v.equals(Card.Values.C8)) {
 			return -2;
 		}
-		if (v.equals(Card.Values.C7))
-		{
+		if (v.equals(Card.Values.C7)) {
 			return -3;
 		}
 		return c.getValueId();
@@ -189,6 +182,8 @@ public class OffizierSkat extends Game {
 			py = Card.getY(Card.maxCardY / 2) - Button.height * 2f;
 			bdx = 0;
 			bdy = Button.height;
+			get(17).initText(TextAlign.BOTTOM);
+			get(18).initText(TextAlign.TOP);
 		} else {
 			add(new Hand(iCount++, 3.5f, Card.maxCardY / 2 + 0.5f, 4,
 					Card.maxCardY / 2 + 0.5f, 2));
@@ -198,9 +193,9 @@ public class OffizierSkat extends Game {
 			py = Card.getY(Card.maxCardY / 2) + Card.getCardHeight() / 2;
 			bdx = Button.width;
 			bdy = 0;
+			get(17).initText(TextAlign.BOTTOM);
+			get(18).initText(TextAlign.BOTTOM);
 		}
-		get(17).setCovered(99);
-		get(18).setCovered(99);
 
 		for (int i = 0; i < cls.length; i++) {
 			final int bt = i;
@@ -210,9 +205,11 @@ public class OffizierSkat extends Game {
 						@Override
 						public void action() {
 							XmlObject settings = getSettings();
-							boolean pickColor = settings.getAttributeAsBoolean("pickColor");
-							if (!pickColor)
+							boolean pickColor = settings
+									.getAttributeAsBoolean("pickColor");
+							if (!pickColor) {
 								return;
+							}
 							for (int i = 0; i < 5; i++) {
 								buttons.setEnabled(i, i == bt);
 							}
@@ -267,6 +264,8 @@ public class OffizierSkat extends Game {
 		XmlObject settings = getSettings();
 		settings.setAttribute("player", 1);
 		settings.setAttribute("pickColor", true);
+		get(17).setCovered(999);
+		get(18).setCovered(999);
 		coverCards();
 	}
 
@@ -284,6 +283,20 @@ public class OffizierSkat extends Game {
 			}
 			hand.setCovered(iCovered);
 		}
+		setCount(get(17));
+		setCount(get(18));
+	}
+
+	private void setCount(Hand hand) {
+		List<Card> cards = hand.getCards();
+		int cnt = 0;
+		for (Card card : cards) {
+			int val = getVal(card);
+			if (val > 0) {
+				cnt += val;
+			}
+		}
+		hand.setText(String.valueOf(cnt));
 	}
 
 	@Override

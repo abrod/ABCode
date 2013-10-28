@@ -154,6 +154,7 @@ public class Hand extends CardContainer {
 	@Override
 	public void loadState(XmlObject xmlHand) {
 		covered = xmlHand.getAttributeAsInt("covered");
+		System.out.println("load " + xmlHand);
 		StringTokenizer st = new StringTokenizer(xmlHand.getAttribute("cards"),
 				" ");
 		while (st.hasMoreTokens()) {
