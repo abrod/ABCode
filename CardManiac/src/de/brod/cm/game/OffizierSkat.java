@@ -84,7 +84,82 @@ public class OffizierSkat extends Game {
 			};
 		}
 		// TODO Auto-generated method stub
+		final XmlObject settings = getSettings();
+		int player = settings.getAttributeAsInt("player");
+		if (player == 0) {
+			int cnt=0;
+			for (int i=0;i<8;i++){
+				cnt+=get(i).getCardCount();
+			}
+			if (cnt>0)
+			return new IAction() {
+
+				@Override
+				public void action() {
+					boolean[] b=new boolean[8];
+					Card cbest=null;
+					if (get(16).getCardCount() == 0) {
+						// play first
+						int mx=-99;
+						for (int i=0;i<8;i++){
+							Card c=get(i).getLastCard();
+							if (c != null)
+							{
+								int cv=getVal(c);
+								int max=cv;
+								checkPlayableCards(b,c,8);
+								for (int j=0;j < 8;j++)
+								{
+									Card co=get(j+8).getLastCard();
+									if (co!=null && b[j]){
+										if (cardRightIsHigher(c,co)){
+											// points are lost
+											max=-cv;
+											break;
+										}
+									}
+								}
+								if (max>mx){
+									mx=max;
+									cbest=c;
+								}
+							}
+						}
+					} else {
+						
+					}
+					
+					if (cbest!=null){
+						cbest.moveTo(get(16));
+					}
+				}
+			};
+		}
 		return null;
+	}
+	
+	private void checkPlayableCards(boolean[] b, Card c, int a)
+	{
+		boolean matchColor=false;
+		for (int j=0;j < 8;j++)
+		{
+			b[j]=false;
+			Card co=get(j+a).getLastCard();
+			if (co!=null){
+				if (co.getColor().equals(c.getColor())){
+					matchColor=true;
+					b[j] = true;
+				}
+			}
+		}
+		if (!matchColor){
+			for (int j=0;j < 8;j++){
+				Card co=get(j+a).getLastCard();
+				if (co!=null){
+					b[j] = true;
+				}
+			}
+		}
 	}
 
 	protected boolean cardRightIsHigher(Card cp0, Card cp1) {
@@ -102,6 +177,14 @@ public class OffizierSkat extends Game {
 			return getVal(cp0) < getVal(cp1);
 		}
 		// if trump
+		if (isTrump(cp1)){
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isTrump(Card cp1)
+	{
 		int t = getSettings().getAttributeAsInt("trumpf");
 		if (t == 0) {
 			if (cp1.getColor().equals(Colors.Clubs)) {

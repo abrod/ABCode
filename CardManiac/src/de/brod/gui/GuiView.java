@@ -136,13 +136,17 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			}
 			return true;
 		}
+		// reset the slides
+		for (Container spritec : lstSprites) {
+			spritec.savePosition();
+		}
 		for (int i = lstTitleItems.size() - 1; i >= 0; i--) {
 			Container sprite = lstTitleItems.get(i);
 			if (sprite.touches(eventX, eventY)) {
 				if (sprite instanceof Button) {
 					System.out.println("Button " + sprite + " pressed");
 					pressedButton = (Button) sprite;
-					pressedButton.pressed();
+					pressedButton.pressed();			
 					return true;
 				} else if (sprite instanceof Text) {
 					System.out.println("Text " + sprite + " pressed");
@@ -150,10 +154,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 				}
 			}
 		}
-		// reset the slides
-		for (Container spritec : lstSprites) {
-			spritec.savePosition();
-		}
+		
 		for (int i = lstSprites.size() - 1; i >= 0; i--) {
 			Container sprite = lstSprites.get(i);
 			if (sprite.isVisible() && sprite.touches(eventX, eventY)) {
@@ -192,6 +193,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 					Button button = (Button) sprite;
 					System.out.println("Button " + button + " pressed");
 					button.pressed();
+					resetSlidePositions();
+					update(true);
 					return true;
 				}
 			}
