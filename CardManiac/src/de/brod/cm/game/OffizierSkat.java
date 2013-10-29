@@ -17,6 +17,7 @@
  */
 package de.brod.cm.game;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class OffizierSkat extends Game {
 			Colors.Spades.toString(), Colors.Hearts.toString(),
 			Colors.Diamonds.toString(), "J" };
 	private Buttons buttons;
+	private List<Card> lstPlayable = new ArrayList<Card>();
 
 	public OffizierSkat(CardManiacView pCardManiacView) {
 		super(pCardManiacView);
@@ -83,83 +85,110 @@ public class OffizierSkat extends Game {
 				}
 			};
 		}
-		// TODO Auto-generated method stub
 		final XmlObject settings = getSettings();
-		int player = settings.getAttributeAsInt("player");
+		final int player = settings.getAttributeAsInt("player");
 		if (player == 0) {
-			int cnt=0;
-			for (int i=0;i<8;i++){
-				cnt+=get(i).getCardCount();
+			int cnt = 0;
+			for (int i = 0; i < 8; i++) {
+				cnt += get(i).getCardCount();
 			}
-			if (cnt>0)
-			return new IAction() {
+			if (cnt > 0) {
+				return new IAction() {
 
-				@Override
-				public void action() {
-					boolean[] b=new boolean[8];
-					Card cbest=null;
-					if (get(16).getCardCount() == 0) {
-						// play first
-						int mx=-99;
-						for (int i=0;i<8;i++){
-							Card c=get(i).getLastCard();
-							if (c != null)
-							{
-								int cv=getVal(c);
-								int max=cv;
-								checkPlayableCards(b,c,8);
-								for (int j=0;j < 8;j++)
-								{
-									Card co=get(j+8).getLastCard();
-									if (co!=null && b[j]){
-										if (cardRightIsHigher(c,co)){
+					/*
+					 * (non-Javadoc)
+					 *
+					 * @see de.brod.gui.IAction#action()
+					 */
+					@Override
+					public void action() {
+						Card cbest = null;
+						int mx = -99;
+						Hand handStack = get(16);
+						Card cStack = handStack.getLastCard();
+						if (cStack == null) {
+							// play first
+							for (int i = 0; i < 8; i++) {
+								Card c = get(i).getLastCard();
+								if (c != null) {
+									int cv = Math.max(getVal(c), 0);
+									int max = cv;
+									for (Card co : checkPlayableCards(c, 8)) {
+										if (cardRightIsHigher(c, co)) {
 											// points are lost
-											max=-cv;
+											max = -cv;
 											break;
 										}
 									}
+									if (max > mx) {
+										mx = max;
+										cbest = c;
+									}
 								}
-								if (max>mx){
-									mx=max;
-									cbest=c;
+							}
+						} else {
+							for (Card co : checkPlayableCards(cStack, 0)) {
+								int cv = Math.max(getVal(co), 0);
+								if (cardRightIsHigher(co, cStack)) {
+									// points are lost
+									cv = -cv;
+								}
+								if (cv > mx) {
+									mx = cv;
+									cbest = co;
 								}
 							}
 						}
-					} else {
-						
+
+						if (cbest != null) {
+							cbest.moveTo(handStack);
+							cbest.getHand().organize();
+							handStack.organize();
+						}
+						XmlObject settings = getSettings();
+						int player = settings.getAttributeAsInt("player");
+						// set to next player
+						settings.setAttribute("player", (player + 1) % 2);
 					}
-					
-					if (cbest!=null){
-						cbest.moveTo(get(16));
-					}
-				}
-			};
+				};
+			}
 		}
 		return null;
 	}
-	
-	private void checkPlayableCards(boolean[] b, Card c, int a)
-	{
-		boolean matchColor=false;
-		for (int j=0;j < 8;j++)
-		{
-			b[j]=false;
-			Card co=get(j+a).getLastCard();
-			if (co!=null){
-				if (co.getColor().equals(c.getColor())){
-					matchColor=true;
-					b[j] = true;
+
+	private List<Card> checkPlayableCards(Card c, int a) {
+		lstPlayable.clear();
+		if (isTrump(c)) {
+			// you have to play also a trump
+			for (int j = 0; j < 8; j++) {
+				Card co = get(j + a).getLastCard();
+				if (co != null) {
+					if (isTrump(co)) {
+						lstPlayable.add(co);
+					}
+				}
+			}
+		} else {
+			// / otherwise you have to play a color
+			for (int j = 0; j < 8; j++) {
+				Card co = get(j + a).getLastCard();
+				if (co != null && !co.getValue().equals(Values.Jack)) {
+					if (co.getColor().equals(c.getColor())) {
+						lstPlayable.add(co);
+					}
 				}
 			}
 		}
-		if (!matchColor){
-			for (int j=0;j < 8;j++){
-				Card co=get(j+a).getLastCard();
-				if (co!=null){
-					b[j] = true;
+		// may play any card
+		if (lstPlayable.size() == 0) {
+			for (int j = 0; j < 8; j++) {
+				Card co = get(j + a).getLastCard();
+				if (co != null) {
+					lstPlayable.add(co);
 				}
 			}
 		}
+		return lstPlayable;
 	}
 
 	protected boolean cardRightIsHigher(Card cp0, Card cp1) {
@@ -177,14 +206,18 @@ public class OffizierSkat extends Game {
 			return getVal(cp0) < getVal(cp1);
 		}
 		// if trump
-		if (isTrump(cp1)){
+		if (isTrump(cp1)) {
 			return true;
 		}
+		// color does not match
 		return false;
 	}
 
-	private boolean isTrump(Card cp1)
-	{
+	private boolean isTrump(Card cp1) {
+		// jack is always trump
+		if (cp1.getValue().equals(Values.Jack)) {
+			return true;
+		}
 		int t = getSettings().getAttributeAsInt("trumpf");
 		if (t == 0) {
 			if (cp1.getColor().equals(Colors.Clubs)) {
@@ -366,11 +399,11 @@ public class OffizierSkat extends Game {
 			}
 			hand.setCovered(iCovered);
 		}
-		setCount(get(17));
-		setCount(get(18));
+		setCounter(get(17));
+		setCounter(get(18));
 	}
 
-	private void setCount(Hand hand) {
+	private void setCounter(Hand hand) {
 		List<Card> cards = hand.getCards();
 		int cnt = 0;
 		for (Card card : cards) {
