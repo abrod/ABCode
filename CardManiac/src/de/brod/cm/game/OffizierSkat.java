@@ -88,6 +88,46 @@ public class OffizierSkat extends Game {
 		final XmlObject settings = getSettings();
 		final int player = settings.getAttributeAsInt("player");
 		if (player == 0) {
+			if (settings.getAttributeAsBoolean("pickColor")) {
+				return new IAction() {
+
+					@Override
+					public void action() {
+						settings.setAttribute("pickColor", false);
+						// try all 5 buttons
+						int max = -999;
+						int bt = 0;
+						for (int i = 0; i < 5; i++) {
+							settings.setAttribute("trumpf", i);
+							int cnt = 0;
+							for (int j = 4; j < 8; j++) {
+								Card c = get(j).getLastCard();
+								if (isTrump(c)) {
+									cnt += getVal(c, 1) + 20;
+									if (i == 4) {
+										cnt += 10;
+									}
+								} else if (i == 4 && cnt > 10) {
+									if (c.getValue().equals(Values.Ace)) {
+										cnt += getVal(c, 1) + 20;
+									}
+								}
+							}
+							if (cnt > max) {
+								max = cnt;
+								bt = i;
+							}
+						}
+						settings.setAttribute("trumpf", bt);
+						for (int i = 0; i < 5; i++) {
+							buttons.setEnabled(i, i == bt);
+						}
+						settings.setAttribute("pickColor", false);
+						coverCards();
+
+					}
+				};
+			}
 			int cnt = 0;
 			for (int i = 0; i < 8; i++) {
 				cnt += get(i).getCardCount();
@@ -95,43 +135,43 @@ public class OffizierSkat extends Game {
 			if (cnt > 0) {
 				return new IAction() {
 
-					/*
-					 * (non-Javadoc)
-					 *
-					 * @see de.brod.gui.IAction#action()
-					 */
 					@Override
 					public void action() {
 						Card cbest = null;
 						int mx = -99;
 						Hand handStack = get(16);
 						Card cStack = handStack.getLastCard();
+						boolean bJacks = settings.getAttributeAsInt("trumpf") == 4;
 						if (cStack == null) {
 							// play first
 							for (int i = 0; i < 8; i++) {
 								Card c = get(i).getLastCard();
 								if (c != null) {
-									int cv = Math.max(getVal(c), 0);
-									int max = cv;
+									int cv = getVal(c, 0);
 									for (Card co : checkPlayableCards(c, 8)) {
 										if (cardRightIsHigher(c, co)) {
 											// points are lost
-											max = -cv;
+											cv = -Math.abs(cv);
 											break;
 										}
 									}
-									if (max > mx) {
-										mx = max;
+									// don't waste jacks
+									if (bJacks && cv == 2) {
+										cv = -2;
+									}
+									if (cv > mx) {
+										mx = cv;
 										cbest = c;
 									}
 								}
 							}
 						} else {
+							// react to card
 							for (Card co : checkPlayableCards(cStack, 0)) {
-								int cv = Math.max(getVal(co), 0);
+								int cv = getVal(co, 0);
 								if (cardRightIsHigher(co, cStack)) {
 									// points are lost
-									cv = -cv;
+									cv = -Math.abs(cv);
 								}
 								if (cv > mx) {
 									mx = cv;
@@ -203,7 +243,7 @@ public class OffizierSkat extends Game {
 		}
 
 		if (cp0.getColor().equals(cp1.getColor())) {
-			return getVal(cp0) < getVal(cp1);
+			return getVal(cp0, 1) < getVal(cp1, 1);
 		}
 		// if trump
 		if (isTrump(cp1)) {
@@ -239,7 +279,7 @@ public class OffizierSkat extends Game {
 		return false;
 	}
 
-	private int getVal(Card c) {
+	private int getVal(Card c, int iNullValue) {
 		Card.Values v = c.getValue();
 		if (v.equals(Card.Values.Ace)) {
 			return 11;
@@ -257,13 +297,13 @@ public class OffizierSkat extends Game {
 			return 2;
 		}
 		if (v.equals(Card.Values.C9)) {
-			return -1;
+			return -1 * iNullValue;
 		}
 		if (v.equals(Card.Values.C8)) {
-			return -2;
+			return -2 * iNullValue;
 		}
 		if (v.equals(Card.Values.C7)) {
-			return -3;
+			return -3 * iNullValue;
 		}
 		return c.getValueId();
 	}
@@ -364,7 +404,8 @@ public class OffizierSkat extends Game {
 				buttons.setEnabled(i, i == trumpf);
 			}
 		}
-
+		setCounter(get(17));
+		setCounter(get(18));
 		// coverCards();
 	}
 
@@ -378,7 +419,9 @@ public class OffizierSkat extends Game {
 			buttons.setEnabled(i, true);
 		}
 		XmlObject settings = getSettings();
-		settings.setAttribute("player", 1);
+		int iLastPlayer = (getSettingAsInt("lastPlayer") + 1) % 2;
+		setSettings("lastPlayer", iLastPlayer);
+		settings.setAttribute("player", iLastPlayer);
 		settings.setAttribute("pickColor", true);
 		get(17).setCovered(999);
 		get(18).setCovered(999);
@@ -407,10 +450,7 @@ public class OffizierSkat extends Game {
 		List<Card> cards = hand.getCards();
 		int cnt = 0;
 		for (Card card : cards) {
-			int val = getVal(card);
-			if (val > 0) {
-				cnt += val;
-			}
+			cnt += getVal(card, 0);
 		}
 		hand.setText(String.valueOf(cnt));
 	}
@@ -418,7 +458,13 @@ public class OffizierSkat extends Game {
 	@Override
 	public void mouseDown(List<Card> plstMoves) {
 		if (plstMoves.size() > 0) {
-			Hand hand = plstMoves.get(0).getHand();
+			Card card = plstMoves.get(0);
+			Hand hand = card.getHand();
+			// only top card selectable
+			if (!hand.getLastCard().equals(card)) {
+				plstMoves.clear();
+				return;
+			}
 
 			int playerCard = (hand.getId() - get(0).getId()) / 8;
 			int current = getSettings().getAttributeAsInt("player");
