@@ -168,11 +168,12 @@ public class OffizierSkat extends Game {
 						} else {
 							// react to card
 							for (Card co : checkPlayableCards(cStack, 0)) {
-								int cv = getVal(co, 0);
-								if (cardRightIsHigher(co, cStack)) {
+								int cv = getVal(co, 1)+5;
+								if (!cardRightIsHigher(cStack,co)) {
 									// points are lost
 									cv = -Math.abs(cv);
 								}
+								System.out.println(co.toString()+" "+cv);
 								if (cv > mx) {
 									mx = cv;
 									cbest = co;
