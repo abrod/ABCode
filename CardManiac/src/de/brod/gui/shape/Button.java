@@ -59,6 +59,13 @@ public class Button extends Sprite {
 			return button;
 		}
 
+		public Button createButton(float px, float py, float pfHeight,IAction action) {
+			Button button = new Button(this.toString(), pfHeight, action);
+			button.setCell(x, y, x + 6, y);
+			button.setPosition(px, py);
+			return button;
+		}
+		
 		public Button createButton(int i, int piCount, boolean bTop,
 				Align align, IAction action) {
 			float px;
@@ -80,10 +87,11 @@ public class Button extends Sprite {
 		}
 	}
 
-	public static Button createTextButton(float px, float py, String psText,
+	public static Button createTextButton(float px, float py, float pfHeight, String psText,
 			IAction action) {
-
-		Button button = new Button(emptyTexture, width, height, psText, action);
+		if (pfHeight==0) pfHeight=1;
+		       else pfHeight=height/pfHeight;
+		Button button = new Button(emptyTexture, width/pfHeight, height/pfHeight, psText, action);
 		button.setCell(0, 0, 1, 0);
 		button.setPosition(px, py);
 		button.setText(psText);
@@ -93,9 +101,10 @@ public class Button extends Sprite {
 	public void setText(String psText) {
 		float px = getX();
 		float py = getY();
-		createText = Text.createText(psText, px, py, height);
+		float h = getHeight();
+		createText = Text.createText(psText, px, py, h);
 		createText.setPosition(px - createText.getTextWdith() / 2,
-				createText.getY() - height / 2);
+				createText.getY() - h / 2);
 		clear();
 		add(createText);
 	}
@@ -197,6 +206,10 @@ public class Button extends Sprite {
 		this(texture, width, height, psType, action);
 	}
 
+	private Button(String psType, float pfHeight,IAction action) {
+		this(texture, pfHeight* width/height, pfHeight, psType, action);
+	}
+	
 	public Button(Texture pTexture, float piWidth, float piHeight,
 			String psType, IAction action) {
 		super(pTexture, piWidth, piHeight);

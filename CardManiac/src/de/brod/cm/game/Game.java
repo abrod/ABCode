@@ -30,12 +30,13 @@ import de.brod.gui.IAction;
 import de.brod.gui.StateHandler;
 import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Button.Type;
+import android.graphics.*;
 
 public abstract class Game {
 
 	protected CardManiacView cardManiacView;
 
-	private ArrayList<Hand> hands = new ArrayList<Hand>();
+	protected ArrayList<Hand> hands = new ArrayList<Hand>();
 
 	private ArrayList<CardContainer> cardContainer = new ArrayList<CardContainer>();
 
@@ -185,4 +186,20 @@ public abstract class Game {
 	public void setSettings(String psName, int piValue) {
 		cardManiacView.setGlobalSettings(psName, "" + piValue);
 	}
+	
+
+	protected void setColor(Card cl, boolean pOK)
+	{
+		if (cl==null)
+			return;
+		int a=220;
+		int b=128;
+		int c=96;
+		if(!pOK)
+			cl.setColor(Color.argb(255, a, b, c));
+		else 
+			cl.setColor(Color.argb(255, c, a, b));
+
+	}
+	
 }

@@ -346,6 +346,14 @@ public class Sprite extends Container {
 		h = height / 2;
 		setAngle(angle);
 	}
+	
+	public float getHeight(){
+		return h*2;
+	}
+	
+	public float getWidth(){
+		return wd*2;
+	}
 
 	protected void setTextureBuffer(int x1, int y1, int x2, int y2) {
 		if (tex == null) {

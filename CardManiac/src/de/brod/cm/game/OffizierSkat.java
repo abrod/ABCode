@@ -341,7 +341,7 @@ public class OffizierSkat extends Game {
 			px = Card.getX(-1.5f);
 			py = Card.getY(Card.maxCardY / 2) - Button.height * 2f;
 			bdx = 0;
-			bdy = Button.height;
+			bdy = Card.getCardWidth();
 			get(17).initText(TextAlign.BOTTOM);
 			get(18).initText(TextAlign.TOP);
 		} else {
@@ -349,10 +349,10 @@ public class OffizierSkat extends Game {
 					Card.maxCardY / 2 + 0.5f, 2));
 			add(new Hand(iCount++, 6, 0.5f, 7, 0.5f, 16));
 			add(new Hand(iCount++, 6, dy[2] + 0.5f, 7, dy[2] + 0.5f, 16));
-			px = Card.getX(3.5f) - Button.width * 2f;
-			py = Card.getY(Card.maxCardY / 2) + Card.getCardHeight() / 2;
-			bdx = Button.width;
+			bdx = Card.getCardWidth();
 			bdy = 0;
+			px = Card.getX(3.5f) - bdx * 2f;
+			py = Card.getY(Card.maxCardY / 2) + Card.getCardHeight() / 2;
 			get(17).initText(TextAlign.BOTTOM);
 			get(18).initText(TextAlign.BOTTOM);
 		}
@@ -360,6 +360,7 @@ public class OffizierSkat extends Game {
 		for (int i = 0; i < cls.length; i++) {
 			final int bt = i;
 			Button b = Button.createTextButton(px + i * bdx, py + i * bdy,
+					bdy+bdx,
 					cls[i], new IAction() {
 
 						@Override
@@ -462,6 +463,12 @@ public class OffizierSkat extends Game {
 	@Override
 	public void mouseDown(List<Card> plstMoves) {
 		if (plstMoves.size() > 0) {
+			for (int i=8;i<16;i++){
+				for (Card c:get(i).getCards()){
+					c.setColor(Color.WHITE);
+				}
+			}
+			
 			Card card = plstMoves.get(0);
 			Hand hand = card.getHand();
 			// only top card selectable
@@ -476,9 +483,16 @@ public class OffizierSkat extends Game {
 				plstMoves.clear();
 				return;
 			}
+
 			Card c=get(16).getLastCard();
 			if (c!=null){
-				if (!checkPlayableCards(c,8).contains(card)){
+				List<Card> l=checkPlayableCards(c, 8);
+				if (!l.contains(card))
+				{
+					for (int i=8;i<16;i++){
+						Card cl=get(i).getLastCard();
+						setColor(cl,l.contains(cl));
+					}
 					plstMoves.clear();
 					return;
 				}

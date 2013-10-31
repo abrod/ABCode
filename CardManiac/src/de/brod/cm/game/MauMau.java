@@ -219,7 +219,8 @@ public class MauMau extends Game {
 		// add a ButtonContainer
 		buttons = new Buttons(99);
 		skipButton = Button.Type.no.createButton(0,
-				Card.getY(Card.maxCardY * 3 / 4), new IAction() {
+				Card.getY(Card.maxCardY * 3 / 4), 
+				Card.getCardWidth(),new IAction() {
 
 					@Override
 					public void action() {
@@ -228,14 +229,17 @@ public class MauMau extends Game {
 						if (iPlayer == 0
 								&& !settings.getAttributeAsBoolean("drawCard")) {
 							setNextPlayer(null, settings);
+							resetColors();
 						}
 					}
 				});
 		float py = Card.getY(Card.maxCardY * 1 / 4);
-		float px = Card.getX(3.5f) - Button.width * 1.5f;
+		float bwd=Card.getCardWidth();
+		float px = Card.getX(3.5f) - bwd * 1.5f;
 		for (int i = 0; i < cls.length; i++) {
 			final int bt = i;
-			Button b = Button.createTextButton(px + i * Button.width, py,
+			Button b = Button.createTextButton(px + i * bwd, py,
+					bwd,
 					cls[i].toString(), new IAction() {
 
 						@Override
@@ -259,7 +263,7 @@ public class MauMau extends Game {
 
 		add(buttons);
 		// init the text
-		get(0).setText("");
+		get(0).setText(" ");
 
 	}
 
@@ -357,8 +361,48 @@ public class MauMau extends Game {
 
 	@Override
 	public void mouseDown(List<Card> plstMoves) {
-		if (isFinished()) {
+		if (isFinished() || plstMoves.size()==0) {
 			plstMoves.clear();
+			return;
+		}
+		resetColors();
+		XmlObject settings = getSettings();
+		int iPlayer = settings.getAttributeAsInt("player");
+		if (iPlayer != 0 || settings.getAttributeAsBoolean("jack")) {
+			// it's not your turn
+			plstMoves.clear();
+			return;
+		}
+		
+		Card cl=plstMoves.get(0);
+		int hid=cl.getHand().getId();
+		if (hid==0){
+			// ok
+			if (!settings.getAttributeAsBoolean("drawCard")){
+				help();
+				plstMoves.clear();
+				return;
+			}
+		} else if (hid==4) {
+			if (!matchesStack(cl, settings)) {
+				help();
+				plstMoves.clear();
+				return;
+			}
+		} else {
+			plstMoves.clear();
+			return;
+		}
+	}
+	
+	public void help(){
+		XmlObject settings = getSettings();
+		for (Card c:get(4).getCards()){
+			setColor(c,matchesStack(c, settings));
+		}
+		boolean b=settings.getAttributeAsBoolean("drawCard");
+		for (Card c:get(0).getCards()){
+			setColor(c,b);
 		}
 	}
 
@@ -406,6 +450,8 @@ public class MauMau extends Game {
 			return false;
 		}
 		selectedCard.moveTo(handTo);
+		// reset colors
+		resetColors();
 		check4finshed();
 		if (selectedCard.getValue().equals(Card.Values.Jack)) {
 			settings.setAttribute("jack", true);
@@ -415,6 +461,11 @@ public class MauMau extends Game {
 		settings.setAttribute("force", 0);
 		showColorButtons(settings);
 		return true;
+	}
+	private void resetColors(){
+		for (Hand h:hands)
+			for (Card c:h.getCards())
+				c.setColor(Color.WHITE);
 	}
 
 	private void check4finshed() {
