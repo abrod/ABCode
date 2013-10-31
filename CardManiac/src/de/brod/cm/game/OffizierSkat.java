@@ -474,6 +474,14 @@ public class OffizierSkat extends Game {
 			int current = getSettings().getAttributeAsInt("player");
 			if (playerCard != current) {
 				plstMoves.clear();
+				return;
+			}
+			Card c=get(16).getLastCard();
+			if (c!=null){
+				if (!checkPlayableCards(c,8).contains(card)){
+					plstMoves.clear();
+					return;
+				}
 			}
 		}
 	}
