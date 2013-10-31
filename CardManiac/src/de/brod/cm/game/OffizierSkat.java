@@ -148,16 +148,20 @@ public class OffizierSkat extends Game {
 								Card c = get(i).getLastCard();
 								if (c != null) {
 									int cv = getVal(c, 0);
+									int iLowestValue = 20;
 									for (Card co : checkPlayableCards(c, 8)) {
 										if (cardRightIsHigher(c, co)) {
 											// points are lost
 											cv = -Math.abs(cv);
-											break;
+										} else {
+											iLowestValue = Math
+													.min(iLowestValue,
+															getVal(co, 0));
 										}
 									}
 									// don't waste jacks
-									if (bJacks && cv == 2) {
-										cv = -2;
+									if (cv == 2 && iLowestValue == 0) {
+										cv = -5;
 									}
 									if (cv > mx) {
 										mx = cv;
@@ -168,12 +172,11 @@ public class OffizierSkat extends Game {
 						} else {
 							// react to card
 							for (Card co : checkPlayableCards(cStack, 0)) {
-								int cv = getVal(co, 1)+5;
-								if (!cardRightIsHigher(cStack,co)) {
+								int cv = getVal(co, 1) + 5;
+								if (!cardRightIsHigher(cStack, co)) {
 									// points are lost
 									cv = -Math.abs(cv);
 								}
-								System.out.println(co.toString()+" "+cv);
 								if (cv > mx) {
 									mx = cv;
 									cbest = co;
