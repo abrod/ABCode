@@ -296,4 +296,18 @@ public class FreeCell extends Game {
 		return super.mouseUp(pLstMoves, handTo);
 	}
 
+	@Override
+	public boolean isFinished() {
+		for (int i = 0; i < 16; i++) {
+			if (i % 2 == 0 && i >= 8) {
+				// ignore
+			} else {
+				if (get(i).getCardCount() > 0) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 }

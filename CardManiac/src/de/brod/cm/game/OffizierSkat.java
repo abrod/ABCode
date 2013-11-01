@@ -137,52 +137,8 @@ public class OffizierSkat extends Game {
 
 					@Override
 					public void action() {
-						Card cbest = null;
-						int mx = -99;
+						Card cbest = getBestMove(0);
 						Hand handStack = get(16);
-						Card cStack = handStack.getLastCard();
-						boolean bJacks = settings.getAttributeAsInt("trumpf") == 4;
-						if (cStack == null) {
-							// play first
-							for (int i = 0; i < 8; i++) {
-								Card c = get(i).getLastCard();
-								if (c != null) {
-									int cv = getVal(c, 0);
-									int iLowestValue = 20;
-									for (Card co : checkPlayableCards(c, 8)) {
-										if (cardRightIsHigher(c, co)) {
-											// points are lost
-											cv = -Math.abs(cv);
-										} else {
-											iLowestValue = Math
-													.min(iLowestValue,
-															getVal(co, 0));
-										}
-									}
-									// don't waste jacks
-									if (cv == 2 && iLowestValue == 0) {
-										cv = -5;
-									}
-									if (cv > mx) {
-										mx = cv;
-										cbest = c;
-									}
-								}
-							}
-						} else {
-							// react to card
-							for (Card co : checkPlayableCards(cStack, 0)) {
-								int cv = getVal(co, 1) + 5;
-								if (!cardRightIsHigher(cStack, co)) {
-									// points are lost
-									cv = -Math.abs(cv);
-								}
-								if (cv > mx) {
-									mx = cv;
-									cbest = co;
-								}
-							}
-						}
 
 						if (cbest != null) {
 							cbest.moveTo(handStack);
@@ -198,6 +154,54 @@ public class OffizierSkat extends Game {
 			}
 		}
 		return null;
+	}
+
+	protected Card getBestMove(int iOffset) {
+		Hand handStack = get(16);
+		int mx = -99;
+		Card cStack = handStack.getLastCard();
+		Card cbest = null;
+		if (cStack == null) {
+			// play first
+			for (int i = 0; i < 8; i++) {
+				Card c = get(i + iOffset).getLastCard();
+				if (c != null) {
+					int cv = getVal(c, 0);
+					int iLowestValue = 20;
+					for (Card co : checkPlayableCards(c, 8 - iOffset)) {
+						if (cardRightIsHigher(c, co)) {
+							// points are lost
+							cv = -Math.abs(cv);
+						} else {
+							iLowestValue = Math
+									.min(iLowestValue, getVal(co, 0));
+						}
+					}
+					// don't waste jacks
+					if (cv == 2 && iLowestValue == 0) {
+						cv = -5;
+					}
+					if (cv > mx) {
+						mx = cv;
+						cbest = c;
+					}
+				}
+			}
+		} else {
+			// react to card
+			for (Card co : checkPlayableCards(cStack, iOffset)) {
+				int cv = getVal(co, 1) + 5;
+				if (!cardRightIsHigher(cStack, co)) {
+					// points are lost
+					cv = -Math.abs(cv);
+				}
+				if (cv > mx) {
+					mx = cv;
+					cbest = co;
+				}
+			}
+		}
+		return cbest;
 	}
 
 	private List<Card> checkPlayableCards(Card c, int a) {
@@ -359,26 +363,25 @@ public class OffizierSkat extends Game {
 
 		for (int i = 0; i < cls.length; i++) {
 			final int bt = i;
-			Button b = Button.createTextButton(px + i * bdx, py + i * bdy,
-					bdy+bdx,
-					cls[i], new IAction() {
+			Button b = Button.createTextButton(px + i * bdx, py + i * bdy, bdy
+					+ bdx, cls[i], new IAction() {
 
-						@Override
-						public void action() {
-							XmlObject settings = getSettings();
-							boolean pickColor = settings
-									.getAttributeAsBoolean("pickColor");
-							if (!pickColor) {
-								return;
-							}
-							for (int i = 0; i < 5; i++) {
-								buttons.setEnabled(i, i == bt);
-							}
-							settings.setAttribute("pickColor", false);
-							settings.setAttribute("trumpf", bt);
-							coverCards();
-						}
-					});
+				@Override
+				public void action() {
+					XmlObject settings = getSettings();
+					boolean pickColor = settings
+							.getAttributeAsBoolean("pickColor");
+					if (!pickColor) {
+						return;
+					}
+					for (int i = 0; i < 5; i++) {
+						buttons.setEnabled(i, i == bt);
+					}
+					settings.setAttribute("pickColor", false);
+					settings.setAttribute("trumpf", bt);
+					coverCards();
+				}
+			});
 			if (i < 2) {
 				b.setTextColor(Color.BLACK);
 			} else if (i < 4) {
@@ -463,12 +466,7 @@ public class OffizierSkat extends Game {
 	@Override
 	public void mouseDown(List<Card> plstMoves) {
 		if (plstMoves.size() > 0) {
-			for (int i=8;i<16;i++){
-				for (Card c:get(i).getCards()){
-					c.setColor(Color.WHITE);
-				}
-			}
-			
+
 			Card card = plstMoves.get(0);
 			Hand hand = card.getHand();
 			// only top card selectable
@@ -484,20 +482,34 @@ public class OffizierSkat extends Game {
 				return;
 			}
 
-			Card c=get(16).getLastCard();
-			if (c!=null){
-				List<Card> l=checkPlayableCards(c, 8);
-				if (!l.contains(card))
-				{
-					for (int i=8;i<16;i++){
-						Card cl=get(i).getLastCard();
-						setColor(cl,l.contains(cl));
-					}
+			Card c = get(16).getLastCard();
+			if (c != null) {
+				List<Card> l = checkPlayableCards(c, 8);
+				if (!l.contains(card)) {
+					help();
 					plstMoves.clear();
 					return;
 				}
 			}
 		}
+	}
+
+	@Override
+	protected void help() {
+		Card c = get(16).getLastCard();
+		if (c != null) {
+			List<Card> l = checkPlayableCards(c, 8);
+			for (int i = 8; i < 16; i++) {
+				Card cl = get(i).getLastCard();
+				setColor(cl, l.contains(cl));
+			}
+		} else {
+			Card cbest = getBestMove(8);
+			if (cbest != null) {
+				setColor(cbest, true);
+			}
+		}
+		super.help();
 	}
 
 	@Override
@@ -537,6 +549,16 @@ public class OffizierSkat extends Game {
 		// coverCards();
 		// next players turn
 		settings.setAttribute("player", (playerCard + 1) % 2);
+		return true;
+	}
+
+	@Override
+	public boolean isFinished() {
+		for (int i = 0; i < 16; i++) {
+			if (get(i).getCardCount() > 0) {
+				return false;
+			}
+		}
 		return true;
 	}
 }

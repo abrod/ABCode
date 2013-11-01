@@ -89,6 +89,9 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected IAction getNextAction() {
+		if (game.isFinished()) {
+			return null;
+		}
 		return game.getNextAction();
 	}
 
@@ -176,11 +179,19 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected void mouseDown(List<Card> plstMoves) {
+		if (game.isFinished()) {
+			plstMoves.clear();
+			return;
+		}
+		game.clearHelp();
 		game.mouseDown(plstMoves);
 	}
 
 	@Override
 	protected boolean mouseUp(List<Card> pLstMoves, Card cardTo) {
+		if (game.isFinished()) {
+			return false;
+		}
 		boolean bChanged = false;
 		if (pLstMoves.size() > 0) {
 			if (cardTo != null) {

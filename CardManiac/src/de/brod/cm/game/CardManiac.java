@@ -139,4 +139,10 @@ public class CardManiac extends Game {
 		super.prepareUpdate(stateHandler, htTitleButtons);
 	}
 
+	@Override
+	public boolean isFinished() {
+		// never finishes
+		return false;
+	}
+
 }

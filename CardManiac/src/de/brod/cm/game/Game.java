@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.graphics.Color;
 import de.brod.cm.Card;
 import de.brod.cm.CardContainer;
 import de.brod.cm.CardManiacView;
@@ -30,7 +31,6 @@ import de.brod.gui.IAction;
 import de.brod.gui.StateHandler;
 import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Button.Type;
-import android.graphics.*;
 
 public abstract class Game {
 
@@ -39,6 +39,8 @@ public abstract class Game {
 	protected ArrayList<Hand> hands = new ArrayList<Hand>();
 
 	private ArrayList<CardContainer> cardContainer = new ArrayList<CardContainer>();
+
+	private boolean showHelp;
 
 	public Game(CardManiacView pCardManiacView) {
 		cardManiacView = pCardManiacView;
@@ -72,10 +74,17 @@ public abstract class Game {
 			stateHandler.undo();
 		} else if (type.equals(Type.redo)) {
 			stateHandler.redo();
+		} else if (type.equals(Type.question)) {
+			help();
 		} else {
 			return false;
 		}
 		return true;
+	}
+
+	protected void help() {
+		// make nothing
+		showHelp = true;
 	}
 
 	protected abstract void createTitleCards(Hand hand);
@@ -186,20 +195,37 @@ public abstract class Game {
 	public void setSettings(String psName, int piValue) {
 		cardManiacView.setGlobalSettings(psName, "" + piValue);
 	}
-	
 
-	protected void setColor(Card cl, boolean pOK)
-	{
-		if (cl==null)
+	protected void setColor(Card cl, boolean pOK) {
+		if (cl == null) {
 			return;
-		int a=220;
-		int b=128;
-		int c=96;
-		if(!pOK)
+		}
+		int a = 220;
+		int b = 128;
+		int c = 96;
+		if (!pOK) {
 			cl.setColor(Color.argb(255, a, b, c));
-		else 
+		} else {
 			cl.setColor(Color.argb(255, c, a, b));
+		}
 
 	}
-	
+
+	public abstract boolean isFinished();
+
+	public void clearHelp() {
+		if (showHelp) {
+			resetColors();
+			showHelp = false;
+		}
+	}
+
+	protected void resetColors() {
+		for (Hand h : hands) {
+			for (Card c : h.getCards()) {
+				c.setColor(Color.WHITE);
+			}
+		}
+	}
+
 }

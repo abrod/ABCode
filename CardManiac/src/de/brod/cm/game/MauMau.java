@@ -48,12 +48,12 @@ public class MauMau extends Game {
 	@Override
 	public void getMenuItems(List<String> menuItems) {
 		super.getMenuItems(menuItems);
-		menuItems.add("Reset score");
+		menuItems.add("Reset Score");
 	}
 
 	@Override
 	public void menuPressed(String sItem, StateHandler stateHandler) {
-		if (sItem.equals("Reset score")) {
+		if (sItem.equals("Reset Score")) {
 			for (int i = 1; i <= 4; i++) {
 				Hand hand = get(i);
 				hand.setCenter(true);
@@ -212,15 +212,15 @@ public class MauMau extends Game {
 		for (int i = 1; i <= 4; i++) {
 			Hand hand = get(i);
 			hand.setCenter(true);
-			hand.setText("" + getSettingAsInt("points" + i));
+			hand.setText(String.valueOf(getSettingAsInt("points" + i)));
 		}
 		// set order
 		get(4).setCardComperator(getColorOrder());
 		// add a ButtonContainer
 		buttons = new Buttons(99);
 		skipButton = Button.Type.no.createButton(0,
-				Card.getY(Card.maxCardY * 3 / 4), 
-				Card.getCardWidth(),new IAction() {
+				Card.getY(Card.maxCardY * 3 / 4), Card.getCardWidth(),
+				new IAction() {
 
 					@Override
 					public void action() {
@@ -234,12 +234,11 @@ public class MauMau extends Game {
 					}
 				});
 		float py = Card.getY(Card.maxCardY * 1 / 4);
-		float bwd=Card.getCardWidth();
+		float bwd = Card.getCardWidth();
 		float px = Card.getX(3.5f) - bwd * 1.5f;
 		for (int i = 0; i < cls.length; i++) {
 			final int bt = i;
-			Button b = Button.createTextButton(px + i * bwd, py,
-					bwd,
+			Button b = Button.createTextButton(px + i * bwd, py, bwd,
 					cls[i].toString(), new IAction() {
 
 						@Override
@@ -295,7 +294,7 @@ public class MauMau extends Game {
 		settings.setAttribute("jack", false);
 		settings.setAttribute("force", 0);
 		showColorButtons(settings);
-		h0.setText("");
+		h0.setText(" ");
 	}
 
 	private void showColorButtons(XmlObject settings) {
@@ -311,7 +310,8 @@ public class MauMau extends Game {
 		}
 	}
 
-	private boolean isFinished() {
+	@Override
+	public boolean isFinished() {
 		for (int i = 1; i <= 4; i++) {
 			if (get(i).getCardCount() == 0) {
 				return true;
@@ -361,7 +361,7 @@ public class MauMau extends Game {
 
 	@Override
 	public void mouseDown(List<Card> plstMoves) {
-		if (isFinished() || plstMoves.size()==0) {
+		if (isFinished() || plstMoves.size() == 0) {
 			plstMoves.clear();
 			return;
 		}
@@ -373,17 +373,17 @@ public class MauMau extends Game {
 			plstMoves.clear();
 			return;
 		}
-		
-		Card cl=plstMoves.get(0);
-		int hid=cl.getHand().getId();
-		if (hid==0){
+
+		Card cl = plstMoves.get(0);
+		int hid = cl.getHand().getId();
+		if (hid == 0) {
 			// ok
-			if (!settings.getAttributeAsBoolean("drawCard")){
+			if (!settings.getAttributeAsBoolean("drawCard")) {
 				help();
 				plstMoves.clear();
 				return;
 			}
-		} else if (hid==4) {
+		} else if (hid == 4) {
 			if (!matchesStack(cl, settings)) {
 				help();
 				plstMoves.clear();
@@ -394,16 +394,18 @@ public class MauMau extends Game {
 			return;
 		}
 	}
-	
-	public void help(){
+
+	@Override
+	protected void help() {
 		XmlObject settings = getSettings();
-		for (Card c:get(4).getCards()){
-			setColor(c,matchesStack(c, settings));
+		for (Card c : get(4).getCards()) {
+			setColor(c, matchesStack(c, settings));
 		}
-		boolean b=settings.getAttributeAsBoolean("drawCard");
-		for (Card c:get(0).getCards()){
-			setColor(c,b);
+		boolean b = settings.getAttributeAsBoolean("drawCard");
+		for (Card c : get(0).getCards()) {
+			setColor(c, b);
 		}
+		super.help();
 	}
 
 	@Override
@@ -462,11 +464,6 @@ public class MauMau extends Game {
 		showColorButtons(settings);
 		return true;
 	}
-	private void resetColors(){
-		for (Hand h:hands)
-			for (Card c:h.getCards())
-				c.setColor(Color.WHITE);
-	}
 
 	private void check4finshed() {
 		for (int i = 1; i <= 4; i++) {
@@ -475,7 +472,7 @@ public class MauMau extends Game {
 				int p = getSettingAsInt("points" + i);
 				p++;
 				setSettings("points" + i, p);
-				hand.setText("" + p);
+				hand.setText(String.valueOf(p));
 				return;
 			}
 		}
