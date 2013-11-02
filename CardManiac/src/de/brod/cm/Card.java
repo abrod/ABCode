@@ -110,8 +110,6 @@ public class Card extends Sprite {
 	private static float offsetY;
 	public static float maxCardY;
 	private static float ym;
-	private boolean covered = false;
-
 	public static float getCardHeight() {
 		return cardHeight;
 	}
@@ -162,6 +160,8 @@ public class Card extends Sprite {
 		cardTextures.add(cardTexture2);
 	}
 
+	private boolean covered = false;
+
 	Values value;
 	Colors color;
 	Hand hand;
@@ -188,10 +188,19 @@ public class Card extends Sprite {
 		return valueId;
 	}
 
+	public boolean isCovered() {
+		return covered;
+	}
+
 	public void moveTo(Hand pHand) {
 		hand.remove(this);
 		pHand.add(this);
 		setMoving(true);
+	}
+
+	public void setCovered(boolean pbCovered) {
+		this.covered = pbCovered;
+		setAngle(pbCovered ? 180 : 0);
 	}
 
 	public void setValue(int parseInt) {
@@ -209,14 +218,5 @@ public class Card extends Sprite {
 	@Override
 	public String toString() {
 		return valueId + " " + value.toString() + "" + color.toString();
-	}
-
-	public boolean isCovered() {
-		return covered;
-	}
-
-	public void setCovered(boolean pbCovered) {
-		this.covered = pbCovered;
-		setAngle(pbCovered ? 180 : 0);
 	}
 }

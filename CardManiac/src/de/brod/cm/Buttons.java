@@ -25,15 +25,14 @@ import de.brod.gui.shape.Sprite;
 
 public class Buttons extends CardContainer {
 
+	public enum UpdateType {
+		RELOAD, REFRESH
+	}
+
 	private List<Button> lstButtons = new ArrayList<Button>();
 
 	public Buttons(int piId) {
 		super(piId, -1, -1, 1, 1);
-	}
-
-	public void setEnabled(int i, boolean p1)
-	{
-		lstButtons.get(i).setEnabled(p1);
 	}
 
 	public void add(Button button) {
@@ -61,6 +60,10 @@ public class Buttons extends CardContainer {
 	@Override
 	public void organize() {
 		// make nothing
+	}
+
+	public void setEnabled(int i, boolean p1) {
+		lstButtons.get(i).setEnabled(p1);
 	}
 
 }

@@ -23,6 +23,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import android.graphics.Color;
+import de.brod.cm.Buttons;
 import de.brod.cm.Card;
 import de.brod.cm.CardContainer;
 import de.brod.cm.CardManiacView;
@@ -46,16 +47,6 @@ public abstract class Game {
 		cardManiacView = pCardManiacView;
 	}
 
-	public void getMenuItems(List<String> menuItems) {
-		menuItems.add("New");
-	}
-
-	public void menuPressed(String sItem, StateHandler stateHandler) {
-		if (sItem.equals("New")) {
-			stateHandler.clear();
-		}
-	}
-
 	protected void add(CardContainer cc) {
 		cardContainer.add(cc);
 		if (cc instanceof Hand) {
@@ -69,22 +60,25 @@ public abstract class Game {
 		lst.add(Type.undo);
 	}
 
-	public boolean buttonPressed(Type type, StateHandler stateHandler) {
+	public Buttons.UpdateType buttonPressed(Type type, StateHandler stateHandler) {
 		if (type.equals(Type.undo)) {
 			stateHandler.undo();
+			return Buttons.UpdateType.RELOAD;
 		} else if (type.equals(Type.redo)) {
 			stateHandler.redo();
+			return Buttons.UpdateType.RELOAD;
 		} else if (type.equals(Type.question)) {
 			help();
-		} else {
-			return false;
+			return Buttons.UpdateType.REFRESH;
 		}
-		return true;
+		return null;
 	}
 
-	protected void help() {
-		// make nothing
-		showHelp = true;
+	public void clearHelp() {
+		if (showHelp) {
+			resetColors();
+			showHelp = false;
+		}
 	}
 
 	protected abstract void createTitleCards(Hand hand);
@@ -95,6 +89,34 @@ public abstract class Game {
 
 	public CardContainer[] getCardContainer() {
 		return cardContainer.toArray(new CardContainer[cardContainer.size()]);
+	}
+
+	public Comparator<? super Card> getColorOrder() {
+		return new Comparator<Card>() {
+
+			@Override
+			public int compare(Card lhs, Card rhs) {
+				int diff = lhs.getColor().getId() - rhs.getColor().getId();
+				if (diff != 0) {
+					return diff;
+				}
+
+				return getValue(lhs) - getValue(rhs);
+			}
+
+			private int getValue(Card rhs) {
+				int id = rhs.getValue().getId();
+				if (id == 0) {
+					// shift ace
+					return 13;
+				}
+				return id;
+			}
+		};
+	}
+
+	public void getMenuItems(List<String> menuItems) {
+		menuItems.add("New");
 	}
 
 	public String getName() {
@@ -109,11 +131,37 @@ public abstract class Game {
 		return new CardManiac(cardManiacView2);
 	}
 
+	public String getSetting(String psName) {
+		return cardManiacView.getGlobalSettings(psName);
+	}
+
+	public int getSettingAsInt(String psName) {
+		try {
+			return Integer.parseInt(cardManiacView.getGlobalSettings(psName));
+		} catch (Exception ex) {
+			// ignore
+			return 0;
+		}
+	}
+
 	public abstract boolean hasHistory();
+
+	protected void help() {
+		// make nothing
+		showHelp = true;
+	}
 
 	public abstract void initHands(boolean bLandscape);
 
 	public abstract void initNewCards();
+
+	public abstract boolean isFinished();
+
+	public void menuPressed(String sItem, StateHandler stateHandler) {
+		if (sItem.equals("New")) {
+			stateHandler.clear();
+		}
+	}
 
 	public abstract void mouseDown(List<Card> plstMoves);
 
@@ -147,53 +195,12 @@ public abstract class Game {
 		}
 	}
 
-	public int size() {
-		return hands.size();
-	}
-
-	public Comparator<? super Card> getColorOrder() {
-		return new Comparator<Card>() {
-
-			@Override
-			public int compare(Card lhs, Card rhs) {
-				int diff = lhs.getColor().getId() - rhs.getColor().getId();
-				if (diff != 0) {
-					return diff;
-				}
-
-				return getValue(lhs) - getValue(rhs);
+	protected void resetColors() {
+		for (Hand h : hands) {
+			for (Card c : h.getCards()) {
+				c.setColor(Color.WHITE);
 			}
-
-			private int getValue(Card rhs) {
-				int id = rhs.getValue().getId();
-				if (id == 0) {
-					// shift ace
-					return 13;
-				}
-				return id;
-			}
-		};
-	}
-
-	public String getSetting(String psName) {
-		return cardManiacView.getGlobalSettings(psName);
-	}
-
-	public int getSettingAsInt(String psName) {
-		try {
-			return Integer.parseInt(cardManiacView.getGlobalSettings(psName));
-		} catch (Exception ex) {
-			// ignore
-			return 0;
 		}
-	}
-
-	public void setSettings(String psName, String psValue) {
-		cardManiacView.setGlobalSettings(psName, psValue);
-	}
-
-	public void setSettings(String psName, int piValue) {
-		cardManiacView.setGlobalSettings(psName, "" + piValue);
 	}
 
 	protected void setColor(Card cl, boolean pOK) {
@@ -211,21 +218,16 @@ public abstract class Game {
 
 	}
 
-	public abstract boolean isFinished();
-
-	public void clearHelp() {
-		if (showHelp) {
-			resetColors();
-			showHelp = false;
-		}
+	public void setSettings(String psName, int piValue) {
+		cardManiacView.setGlobalSettings(psName, "" + piValue);
 	}
 
-	protected void resetColors() {
-		for (Hand h : hands) {
-			for (Card c : h.getCards()) {
-				c.setColor(Color.WHITE);
-			}
-		}
+	public void setSettings(String psName, String psValue) {
+		cardManiacView.setGlobalSettings(psName, psValue);
+	}
+
+	public int size() {
+		return hands.size();
 	}
 
 }

@@ -97,6 +97,12 @@ public class CardManiac extends Game {
 	}
 
 	@Override
+	public boolean isFinished() {
+		// never finishes
+		return false;
+	}
+
+	@Override
 	public void mouseDown(List<Card> plstMoves) {
 		int id = plstMoves.get(0).getHand().getId();
 		if (id >= 0 && id < games.length) {
@@ -137,12 +143,6 @@ public class CardManiac extends Game {
 			// button not found ... which should not happen
 		}
 		super.prepareUpdate(stateHandler, htTitleButtons);
-	}
-
-	@Override
-	public boolean isFinished() {
-		// never finishes
-		return false;
 	}
 
 }

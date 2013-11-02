@@ -146,7 +146,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 				if (sprite instanceof Button) {
 					System.out.println("Button " + sprite + " pressed");
 					pressedButton = (Button) sprite;
-					pressedButton.pressed();			
+					pressedButton.pressed();
 					return true;
 				} else if (sprite instanceof Text) {
 					System.out.println("Text " + sprite + " pressed");
@@ -154,7 +154,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 				}
 			}
 		}
-		
+
 		for (int i = lstSprites.size() - 1; i >= 0; i--) {
 			Container sprite = lstSprites.get(i);
 			if (sprite.isVisible() && sprite.touches(eventX, eventY)) {
@@ -352,9 +352,11 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 				.getLastHistoryEntry();
 		initGroup(area, lastHistoryEntry);
 		lstSprites = area.getChildren();
-		sortSprites();
 		if (lastHistoryEntry == null) {
 			update(true);
+		} else {
+			sortSprites();
+			requestRender();
 		}
 	}
 

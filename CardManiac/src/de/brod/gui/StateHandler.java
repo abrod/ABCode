@@ -49,12 +49,6 @@ public class StateHandler {
 		setValues();
 	}
 
-	public void setObject(String p0, String name, String psName, String psValue) {
-		if (getObject(p0, name).setAttribute(psName, psValue)) {
-			saveState();
-		}
-	}
-
 	public synchronized void addHistory(XmlObject historyEntry,
 			boolean pbSetUndoPoint) {
 		historyEntry.setAttribute("undoPoint", "" + pbSetUndoPoint);
@@ -102,6 +96,10 @@ public class StateHandler {
 
 	public XmlObject getLastHistoryEntry() {
 		return lastHistoryEntry;
+	}
+
+	public XmlObject getObject(String psElement, String psName) {
+		return xmlState.getObject(psElement, "name", psName, true);
 	}
 
 	public boolean isEOF() {
@@ -162,8 +160,10 @@ public class StateHandler {
 		}
 	}
 
-	public XmlObject getObject(String psElement, String psName) {
-		return xmlState.getObject(psElement, "name", psName, true);
+	public void setObject(String p0, String name, String psName, String psValue) {
+		if (getObject(p0, name).setAttribute(psName, psValue)) {
+			saveState();
+		}
 	}
 
 	private void setValues() {

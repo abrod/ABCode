@@ -134,6 +134,10 @@ public class Hand extends CardContainer {
 		return lstCards;
 	}
 
+	public int getCovered() {
+		return covered;
+	}
+
 	public Card getLastCard() {
 		int size = lstCards.size();
 		if (size > 0) {
@@ -230,8 +234,20 @@ public class Hand extends CardContainer {
 		super.saveState(xmlHand);
 	}
 
+	public void setCardComperator(Comparator<? super Card> cardComperator) {
+		this.cardComperator = cardComperator;
+	}
+
 	public void setCenter(boolean b) {
 		bCenter = b;
+	}
+
+	public void setCovered(int piCovered) {
+		this.covered = piCovered;
+		for (int i = 0; i < lstCards.size(); i++) {
+			// reorganize
+			lstCards.get(i).setCovered(i < piCovered);
+		}
 	}
 
 	public void shuffleCards() {
@@ -246,22 +262,6 @@ public class Hand extends CardContainer {
 			sb.append(c.toString());
 		}
 		return sb.toString();
-	}
-
-	public void setCardComperator(Comparator<? super Card> cardComperator) {
-		this.cardComperator = cardComperator;
-	}
-
-	public int getCovered() {
-		return covered;
-	}
-
-	public void setCovered(int piCovered) {
-		this.covered = piCovered;
-		for (int i = 0; i < lstCards.size(); i++) {
-			// reorganize
-			lstCards.get(i).setCovered(i < piCovered);
-		}
 	}
 
 }

@@ -46,12 +46,131 @@ public class OffizierSkat extends Game {
 		super(pCardManiacView);
 	}
 
+	protected boolean cardRightIsHigher(Card cp0, Card cp1) {
+		if (cp0.getValue().equals(Values.Jack)) {
+			if (cp1.getValue().equals(Values.Jack)) {
+				return (cp1.getColor().getId() < cp0.getColor().getId());
+			}
+			return false;
+		}
+		if (cp1.getValue().equals(Values.Jack)) {
+			return true;
+		}
+
+		if (cp0.getColor().equals(cp1.getColor())) {
+			return getVal(cp0, 1) < getVal(cp1, 1);
+		}
+		// if trump
+		if (isTrump(cp1)) {
+			return true;
+		}
+		// color does not match
+		return false;
+	}
+
+	private List<Card> checkPlayableCards(Card c, int a) {
+		lstPlayable.clear();
+		if (isTrump(c)) {
+			// you have to play also a trump
+			for (int j = 0; j < 8; j++) {
+				Card co = get(j + a).getLastCard();
+				if (co != null) {
+					if (isTrump(co)) {
+						lstPlayable.add(co);
+					}
+				}
+			}
+		} else {
+			// / otherwise you have to play a color
+			for (int j = 0; j < 8; j++) {
+				Card co = get(j + a).getLastCard();
+				if (co != null && !co.getValue().equals(Values.Jack)) {
+					if (co.getColor().equals(c.getColor())) {
+						lstPlayable.add(co);
+					}
+				}
+			}
+		}
+		// may play any card
+		if (lstPlayable.size() == 0) {
+			for (int j = 0; j < 8; j++) {
+				Card co = get(j + a).getLastCard();
+				if (co != null) {
+					lstPlayable.add(co);
+				}
+			}
+		}
+		return lstPlayable;
+	}
+
+	private void coverCards() {
+		boolean pickColor = getSettings().getAttributeAsBoolean("pickColor");
+		for (int i = 0; i < 16; i++) {
+			Hand hand = get(i);
+			int iCovered = hand.getCardCount() - 1;
+			if (pickColor && i / 4 != 2) {
+				iCovered = 32;
+			}
+			hand.setCovered(iCovered);
+		}
+		setCounter(get(17));
+		setCounter(get(18));
+	}
+
 	@Override
 	protected void createTitleCards(Hand hand) {
 		hand.createCard(Values.Jack, Colors.Hearts);
 		hand.createCard(Values.Jack, Colors.Diamonds);
 		hand.createCard(Values.Jack, Colors.Spades);
 		hand.createCard(Values.Jack, Colors.Clubs);
+	}
+
+	protected Card getBestMove(int iOffset) {
+		Hand handStack = get(16);
+		int mx = -99;
+		Card cStack = handStack.getLastCard();
+		Card cbest = null;
+		if (cStack == null) {
+			// play first
+			for (int i = 0; i < 8; i++) {
+				Card c = get(i + iOffset).getLastCard();
+				if (c != null) {
+					int cv = getVal(c, 0);
+					int iLowestValue = 20;
+					for (Card co : checkPlayableCards(c, 8 - iOffset)) {
+						if (cardRightIsHigher(c, co)) {
+							// points are lost
+							cv = -Math.abs(cv);
+						} else {
+							iLowestValue = Math
+									.min(iLowestValue, getVal(co, 0));
+						}
+					}
+					// don't waste jacks
+					if (cv == 2 && iLowestValue == 0) {
+						cv = -5;
+					}
+					if (cv > mx) {
+						mx = cv;
+						cbest = c;
+					}
+				}
+			}
+		} else {
+			// react to card
+			for (Card co : checkPlayableCards(cStack, iOffset)) {
+				int cv = getVal(co, 1) + 5;
+				if (!cardRightIsHigher(cStack, co)) {
+					// points are lost
+					cv = -Math.abs(cv);
+				}
+				if (cv > mx) {
+					mx = cv;
+					cbest = co;
+				}
+			}
+		}
+		return cbest;
 	}
 
 	@Override
@@ -156,135 +275,8 @@ public class OffizierSkat extends Game {
 		return null;
 	}
 
-	protected Card getBestMove(int iOffset) {
-		Hand handStack = get(16);
-		int mx = -99;
-		Card cStack = handStack.getLastCard();
-		Card cbest = null;
-		if (cStack == null) {
-			// play first
-			for (int i = 0; i < 8; i++) {
-				Card c = get(i + iOffset).getLastCard();
-				if (c != null) {
-					int cv = getVal(c, 0);
-					int iLowestValue = 20;
-					for (Card co : checkPlayableCards(c, 8 - iOffset)) {
-						if (cardRightIsHigher(c, co)) {
-							// points are lost
-							cv = -Math.abs(cv);
-						} else {
-							iLowestValue = Math
-									.min(iLowestValue, getVal(co, 0));
-						}
-					}
-					// don't waste jacks
-					if (cv == 2 && iLowestValue == 0) {
-						cv = -5;
-					}
-					if (cv > mx) {
-						mx = cv;
-						cbest = c;
-					}
-				}
-			}
-		} else {
-			// react to card
-			for (Card co : checkPlayableCards(cStack, iOffset)) {
-				int cv = getVal(co, 1) + 5;
-				if (!cardRightIsHigher(cStack, co)) {
-					// points are lost
-					cv = -Math.abs(cv);
-				}
-				if (cv > mx) {
-					mx = cv;
-					cbest = co;
-				}
-			}
-		}
-		return cbest;
-	}
-
-	private List<Card> checkPlayableCards(Card c, int a) {
-		lstPlayable.clear();
-		if (isTrump(c)) {
-			// you have to play also a trump
-			for (int j = 0; j < 8; j++) {
-				Card co = get(j + a).getLastCard();
-				if (co != null) {
-					if (isTrump(co)) {
-						lstPlayable.add(co);
-					}
-				}
-			}
-		} else {
-			// / otherwise you have to play a color
-			for (int j = 0; j < 8; j++) {
-				Card co = get(j + a).getLastCard();
-				if (co != null && !co.getValue().equals(Values.Jack)) {
-					if (co.getColor().equals(c.getColor())) {
-						lstPlayable.add(co);
-					}
-				}
-			}
-		}
-		// may play any card
-		if (lstPlayable.size() == 0) {
-			for (int j = 0; j < 8; j++) {
-				Card co = get(j + a).getLastCard();
-				if (co != null) {
-					lstPlayable.add(co);
-				}
-			}
-		}
-		return lstPlayable;
-	}
-
-	protected boolean cardRightIsHigher(Card cp0, Card cp1) {
-		if (cp0.getValue().equals(Values.Jack)) {
-			if (cp1.getValue().equals(Values.Jack)) {
-				return (cp1.getColor().getId() < cp0.getColor().getId());
-			}
-			return false;
-		}
-		if (cp1.getValue().equals(Values.Jack)) {
-			return true;
-		}
-
-		if (cp0.getColor().equals(cp1.getColor())) {
-			return getVal(cp0, 1) < getVal(cp1, 1);
-		}
-		// if trump
-		if (isTrump(cp1)) {
-			return true;
-		}
-		// color does not match
-		return false;
-	}
-
-	private boolean isTrump(Card cp1) {
-		// jack is always trump
-		if (cp1.getValue().equals(Values.Jack)) {
-			return true;
-		}
-		int t = getSettings().getAttributeAsInt("trumpf");
-		if (t == 0) {
-			if (cp1.getColor().equals(Colors.Clubs)) {
-				return true;
-			}
-		} else if (t == 1) {
-			if (cp1.getColor().equals(Colors.Spades)) {
-				return true;
-			}
-		} else if (t == 2) {
-			if (cp1.getColor().equals(Colors.Hearts)) {
-				return true;
-			}
-		} else if (t == 3) {
-			if (cp1.getColor().equals(Colors.Diamonds)) {
-				return true;
-			}
-		}
-		return false;
+	private XmlObject getSettings() {
+		return buttons.getSettings();
 	}
 
 	private int getVal(Card c, int iNullValue) {
@@ -319,6 +311,24 @@ public class OffizierSkat extends Game {
 	@Override
 	public boolean hasHistory() {
 		return true;
+	}
+
+	@Override
+	protected void help() {
+		Card c = get(16).getLastCard();
+		if (c != null) {
+			List<Card> l = checkPlayableCards(c, 8);
+			for (int i = 8; i < 16; i++) {
+				Card cl = get(i).getLastCard();
+				setColor(cl, l.contains(cl));
+			}
+		} else {
+			Card cbest = getBestMove(8);
+			if (cbest != null) {
+				setColor(cbest, true);
+			}
+		}
+		super.help();
 	}
 
 	@Override
@@ -396,28 +406,6 @@ public class OffizierSkat extends Game {
 	}
 
 	@Override
-	public void prepareUpdate(StateHandler stateHandler,
-			Hashtable<Button.Type, Button> htTitleButtons) {
-		super.prepareUpdate(stateHandler, htTitleButtons);
-
-		XmlObject settings = getSettings();
-		boolean pickColor = settings.getAttributeAsBoolean("pickColor");
-		if (pickColor) {
-			for (int i = 0; i < 5; i++) {
-				buttons.setEnabled(i, true);
-			}
-		} else {
-			int trumpf = settings.getAttributeAsInt("trumpf");
-			for (int i = 0; i < 5; i++) {
-				buttons.setEnabled(i, i == trumpf);
-			}
-		}
-		setCounter(get(17));
-		setCounter(get(18));
-		// coverCards();
-	}
-
-	@Override
 	public void initNewCards() {
 		Card[] create32Cards = get(0).create32Cards();
 		for (int i = 2; i < create32Cards.length; i++) {
@@ -436,31 +424,40 @@ public class OffizierSkat extends Game {
 		coverCards();
 	}
 
-	private XmlObject getSettings() {
-		return buttons.getSettings();
-	}
-
-	private void coverCards() {
-		boolean pickColor = getSettings().getAttributeAsBoolean("pickColor");
+	@Override
+	public boolean isFinished() {
 		for (int i = 0; i < 16; i++) {
-			Hand hand = get(i);
-			int iCovered = hand.getCardCount() - 1;
-			if (pickColor && i / 4 != 2) {
-				iCovered = 32;
+			if (get(i).getCardCount() > 0) {
+				return false;
 			}
-			hand.setCovered(iCovered);
 		}
-		setCounter(get(17));
-		setCounter(get(18));
+		return true;
 	}
 
-	private void setCounter(Hand hand) {
-		List<Card> cards = hand.getCards();
-		int cnt = 0;
-		for (Card card : cards) {
-			cnt += getVal(card, 0);
+	private boolean isTrump(Card cp1) {
+		// jack is always trump
+		if (cp1.getValue().equals(Values.Jack)) {
+			return true;
 		}
-		hand.setText(String.valueOf(cnt));
+		int t = getSettings().getAttributeAsInt("trumpf");
+		if (t == 0) {
+			if (cp1.getColor().equals(Colors.Clubs)) {
+				return true;
+			}
+		} else if (t == 1) {
+			if (cp1.getColor().equals(Colors.Spades)) {
+				return true;
+			}
+		} else if (t == 2) {
+			if (cp1.getColor().equals(Colors.Hearts)) {
+				return true;
+			}
+		} else if (t == 3) {
+			if (cp1.getColor().equals(Colors.Diamonds)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -492,24 +489,6 @@ public class OffizierSkat extends Game {
 				}
 			}
 		}
-	}
-
-	@Override
-	protected void help() {
-		Card c = get(16).getLastCard();
-		if (c != null) {
-			List<Card> l = checkPlayableCards(c, 8);
-			for (int i = 8; i < 16; i++) {
-				Card cl = get(i).getLastCard();
-				setColor(cl, l.contains(cl));
-			}
-		} else {
-			Card cbest = getBestMove(8);
-			if (cbest != null) {
-				setColor(cbest, true);
-			}
-		}
-		super.help();
 	}
 
 	@Override
@@ -553,12 +532,33 @@ public class OffizierSkat extends Game {
 	}
 
 	@Override
-	public boolean isFinished() {
-		for (int i = 0; i < 16; i++) {
-			if (get(i).getCardCount() > 0) {
-				return false;
+	public void prepareUpdate(StateHandler stateHandler,
+			Hashtable<Button.Type, Button> htTitleButtons) {
+		super.prepareUpdate(stateHandler, htTitleButtons);
+
+		XmlObject settings = getSettings();
+		boolean pickColor = settings.getAttributeAsBoolean("pickColor");
+		if (pickColor) {
+			for (int i = 0; i < 5; i++) {
+				buttons.setEnabled(i, true);
+			}
+		} else {
+			int trumpf = settings.getAttributeAsInt("trumpf");
+			for (int i = 0; i < 5; i++) {
+				buttons.setEnabled(i, i == trumpf);
 			}
 		}
-		return true;
+		setCounter(get(17));
+		setCounter(get(18));
+		// coverCards();
+	}
+
+	private void setCounter(Hand hand) {
+		List<Card> cards = hand.getCards();
+		int cnt = 0;
+		for (Card card : cards) {
+			cnt += getVal(card, 0);
+		}
+		hand.setText(String.valueOf(cnt));
 	}
 }

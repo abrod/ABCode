@@ -52,15 +52,15 @@ public class Button extends Sprite {
 			y = py;
 		}
 
-		public Button createButton(float px, float py, IAction action) {
-			Button button = new Button(this.toString(), action);
+		public Button createButton(float px, float py, float pfHeight,IAction action) {
+			Button button = new Button(this.toString(), pfHeight, action);
 			button.setCell(x, y, x + 6, y);
 			button.setPosition(px, py);
 			return button;
 		}
 
-		public Button createButton(float px, float py, float pfHeight,IAction action) {
-			Button button = new Button(this.toString(), pfHeight, action);
+		public Button createButton(float px, float py, IAction action) {
+			Button button = new Button(this.toString(), action);
 			button.setCell(x, y, x + 6, y);
 			button.setPosition(px, py);
 			return button;
@@ -87,6 +87,15 @@ public class Button extends Sprite {
 		}
 	}
 
+	private static Texture texture = null, emptyTexture = null;
+
+	public static float width = 0;
+
+	public static float height = 0;
+
+	public static float maxHeight;
+
+	public static float maxWidth;
 	public static Button createTextButton(float px, float py, float pfHeight, String psText,
 			IAction action) {
 		if (pfHeight==0) pfHeight=1;
@@ -97,42 +106,33 @@ public class Button extends Sprite {
 		button.setText(psText);
 		return button;
 	}
+	private static void drawEmptyButton(Bitmap bitmap) {
+		int h = bitmap.getHeight();
+		Canvas c = new Canvas(bitmap);
+		float r = h / 10f;
+		Paint paint = new Paint();
+		RectF rect = new RectF(r, r, h - r, h - r);
+		RectF rect2 = new RectF(r + h, r, h - r + h, h - r);
 
-	public void setText(String psText) {
-		float px = getX();
-		float py = getY();
-		float h = getHeight();
-		createText = Text.createText(psText, px, py, h);
-		createText.setPosition(px - createText.getTextWdith() / 2,
-				createText.getY() - h / 2);
-		clear();
-		add(createText);
+		paint.setColor(Color.argb(64, 255, 255, 255));
+		paint.setStyle(Style.FILL);
+		c.drawRoundRect(rect, r, r, paint);
+
+		// paint.setColor(Color.argb(32, 255,255,255));
+		// paint.setStyle(Style.FILL);
+		// c.drawRoundRect(rect2, r, r, paint);
+
+		paint.setColor(Color.argb(128, 0, 0, 0));
+		paint.setStyle(Style.STROKE);
+		paint.setStrokeWidth(Math.max(1, r / 2));
+		c.drawRoundRect(rect, r, r, paint);
+
+		paint.setColor(Color.argb(32, 0, 0, 0));
+		paint.setStyle(Style.STROKE);
+		paint.setStrokeWidth(Math.max(1, r / 2));
+		c.drawRoundRect(rect2, r, r, paint);
+
 	}
-
-	@Override
-	public void setColor(int col) {
-		if (createText == null) {
-			super.setColor(col);
-		} else {
-			foreColor = col;
-			createText.setColor(col);
-		}
-	}
-
-	public void setTextColor(int col) {
-		foreColor = col;
-		setColor(col);
-	}
-
-	private static Texture texture = null, emptyTexture = null;
-	public static float width = 0;
-	public static float height = 0;
-	public static float maxHeight;
-	public static float maxWidth;
-
-	private Text createText = null;
-	private int foreColor = -1;
-
 	public static void init(AssetManager assetManager, GL10 gl, int pWidth,
 			int pHeight, float pfTitleHeight) {
 		float ratio = pWidth * 1f / pHeight;
@@ -169,47 +169,21 @@ public class Button extends Sprite {
 			e.printStackTrace();
 		}
 	}
+	private Text createText = null;
 
-	private static void drawEmptyButton(Bitmap bitmap) {
-		int h = bitmap.getHeight();
-		Canvas c = new Canvas(bitmap);
-		float r = h / 10f;
-		Paint paint = new Paint();
-		RectF rect = new RectF(r, r, h - r, h - r);
-		RectF rect2 = new RectF(r + h, r, h - r + h, h - r);
-
-		paint.setColor(Color.argb(64, 255, 255, 255));
-		paint.setStyle(Style.FILL);
-		c.drawRoundRect(rect, r, r, paint);
-
-		// paint.setColor(Color.argb(32, 255,255,255));
-		// paint.setStyle(Style.FILL);
-		// c.drawRoundRect(rect2, r, r, paint);
-
-		paint.setColor(Color.argb(128, 0, 0, 0));
-		paint.setStyle(Style.STROKE);
-		paint.setStrokeWidth(Math.max(1, r / 2));
-		c.drawRoundRect(rect, r, r, paint);
-
-		paint.setColor(Color.argb(32, 0, 0, 0));
-		paint.setStyle(Style.STROKE);
-		paint.setStrokeWidth(Math.max(1, r / 2));
-		c.drawRoundRect(rect2, r, r, paint);
-
-	}
-
+	private int foreColor = -1;
 	private String type;
-	IAction action;
-	private boolean enabled = true;
 
-	private Button(String psType, IAction action) {
-		this(texture, width, height, psType, action);
-	}
+	IAction action;
+
+	private boolean enabled = true;
 
 	private Button(String psType, float pfHeight,IAction action) {
 		this(texture, pfHeight* width/height, pfHeight, psType, action);
 	}
-	
+	private Button(String psType, IAction action) {
+		this(texture, width, height, psType, action);
+	}
 	public Button(Texture pTexture, float piWidth, float piHeight,
 			String psType, IAction action) {
 		super(pTexture, piWidth, piHeight);
@@ -228,13 +202,23 @@ public class Button extends Sprite {
 			action.action();
 		}
 	}
-
+	
 	public void release() {
 		// setColor(Color.WHITE);
 	}
 
 	public void resize(float f) {
 		setSize(width * f, height * f);
+	}
+
+	@Override
+	public void setColor(int col) {
+		if (createText == null) {
+			super.setColor(col);
+		} else {
+			foreColor = col;
+			createText.setColor(col);
+		}
 	}
 
 	public void setEnabled(boolean pbEnabled) {
@@ -246,6 +230,22 @@ public class Button extends Sprite {
 			createText
 					.setColor(pbEnabled ? foreColor : Color.argb(64, 0, 0, 0));
 		}
+	}
+
+	public void setText(String psText) {
+		float px = getX();
+		float py = getY();
+		float h = getHeight();
+		createText = Text.createText(psText, px, py, h);
+		createText.setPosition(px - createText.getTextWdith() / 2,
+				createText.getY() - h / 2);
+		clear();
+		add(createText);
+	}
+
+	public void setTextColor(int col) {
+		foreColor = col;
+		setColor(col);
 	}
 
 	@Override

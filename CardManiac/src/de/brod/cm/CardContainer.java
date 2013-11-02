@@ -63,6 +63,15 @@ public abstract class CardContainer {
 		return settings;
 	}
 
+	public void initText(TextAlign pAlign) {
+		if (textContainer == null) {
+			textContainer = new Container();
+		} else {
+			textContainer.clear();
+		}
+		_textAlign = pAlign;
+	}
+
 	public void loadState(XmlObject xmlHand) {
 		XmlObject[] arrSettings = xmlHand.getObjects("Settings");
 		if (arrSettings.length > 0) {
@@ -87,15 +96,6 @@ public abstract class CardContainer {
 				xmlHand.addObject(settings);
 			}
 		}
-	}
-
-	public void initText(TextAlign pAlign) {
-		if (textContainer == null) {
-			textContainer = new Container();
-		} else {
-			textContainer.clear();
-		}
-		_textAlign = pAlign;
 	}
 
 	public Container setText(String psText) {

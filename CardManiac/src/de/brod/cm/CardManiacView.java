@@ -23,6 +23,7 @@ import java.util.List;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.app.Activity;
+import de.brod.cm.Buttons.UpdateType;
 import de.brod.cm.game.CardManiac;
 import de.brod.cm.game.Game;
 import de.brod.gui.GuiRendererView;
@@ -62,8 +63,14 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected void buttonPressed(Type type) {
-		if (game.buttonPressed(type, applicationStateHandler)) {
-			reload();
+		UpdateType buttonPressed = game.buttonPressed(type,
+				applicationStateHandler);
+		if (buttonPressed != null) {
+			if (buttonPressed.equals(UpdateType.RELOAD)) {
+				reload();
+			} else if (buttonPressed.equals(UpdateType.REFRESH)) {
+				requestRender();
+			}
 		} else {
 			super.buttonPressed(type);
 		}
@@ -79,6 +86,11 @@ public class CardManiacView extends GuiRendererView<Card> {
 		List<Type> lst = new ArrayList<Button.Type>();
 		game.addButtonTypes(lst);
 		return lst;
+	}
+
+	public String getGlobalSettings(String psName) {
+		return globalStateHandler.getObject("Settings", game.getName())
+				.getAttribute(psName);
 	}
 
 	@Override
@@ -154,16 +166,6 @@ public class CardManiacView extends GuiRendererView<Card> {
 		game = cardManiac.openGame(sGame);
 	}
 
-	public String getGlobalSettings(String psName) {
-		return globalStateHandler.getObject("Settings", game.getName())
-				.getAttribute(psName);
-	}
-
-	public void setGlobalSettings(String psName, String psValue) {
-		globalStateHandler.setObject("Settings", game.getName(), psName,
-				psValue);
-	}
-
 	@Override
 	protected boolean isInstanceOf(Container sprite) {
 		return sprite instanceof Card;
@@ -227,6 +229,11 @@ public class CardManiacView extends GuiRendererView<Card> {
 					+ cc.getId(), true);
 			cc.saveState(xmlObject);
 		}
+	}
+
+	public void setGlobalSettings(String psName, String psValue) {
+		globalStateHandler.setObject("Settings", game.getName(), psName,
+				psValue);
 	}
 
 	@Override

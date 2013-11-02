@@ -143,6 +143,22 @@ public class Sprite extends Container {
 		super.draw(gl);
 	}
 
+	public float getHeight(){
+		return h*2;
+	}
+
+	public float getWidth(){
+		return wd*2;
+	}
+
+	public float getX() {
+		return x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
 	public boolean isCenter() {
 		return center;
 	}
@@ -179,14 +195,6 @@ public class Sprite extends Container {
 	public void setAngle(float angle2) {
 		setInternalAngle(angle2);
 		setPosition(x, y);
-	}
-
-	public float getX() {
-		return x;
-	}
-
-	public float getY() {
-		return y;
 	}
 
 	private void setCell() {
@@ -308,7 +316,7 @@ public class Sprite extends Container {
 		}
 		w = wd * cos;
 	}
-
+	
 	public void setPosition(float px, float py) {
 		x = px;
 		y = py;
@@ -340,19 +348,11 @@ public class Sprite extends Container {
 		}
 		setVertices(position);
 	}
-
+	
 	public void setSize(float width, float height) {
 		wd = width / 2;
 		h = height / 2;
 		setAngle(angle);
-	}
-	
-	public float getHeight(){
-		return h*2;
-	}
-	
-	public float getWidth(){
-		return wd*2;
 	}
 
 	protected void setTextureBuffer(int x1, int y1, int x2, int y2) {
