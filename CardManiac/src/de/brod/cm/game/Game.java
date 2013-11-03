@@ -29,11 +29,15 @@ import de.brod.cm.CardContainer;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
+import de.brod.gui.IDialogAction;
 import de.brod.gui.StateHandler;
 import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Button.Type;
 
 public abstract class Game {
+	public enum CardColor {
+		RED, GREEN, GRAY
+	}
 
 	protected CardManiacView cardManiacView;
 
@@ -203,19 +207,26 @@ public abstract class Game {
 		}
 	}
 
-	protected void setColor(Card cl, boolean pOK) {
+	protected void setColor(Card cl, CardColor pOK) {
 		if (cl == null) {
 			return;
 		}
 		int a = 220;
 		int b = 128;
 		int c = 96;
-		if (!pOK) {
+		if (CardColor.RED.equals(pOK)) {
 			cl.setColor(Color.argb(255, a, b, c));
-		} else {
+		} else if (CardColor.GREEN.equals(pOK)) {
 			cl.setColor(Color.argb(255, c, a, b));
+		} else if (CardColor.GRAY.equals(pOK)) {
+			int d = (a + b) / 2;
+			cl.setColor(Color.argb(255, d, 255, d));
 		}
+	}
 
+	public void showMessage(String psTitle, String psMessage,
+			IDialogAction... sButtons) {
+		cardManiacView.showMessage(psTitle, psMessage, sButtons);
 	}
 
 	public void setSettings(String psName, int piValue) {

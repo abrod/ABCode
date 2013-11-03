@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.app.Activity;
 import de.brod.cm.Buttons.UpdateType;
 import de.brod.cm.game.CardManiac;
 import de.brod.cm.game.Game;
@@ -49,7 +48,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	private GL10 _gl;
 
-	public CardManiacView(Activity context) {
+	public CardManiacView(CardManiacActivity context) {
 		super(context);
 	}
 
@@ -240,5 +239,6 @@ public class CardManiacView extends GuiRendererView<Card> {
 	protected boolean showBackButton() {
 		return game == null || !(game instanceof CardManiac);
 	}
+
 
 }

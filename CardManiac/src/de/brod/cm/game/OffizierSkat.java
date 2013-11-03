@@ -245,6 +245,7 @@ public class OffizierSkat extends Game {
 						coverCards();
 
 					}
+
 				};
 			}
 			int cnt = 0;
@@ -320,13 +321,12 @@ public class OffizierSkat extends Game {
 			List<Card> l = checkPlayableCards(c, 8);
 			for (int i = 8; i < 16; i++) {
 				Card cl = get(i).getLastCard();
-				setColor(cl, l.contains(cl));
+				setColor(cl, l.contains(cl) ? CardColor.GRAY : CardColor.RED);
 			}
-		} else {
-			Card cbest = getBestMove(8);
-			if (cbest != null) {
-				setColor(cbest, true);
-			}
+		}
+		Card cbest = getBestMove(8);
+		if (cbest != null) {
+			setColor(cbest, CardColor.GREEN);
 		}
 		super.help();
 	}

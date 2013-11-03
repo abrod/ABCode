@@ -26,6 +26,8 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -84,7 +86,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	private int width, height;
 	float wd, hg;
-	private Activity activity;
+	private GuiActivity activity;
 	private Sprite root;
 	private Texture iconTexture;
 	private float fTitleHeight;
@@ -92,7 +94,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	protected Hashtable<Button.Type, Button> htTitleButtons = new Hashtable<Button.Type, Button>();
 
-	public GuiRendererView(Activity context) {
+	public GuiRendererView(GuiActivity context) {
 		super(context);
 		activity = context;
 		// set our renderer to be the main renderer with
@@ -107,6 +109,69 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		if (type.equals(Type.menu)) {
 			openMenu();
 		}
+	}
+
+	public void showMessage(String psTitle, String psMessage,
+			final IDialogAction[] sButtons) {
+		AlertDialog.Builder dlgAlert = new AlertDialog.Builder(activity);
+
+		dlgAlert.setMessage(psMessage);
+		dlgAlert.setTitle(psTitle);
+		if (sButtons.length > 0) {
+			dlgAlert.setPositiveButton(sButtons[0].getName(),
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							sButtons[0].action();
+							// repaint
+							requestRender();
+						}
+					});
+			if (sButtons.length == 2) {
+				dlgAlert.setNegativeButton(sButtons[1].getName(),
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								sButtons[1].action();
+								// repaint
+								requestRender();
+							}
+						});
+			} else if (sButtons.length > 2) {
+				dlgAlert.setNeutralButton(sButtons[1].getName(),
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								sButtons[1].action();
+								// repaint
+								requestRender();
+							}
+						});
+				dlgAlert.setNegativeButton(sButtons[2].getName(),
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								sButtons[2].action();
+								// repaint
+								requestRender();
+							}
+						});
+			}
+
+		} else {
+			dlgAlert.setPositiveButton("OK",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// make nothing
+						}
+					});
+		}
+		dlgAlert.setCancelable(true);
+		dlgAlert.create().show();
 	}
 
 	Sprite createButton(Hashtable<Type, Button> htTitleButtons, Type pType,
@@ -169,6 +234,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 				public void action() {
 					backButtonPressed();
 				}
+
 			};
 		} else {
 			fMoveLeft = 0;
