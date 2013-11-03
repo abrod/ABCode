@@ -426,7 +426,7 @@ public class OffizierSkat extends Game {
 
 	@Override
 	public boolean isFinished() {
-		for (int i = 0; i < 16; i++) {
+		for (int i = 0; i <= 16; i++) {
 			if (get(i).getCardCount() > 0) {
 				return false;
 			}
