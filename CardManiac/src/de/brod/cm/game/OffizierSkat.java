@@ -40,7 +40,6 @@ public class OffizierSkat extends Game {
 			Colors.Spades.toString(), Colors.Hearts.toString(),
 			Colors.Diamonds.toString(), "J" };
 	private Buttons buttons;
-	private List<Card> lstPlayable = new ArrayList<Card>();
 
 	public OffizierSkat(CardManiacView pCardManiacView) {
 		super(pCardManiacView);
@@ -68,37 +67,34 @@ public class OffizierSkat extends Game {
 		return false;
 	}
 
-	private List<Card> checkPlayableCards(Card c, int a) {
-		lstPlayable.clear();
+	private ArrayList<Card> checkPlayableCards(Card c,
+			ArrayList<Card> plstPlayable) {
+		if (c == null) {
+			return plstPlayable;
+		}
+		ArrayList<Card> lstPlayable = new ArrayList<Card>();
 		if (isTrump(c)) {
 			// you have to play also a trump
-			for (int j = 0; j < 8; j++) {
-				Card co = get(j + a).getLastCard();
-				if (co != null) {
-					if (isTrump(co)) {
-						lstPlayable.add(co);
-					}
-				}
-			}
-		} else {
-			// / otherwise you have to play a color
-			for (int j = 0; j < 8; j++) {
-				Card co = get(j + a).getLastCard();
-				if (co != null && !co.getValue().equals(Values.Jack)) {
-					if (co.getColor().equals(c.getColor())) {
-						lstPlayable.add(co);
-					}
-				}
-			}
-		}
-		// may play any card
-		if (lstPlayable.size() == 0) {
-			for (int j = 0; j < 8; j++) {
-				Card co = get(j + a).getLastCard();
-				if (co != null) {
+			for (int i = 0; i < plstPlayable.size(); i++) {
+				Card co = plstPlayable.get(i);
+				if (isTrump(co)) {
 					lstPlayable.add(co);
 				}
 			}
+		} else {
+			Colors stackColor = c.getColor();
+			// / otherwise you have to play a color
+			for (int i = 0; i < plstPlayable.size(); i++) {
+				Card co = plstPlayable.get(i);
+				if (!co.getValue().equals(Values.Jack)
+						&& co.getColor().equals(stackColor)) {
+					lstPlayable.add(co);
+				}
+			}
+		}
+		if (lstPlayable.size() == 0) {
+			// add all
+			return plstPlayable;
 		}
 		return lstPlayable;
 	}
@@ -126,51 +122,119 @@ public class OffizierSkat extends Game {
 	}
 
 	protected Card getBestMove(int iOffset) {
+
+		// get all playable cards
+		ArrayList<Card> lstThis = getCards(iOffset);
+		ArrayList<Card> lstOther = getCards(8 - iOffset);
+
 		Hand handStack = get(16);
-		int mx = -99;
 		Card cStack = handStack.getLastCard();
-		Card cbest = null;
+
+		Card cbest = getBestMove(lstThis, lstOther, cStack, new int[1], 1, "",
+				0);
+		// int mx = -99;
+		// if (cStack == null) {
+		// // play first
+		// for (int i = 0; i < 8; i++) {
+		// Card c = get(i + iOffset).getLastCard();
+		// if (c != null) {
+		// int cv = getVal(c, 0);
+		// int iLowestValue = 20;
+		// for (Card co : checkPlayableCards(c, 8 - iOffset)) {
+		// if (cardRightIsHigher(c, co)) {
+		// // points are lost
+		// cv = -Math.abs(cv);
+		// } else {
+		// iLowestValue = Math
+		// .min(iLowestValue, getVal(co, 0));
+		// }
+		// }
+		// // don't waste jacks
+		// if (cv == 2 && iLowestValue == 0) {
+		// cv = -5;
+		// }
+		// if (cv > mx) {
+		// mx = cv;
+		// cbest = c;
+		// }
+		// }
+		// }
+		// } else {
+		// // react to card
+		// for (Card co : checkPlayableCards(cStack, iOffset)) {
+		// int cv = getVal(co, 1) + 5;
+		// if (!cardRightIsHigher(cStack, co)) {
+		// // points are lost
+		// cv = -Math.abs(cv);
+		// }
+		// if (cv > mx) {
+		// mx = cv;
+		// cbest = co;
+		// }
+		// }
+		// }
+		return cbest;
+	}
+
+	private Card getBestMove(ArrayList<Card> lstThis, ArrayList<Card> lstOther,
+			Card cStack, int[] pPoints, int faktor, String sInfo, int iDeep) {
+		pPoints[0] = 0;
+		int[] points = new int[1];
+		Card cBest = null;
+		int max = 0;
+		System.out.println(sInfo);
 		if (cStack == null) {
-			// play first
-			for (int i = 0; i < 8; i++) {
-				Card c = get(i + iOffset).getLastCard();
-				if (c != null) {
-					int cv = getVal(c, 0);
-					int iLowestValue = 20;
-					for (Card co : checkPlayableCards(c, 8 - iOffset)) {
-						if (cardRightIsHigher(c, co)) {
-							// points are lost
-							cv = -Math.abs(cv);
-						} else {
-							iLowestValue = Math
-									.min(iLowestValue, getVal(co, 0));
-						}
-					}
-					// don't waste jacks
-					if (cv == 2 && iLowestValue == 0) {
-						cv = -5;
-					}
-					if (cv > mx) {
-						mx = cv;
-						cbest = c;
+			if (lstThis.size() < 1 || lstOther.size() < 1 || iDeep > 4) {
+				// no possible fields
+				return null;
+			}
+			// check all possible cards
+			for (int i = 0; i < lstThis.size(); i++) {
+				// remove
+				Card card = lstThis.remove(i);
+				Card bestMove = getBestMove(lstOther, lstThis, card, points,
+						-faktor, sInfo + card, iDeep + 1);
+				if (bestMove != null) {
+					if (cBest == null || points[0] > max) {
+						cBest = card;
+						max = points[0];
 					}
 				}
+				// and readd
+				lstThis.add(i, card);
 			}
 		} else {
-			// react to card
-			for (Card co : checkPlayableCards(cStack, iOffset)) {
-				int cv = getVal(co, 1) + 5;
-				if (!cardRightIsHigher(cStack, co)) {
-					// points are lost
-					cv = -Math.abs(cv);
-				}
-				if (cv > mx) {
-					mx = cv;
-					cbest = co;
+			// check only matching cards
+			ArrayList<Card> pc = checkPlayableCards(cStack, lstThis);
+			for (int i = 0; i < pc.size(); i++) { // remove
+				Card card = pc.get(i);
+				int indexOf = lstThis.indexOf(card);
+				if (indexOf >= 0) {
+					lstThis.remove(indexOf);
+					Card bestMove = getBestMove(lstOther, lstThis, null,
+							points, -faktor, sInfo + card, iDeep + 1);
+					if (bestMove != null) {
+						if (cardRightIsHigher(card, cStack)) {
+							// cards are lost
+							points[0] -= getVal(card, 0);
+							points[0] -= getVal(bestMove, 0);
+						} else {
+							// won cards
+							points[0] = getVal(card, 0);
+							points[0] = getVal(bestMove, 0);
+						}
+						if (cBest == null || points[0] > max) {
+							cBest = card;
+							max = points[0];
+						}
+					}
+					// and readd
+					lstThis.add(indexOf, card);
 				}
 			}
 		}
-		return cbest;
+		pPoints[0] = max * faktor;
+		return cBest;
 	}
 
 	@Override
@@ -318,7 +382,7 @@ public class OffizierSkat extends Game {
 	protected void help() {
 		Card c = get(16).getLastCard();
 		if (c != null) {
-			List<Card> l = checkPlayableCards(c, 8);
+			ArrayList<Card> l = checkPlayableCards(c, getCards(8));
 			for (int i = 8; i < 16; i++) {
 				Card cl = get(i).getLastCard();
 				setColor(cl, l.contains(cl) ? CardColor.GRAY : CardColor.RED);
@@ -329,6 +393,18 @@ public class OffizierSkat extends Game {
 			setColor(cbest, CardColor.GREEN);
 		}
 		super.help();
+	}
+
+	private ArrayList<Card> getCards(int a) {
+		ArrayList<Card> lst = new ArrayList<Card>();
+		for (int i = 0; i < 8; i++) {
+			Card c = get(i + a).getLastCard();
+			if (c != null) {
+				lst.add(c);
+			}
+		}
+		// TODO Auto-generated method stub
+		return lst;
 	}
 
 	@Override
@@ -481,7 +557,7 @@ public class OffizierSkat extends Game {
 
 			Card c = get(16).getLastCard();
 			if (c != null) {
-				List<Card> l = checkPlayableCards(c, 8);
+				ArrayList<Card> l = checkPlayableCards(c, getCards(8));
 				if (!l.contains(card)) {
 					help();
 					plstMoves.clear();
