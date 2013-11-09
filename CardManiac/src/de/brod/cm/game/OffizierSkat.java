@@ -132,59 +132,72 @@ public class OffizierSkat extends Game {
 
 		Card cbest = getBestMove(lstThis, lstOther, cStack, new int[1], 1, "",
 				0);
-		// int mx = -99;
-		// if (cStack == null) {
-		// // play first
-		// for (int i = 0; i < 8; i++) {
-		// Card c = get(i + iOffset).getLastCard();
-		// if (c != null) {
-		// int cv = getVal(c, 0);
-		// int iLowestValue = 20;
-		// for (Card co : checkPlayableCards(c, 8 - iOffset)) {
-		// if (cardRightIsHigher(c, co)) {
-		// // points are lost
-		// cv = -Math.abs(cv);
-		// } else {
-		// iLowestValue = Math
-		// .min(iLowestValue, getVal(co, 0));
-		// }
-		// }
-		// // don't waste jacks
-		// if (cv == 2 && iLowestValue == 0) {
-		// cv = -5;
-		// }
-		// if (cv > mx) {
-		// mx = cv;
-		// cbest = c;
-		// }
-		// }
-		// }
-		// } else {
-		// // react to card
-		// for (Card co : checkPlayableCards(cStack, iOffset)) {
-		// int cv = getVal(co, 1) + 5;
-		// if (!cardRightIsHigher(cStack, co)) {
-		// // points are lost
-		// cv = -Math.abs(cv);
-		// }
-		// if (cv > mx) {
-		// mx = cv;
-		// cbest = co;
-		// }
-		// }
-		// }
 		return cbest;
+	}
+
+	public Card getSimpleBest(ArrayList<Card> lstThis,
+			ArrayList<Card> lstOther, Card cStack, int[] pPoints, int faktor) {
+		int mx = -99;
+		int points = 0;
+		Card cBest = null;
+		if (cStack == null) {
+			// play first
+			for (Card c : lstThis) {
+				if (c != null) {
+					int cv = getVal(c, 0);
+					int iLowestValue = 20;
+					for (Card co : checkPlayableCards(c, lstOther)) {
+						if (cardRightIsHigher(c, co)) {
+							// points are lost
+							cv = -Math.abs(cv);
+						} else {
+							iLowestValue = Math
+									.min(iLowestValue, getVal(co, 0));
+						}
+					}
+					int cardValue = cv;
+					// don't waste jacks
+					if (cv == 2 && iLowestValue == 0) {
+						cv = -5;
+					}
+					if (cv > mx) {
+						mx = cv;
+						cBest = c;
+						points = cardValue;
+					}
+				}
+			}
+		} else {
+			// react to card
+			for (Card co : checkPlayableCards(cStack, lstThis)) {
+				int cv = getVal(co, 1) + 5;
+				if (!cardRightIsHigher(cStack, co)) {
+					// points are lost
+					cv = -Math.abs(cv);
+				}
+				if (cv > mx) {
+					mx = cv;
+					points = cv;
+					cBest = co;
+				}
+			}
+		}
+		pPoints[0] += points * faktor;
+		return cBest;
 	}
 
 	private Card getBestMove(ArrayList<Card> lstThis, ArrayList<Card> lstOther,
 			Card cStack, int[] pPoints, int faktor, String sInfo, int iDeep) {
 		pPoints[0] = 0;
+		if (iDeep > 4) {
+			return getSimpleBest(lstThis, lstOther, cStack, pPoints, faktor);
+		}
 		int[] points = new int[1];
 		Card cBest = null;
 		int max = 0;
 		System.out.println(sInfo);
 		if (cStack == null) {
-			if (lstThis.size() < 1 || lstOther.size() < 1 || iDeep > 4) {
+			if (lstThis.size() < 1 || lstOther.size() < 1) {
 				// no possible fields
 				return null;
 			}
@@ -192,13 +205,11 @@ public class OffizierSkat extends Game {
 			for (int i = 0; i < lstThis.size(); i++) {
 				// remove
 				Card card = lstThis.remove(i);
-				Card bestMove = getBestMove(lstOther, lstThis, card, points,
-						-faktor, sInfo + card, iDeep + 1);
-				if (bestMove != null) {
-					if (cBest == null || points[0] > max) {
-						cBest = card;
-						max = points[0];
-					}
+				getBestMove(lstOther, lstThis, card, points, -faktor, sInfo
+						+ card, iDeep + 1);
+				if (cBest == null || points[0] > max) {
+					cBest = card;
+					max = points[0];
 				}
 				// and readd
 				lstThis.add(i, card);
@@ -211,22 +222,23 @@ public class OffizierSkat extends Game {
 				int indexOf = lstThis.indexOf(card);
 				if (indexOf >= 0) {
 					lstThis.remove(indexOf);
-					Card bestMove = getBestMove(lstOther, lstThis, null,
-							points, -faktor, sInfo + card, iDeep + 1);
-					if (bestMove != null) {
-						if (cardRightIsHigher(card, cStack)) {
-							// cards are lost
-							points[0] -= getVal(card, 0);
-							points[0] -= getVal(bestMove, 0);
-						} else {
-							// won cards
-							points[0] = getVal(card, 0);
-							points[0] = getVal(bestMove, 0);
-						}
-						if (cBest == null || points[0] > max) {
-							cBest = card;
-							max = points[0];
-						}
+					if (cardRightIsHigher(card, cStack)) {
+						// cards are lost
+						getBestMove(lstOther, lstThis, null, points, -faktor,
+								sInfo + card, iDeep + 1);
+						points[0] -= getVal(card, 0);
+						points[0] -= getVal(cStack, 0);
+					} else {
+						// won cards
+						getBestMove(lstThis, lstOther, null, points, faktor,
+								sInfo + card, iDeep + 1);
+						points[0] = getVal(card, 0);
+						points[0] = getVal(cStack, 0);
+					}
+
+					if (cBest == null || points[0] > max) {
+						cBest = card;
+						max = points[0];
 					}
 					// and readd
 					lstThis.add(indexOf, card);
