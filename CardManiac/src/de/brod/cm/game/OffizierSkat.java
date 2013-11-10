@@ -57,7 +57,7 @@ public class OffizierSkat extends Game {
 		}
 
 		if (cp0.getColor().equals(cp1.getColor())) {
-			return getVal(cp0, 1) < getVal(cp1, 1);
+			return getVal100(cp0) < getVal100(cp1);
 		}
 		// if trump
 		if (isTrump(cp1)) {
@@ -130,35 +130,42 @@ public class OffizierSkat extends Game {
 		Hand handStack = get(16);
 		Card cStack = handStack.getLastCard();
 
-		Card cbest = getBestMove(lstThis, lstOther, cStack, new int[1], 1, "",
-				0);
+		Card cbest = getBestMove(lstThis, lstOther, cStack, new int[1], "", 0,
+				4);
 		return cbest;
 	}
 
 	public Card getSimpleBest(ArrayList<Card> lstThis,
 			ArrayList<Card> lstOther, Card cStack, int[] pPoints, int faktor) {
-		int mx = -99;
+		int mx = -9999;
 		int points = 0;
 		Card cBest = null;
 		if (cStack == null) {
 			// play first
 			for (Card c : lstThis) {
 				if (c != null) {
-					int cv = getVal(c, 0);
-					int iLowestValue = 20;
+					int cv = getVal100(c);
+					int iMinValue = 99999;
+					int iMaxValue = 0;
 					for (Card co : checkPlayableCards(c, lstOther)) {
 						if (cardRightIsHigher(c, co)) {
 							// points are lost
 							cv = -Math.abs(cv);
 						} else {
-							iLowestValue = Math
-									.min(iLowestValue, getVal(co, 0));
+							int val0 = getVal0(co);
+							iMinValue = Math.min(iMinValue, val0);
+							iMaxValue = Math.min(iMaxValue, val0);
 						}
 					}
-					int cardValue = cv;
+					int cardValue = cv / 100;
+					if (cv < 0) {
+						cardValue -= iMaxValue;
+					} else {
+						cardValue += iMinValue;
+					}
 					// don't waste jacks
-					if (cv == 2 && iLowestValue == 0) {
-						cv = -5;
+					if (cv == 200 && iMinValue == 0) {
+						cv = -500;
 					}
 					if (cv > mx) {
 						mx = cv;
@@ -170,16 +177,19 @@ public class OffizierSkat extends Game {
 		} else {
 			// react to card
 			for (Card co : checkPlayableCards(cStack, lstThis)) {
-				int cv = getVal(co, 1) + 5;
+				int cv = getVal100(co);
 				if (!cardRightIsHigher(cStack, co)) {
 					// points are lost
 					cv = -Math.abs(cv);
 				}
 				if (cv > mx) {
 					mx = cv;
-					points = cv;
 					cBest = co;
 				}
+			}
+			points = getVal0(cBest) + getVal0(cStack);
+			if (mx < 0) {
+				points = -points;
 			}
 		}
 		pPoints[0] += points * faktor;
@@ -187,66 +197,74 @@ public class OffizierSkat extends Game {
 	}
 
 	private Card getBestMove(ArrayList<Card> lstThis, ArrayList<Card> lstOther,
-			Card cStack, int[] pPoints, int faktor, String sInfo, int iDeep) {
-		pPoints[0] = 0;
-		if (iDeep > 4) {
-			return getSimpleBest(lstThis, lstOther, cStack, pPoints, faktor);
-		}
-		int[] points = new int[1];
-		Card cBest = null;
+			Card cStack, int[] pPoints, String sInfo, int iDeep, int piMaxDeep) {
+		Card bestCard = null;
+		// reset the points
 		int max = 0;
-		System.out.println(sInfo);
+		int[] points = new int[1];
 		if (cStack == null) {
-			if (lstThis.size() < 1 || lstOther.size() < 1) {
-				// no possible fields
-				return null;
-			}
-			// check all possible cards
+			// play any card
 			for (int i = 0; i < lstThis.size(); i++) {
-				// remove
+				// remove the card
 				Card card = lstThis.remove(i);
-				getBestMove(lstOther, lstThis, card, points, -faktor, sInfo
-						+ card, iDeep + 1);
-				if (cBest == null || points[0] > max) {
-					cBest = card;
-					max = points[0];
+				getBestMove(lstOther, lstThis, card, points, sInfo + " | "
+						+ card, iDeep + 1, piMaxDeep);
+				int val = -points[0];
+				if (val > max || bestCard == null) {
+					max = val;
+					bestCard = card;
 				}
-				// and readd
+				// add the card
 				lstThis.add(i, card);
 			}
 		} else {
+			int valStack = getVal100(cStack);
 			// check only matching cards
 			ArrayList<Card> pc = checkPlayableCards(cStack, lstThis);
+			if (pc.size() <= 1) {
+				// terminate
+				iDeep = piMaxDeep;
+			}
 			for (int i = 0; i < pc.size(); i++) { // remove
 				Card card = pc.get(i);
+				// get the position
 				int indexOf = lstThis.indexOf(card);
-				if (indexOf >= 0) {
-					lstThis.remove(indexOf);
-					if (cardRightIsHigher(card, cStack)) {
-						// cards are lost
-						getBestMove(lstOther, lstThis, null, points, -faktor,
-								sInfo + card, iDeep + 1);
-						points[0] -= getVal(card, 0);
-						points[0] -= getVal(cStack, 0);
-					} else {
-						// won cards
-						getBestMove(lstThis, lstOther, null, points, faktor,
-								sInfo + card, iDeep + 1);
-						points[0] = getVal(card, 0);
-						points[0] = getVal(cStack, 0);
+				// remove the card
+				lstThis.remove(indexOf);
+				int val = getVal100(card) + valStack;
+				// compare
+				if (cardRightIsHigher(cStack, card)) {
+					// cards won
+					if (iDeep < piMaxDeep) {
+						getBestMove(lstThis, lstOther, null, points, sInfo
+								+ card + " (" + val + ") ", iDeep + 1,
+								piMaxDeep);
+						val += points[0] * 3 / 4;
 					}
-
-					if (cBest == null || points[0] > max) {
-						cBest = card;
-						max = points[0];
+				} else {
+					// cards are lost
+					val = -val;
+					if (iDeep < piMaxDeep) {
+						getBestMove(lstOther, lstThis, null, points, sInfo
+								+ card + " (" + val + ") ", iDeep + 1,
+								piMaxDeep);
+						val -= points[0] * 3 / 4;
 					}
-					// and readd
-					lstThis.add(indexOf, card);
 				}
+				if (val > max || bestCard == null) {
+					max = val;
+					bestCard = card;
+				}
+
+				// readd the card
+				lstThis.add(indexOf, card);
 			}
 		}
-		pPoints[0] = max * faktor;
-		return cBest;
+		pPoints[0] = max;
+		if (iDeep < 2) {
+			System.out.println(sInfo + " > " + bestCard + " -> " + max);
+		}
+		return bestCard;
 	}
 
 	@Override
@@ -298,13 +316,17 @@ public class OffizierSkat extends Game {
 							for (int j = 4; j < 8; j++) {
 								Card c = get(j).getLastCard();
 								if (isTrump(c)) {
-									cnt += getVal(c, 1) + 20;
+									cnt += getVal100(c) + 2000;
 									if (i == 4) {
-										cnt += 10;
+										cnt += 900;
 									}
-								} else if (i == 4 && cnt > 10) {
+								}
+							}
+							if (i == 4 && cnt > 1000) {
+								for (int j = 4; j < 8; j++) {
+									Card c = get(j).getLastCard();
 									if (c.getValue().equals(Values.Ace)) {
-										cnt += getVal(c, 1) + 20;
+										cnt += getVal100(c) + 2000;
 									}
 								}
 							}
@@ -356,7 +378,7 @@ public class OffizierSkat extends Game {
 		return buttons.getSettings();
 	}
 
-	private int getVal(Card c, int iNullValue) {
+	private int getVal0(Card c) {
 		Card.Values v = c.getValue();
 		if (v.equals(Card.Values.Ace)) {
 			return 11;
@@ -373,14 +395,34 @@ public class OffizierSkat extends Game {
 		if (v.equals(Card.Values.Jack)) {
 			return 2;
 		}
+		return 0;
+	}
+
+	private int getVal100(Card c) {
+		Card.Values v = c.getValue();
+		if (v.equals(Card.Values.Ace)) {
+			return 1100;
+		}
+		if (v.equals(Card.Values.C10)) {
+			return 1000;
+		}
+		if (v.equals(Card.Values.King)) {
+			return 400;
+		}
+		if (v.equals(Card.Values.Queen)) {
+			return 300;
+		}
+		if (v.equals(Card.Values.Jack)) {
+			return 200 + c.getColor().getId();
+		}
 		if (v.equals(Card.Values.C9)) {
-			return -1 * iNullValue;
+			return 3;
 		}
 		if (v.equals(Card.Values.C8)) {
-			return -2 * iNullValue;
+			return 2;
 		}
 		if (v.equals(Card.Values.C7)) {
-			return -3 * iNullValue;
+			return 1;
 		}
 		return c.getValueId();
 	}
@@ -415,7 +457,6 @@ public class OffizierSkat extends Game {
 				lst.add(c);
 			}
 		}
-		// TODO Auto-generated method stub
 		return lst;
 	}
 
@@ -645,7 +686,7 @@ public class OffizierSkat extends Game {
 		List<Card> cards = hand.getCards();
 		int cnt = 0;
 		for (Card card : cards) {
-			cnt += getVal(card, 0);
+			cnt += getVal0(card);
 		}
 		hand.setText(String.valueOf(cnt));
 	}

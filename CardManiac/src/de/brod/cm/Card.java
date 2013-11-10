@@ -110,6 +110,7 @@ public class Card extends Sprite {
 	private static float offsetY;
 	public static float maxCardY;
 	private static float ym;
+
 	public static float getCardHeight() {
 		return cardHeight;
 	}
