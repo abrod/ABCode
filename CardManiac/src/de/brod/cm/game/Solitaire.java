@@ -59,7 +59,7 @@ public class Solitaire extends Game {
 		}
 		// reshuffle
 		if (get(0).getCardCount() == 0) {
-			if (get(1).getCardCount() > 0) {
+			if (get(1).getCardCount() > 1) {
 				return new IAction() {
 
 					@Override
