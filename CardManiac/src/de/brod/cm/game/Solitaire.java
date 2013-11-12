@@ -25,15 +25,19 @@ import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
+import java.util.*;
 
-public class Solitaire extends Game {
+public class Solitaire extends Game
+{
 
-	public Solitaire(CardManiacView pCardManiacView) {
+	public Solitaire(CardManiacView pCardManiacView)
+	{
 		super(pCardManiacView);
 	}
 
 	@Override
-	protected void createTitleCards(Hand hand) {
+	protected void createTitleCards(Hand hand)
+	{
 		hand.createCard(Values.Ace, Colors.Hearts);
 		hand.createCard(Values.Ace, Colors.Diamonds);
 		hand.createCard(Values.Ace, Colors.Clubs);
@@ -41,15 +45,19 @@ public class Solitaire extends Game {
 	}
 
 	@Override
-	public IAction getNextAction() {
+	public IAction getNextAction()
+	{
 		// turn cards arround
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < 7; i++)
+		{
 			final Card lastCard = get(i + 6).getLastCard();
-			if (lastCard != null && lastCard.isCovered()) {
+			if (lastCard != null && lastCard.isCovered())
+			{
 				return new IAction() {
 
 					@Override
-					public void action() {
+					public void action()
+					{
 						Hand hand = lastCard.getHand();
 						hand.setCovered(hand.getCardCount() - 1);
 						hand.organize();
@@ -58,16 +66,20 @@ public class Solitaire extends Game {
 			}
 		}
 		// reshuffle
-		if (get(0).getCardCount() == 0) {
-			if (get(1).getCardCount() > 1) {
+		if (get(0).getCardCount() == 0)
+		{
+			if (get(1).getCardCount() > 1)
+			{
 				return new IAction() {
 
 					@Override
-					public void action() {
+					public void action()
+					{
 						Hand h0 = get(0);
 						Hand h1 = get(1);
 						Card[] cards = h1.getCards().toArray(new Card[0]);
-						for (int i = 0; i < cards.length - 1; i++) {
+						for (int i = 0; i < cards.length - 1; i++)
+						{
 							cards[i].moveTo(h0);
 						}
 						h0.shuffleCards();
@@ -77,30 +89,95 @@ public class Solitaire extends Game {
 				};
 			}
 		}
+		// move to top
+		int iMin=999;
+		for (int i=2;i < 6;i++)
+		{
+			Hand h=get(i);
+			Card c=h.getLastCard();
+			if (c == null)
+			{
+				iMin = 0;
+				break;
+			}
+			else
+			{
+				iMin = Math.min(iMin, c.getValue().getId() + 1);
+			}
+		}
+		final List<Card> lst= new ArrayList<Card>();
+		for (int i = 1; i < 13; i++)
+		{
+			if (i >= 2 && i < 6)
+				continue;
+			Card lastCard = get(i).getLastCard();
+			if (lastCard != null && lastCard.getValue().getId() == iMin)
+			{
+				lst.add(lastCard);
+			}
+		}
+		// System.out.println(iMin+" "+lst.size());
+		if (lst.size() > 0)
+		{
+			return new IAction() {
+
+				@Override
+				public void action()
+				{
+					for (Card card:lst)
+					{
+						Hand hand = card.getHand();
+						// hand.setCovered(hand.getCardCount() - 1);
+						for (int i=2;i < 6;i++)
+						{
+							Hand h=get(i);
+							Card c=h.getLastCard();
+							if (c == null)
+							{
+								card.moveTo(h);
+								h.organize();
+								break;
+							}
+							else if (c.getColor().equals(card.getColor()))
+							{
+								card.moveTo(h);
+								h.organize();
+								break;
+							}
+						}
+						hand.organize();
+					}
+				}
+			};
+		}
 
 		return null;
 	}
 
 	@Override
-	public boolean hasHistory() {
+	public boolean hasHistory()
+	{
 		// add undo
 		return true;
 	}
 
 	@Override
-	public void initHands(boolean bLandscape) {
+	public void initHands(boolean bLandscape)
+	{
 		int iCount = 0;
 		float x1 = 2 * 7 / 6f;
 		add(new Hand(iCount, 0, 0, x1 / 2 - 0.5f, 0, 15));
 		iCount++;
 		add(new Hand(iCount, x1 / 2 + 0.5f, 0, x1, 0, 15));
 		iCount++;
-		for (int i = 3; i < 7; i++) {
+		for (int i = 3; i < 7; i++)
+		{
 			float x = i * 7 / 6f;
 			add(new Hand(iCount, x, 0, x, 0, 15));
 			iCount++;
 		}
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < 7; i++)
+		{
 			float x = i * 7 / 6f;
 			add(new Hand(iCount, x, 1, x, Card.maxCardY, 15));
 			iCount++;
@@ -109,45 +186,113 @@ public class Solitaire extends Game {
 	}
 
 	@Override
-	public void initNewCards() {
+	public void initNewCards()
+	{
 		Card[] cards = get(0).create52Cards();
 		get(0).setCovered(999);
 		int iPos = 6;
 		int iOff = 0;
-		for (Card card : cards) {
+		for (Card card : cards)
+		{
 			card.moveTo(get(iPos));
 			iPos++;
-			if (iPos >= 13) {
+			if (iPos >= 13)
+			{
 				iPos = 6 + iOff;
-				if (iPos >= 13) {
+				if (iPos >= 13)
+				{
 					break;
 				}
 				iOff++;
 			}
 		}
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < 7; i++)
+		{
 			get(i + 6).setCovered(i + 1);
 		}
 	}
 
 	@Override
-	public boolean isFinished() {
+	public boolean isFinished()
+	{
 		// is never finished
 		return false;
 	}
 
 	@Override
-	public void mouseDown(List<Card> plstMoves) {
+	public void mouseDown(List<Card> plstMoves)
+	{
 		Card card = plstMoves.get(0);
-		// don't move covered cards
-		if (card.isCovered()) {
-			Hand hand = card.getHand();
-			if (hand.getId() >= 6) {
-				plstMoves.clear();
+		Hand hand = card.getHand();
+		if (hand.getId() >= 6)
+		{
+			plstMoves.clear();
+			// don't move covered cards
+			if (card.isCovered())
+			{
 				return;
+			}
+			boolean bAdd=false;
+			for (Card c:hand.getCards())
+			{
+				if (c == card)
+				{
+					bAdd = true;
+				}
+				if (bAdd)
+					plstMoves.add(c);
+			}
+		}
+		else
+		{
+			if (hand.getLastCard() != card)
+			{
+				plstMoves.clear();
 			}
 		}
 
 	}
 
+	public boolean mouseUp(List<Card> pLstMoves, Hand handTo)
+	{
+		if (handTo == null)
+		{ 
+			// dont move
+			return false;
+		}
+		Card c0=pLstMoves.get(0);
+		Card cto=handTo.getLastCard();
+		// pLstMoves.clear();
+		if (handTo == c0.getHand())
+		{
+			if (c0.getHand().getId() == 0)
+			{
+				handTo = get(1);
+			} else return false;
+		} else if (handTo.getId()<2){
+			return false;
+		} else if (handTo.getId()<6){
+			if (pLstMoves.size()>1)
+				return false;
+			if (cto==null){
+				if (c0.getValue().getId()!=0){
+					return false;
+				}
+			} else if (!cto.getColor().equals(c0.getColor())){
+				return false;
+			} else if (cto.getValue().getId()+1!= c0.getValue().getId()){
+				return false;
+			}
+		} else if (cto==null){
+			if (c0.getValue().getId()!=12){
+				return false;
+			}
+		} else if (cto.getColor().getId()/2==c0.getColor().getId()/2){
+			return false;
+		} else if (cto.getValue().getId()-1!= c0.getValue().getId()){
+			return false;
+		}
+		
+		return super.mouseUp(pLstMoves, handTo);
+	}
 }
