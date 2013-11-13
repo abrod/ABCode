@@ -140,22 +140,51 @@ public class Solitaire extends Game {
 	@Override
 	public void initHands(boolean bLandscape) {
 		int iCount = 0;
-		float x1 = 2 * 7 / 6f;
-		add(new Hand(iCount, 0, 0, x1 / 2 - 0.5f, 0, 15));
-		iCount++;
-		add(new Hand(iCount, x1 / 2 + 0.5f, 0, x1, 0, 15));
-		iCount++;
-		for (int i = 3; i < 7; i++) {
-			float x = i * 7 / 6f;
-			add(new Hand(iCount, x, 0, x, 0, 15));
+		if (!bLandscape){
+			float x1 = 2 * 7 / 6f;
+			float dx;
+			dx=7-x1;
+			add(new Hand(iCount, dx + x1 / 2 + 0.5f, 0, dx+x1, 0, 15));
 			iCount++;
-		}
-		for (int i = 0; i < 7; i++) {
-			float x = i * 7 / 6f;
-			add(new Hand(iCount, x, 1, x, Card.maxCardY, 15));
+			add(new Hand(iCount, dx, 0, dx + x1 / 2 - 0.5f, 0, 15));
 			iCount++;
+			dx = 0;
+			for (int i = 3; i < 7; i++) {
+				float x = dx+(i-3);
+				add(new Hand(iCount, x, 0, x, 0, 15));
+				iCount++;
+			}
+			for (int i = 0; i < 7; i++) {
+				float x = i * 7 / 6f;
+				add(new Hand(iCount, x, 1, x, Card.maxCardY, 15));
+				iCount++;
+			}
+		} else {
+			float px=8.5f;
+			add(new Hand(iCount, px, 0, px, Card.maxCardY/2-0.5f, 15));
+			iCount++;
+			add(new Hand(iCount, px, Card.maxCardY/2+0.5f, px, Card.maxCardY, 15));
+			iCount++;
+			px=-1.2f;
+			for (int i = 3; i < 7; i++) {
+				float y = (i-3);
+				add(new Hand(iCount, px-0.5f, y, px, y, 15));
+				iCount++;
+			}
+			for (int i = 0; i < 7; i++) {
+				float x = i * 7 / 6f;
+				add(new Hand(iCount, x, 0, x, Card.maxCardY, 15));
+				iCount++;
+			}
 		}
+		
 		get(0).setCovered(999);
+		for (int i = 2; i < 6; i++) {
+			get(i).getStackCard().setValue(13 * 4 + 1);
+		}
+		for (int i = 6; i < 13; i++) {
+			get(i).getStackCard().setValue(13 * 4 + 3);
+		}
 	}
 
 	@Override

@@ -153,7 +153,17 @@ public class CardImage {
 				drawText(c, rect, bounds, Card.Colors.Hearts.toString(), paint,
 						false, false);
 
-			}
+			} else if (piValue == 3) {
+				int bc = GuiRendererView.getBackColor();
+				bc = Color.argb(255, Color.red(bc) / 2, Color.green(bc) / 2,
+		 		  Color.blue(bc) / 2);
+				drawEmptyCard(c, left, top, wd, hg, paint, rect, bc);
+				rect.set(l, t, r, bt);
+				String sValue = Values.King.toString();
+				paint.setColor(Color.BLACK);
+				drawText(c, rect, bounds, sValue, paint, true, true);
+				drawText(c, rect, bounds, sValue, paint, false, false);
+			} 
 
 		}
 	}

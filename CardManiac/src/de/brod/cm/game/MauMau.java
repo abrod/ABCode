@@ -257,6 +257,8 @@ public class MauMau extends Game {
 		for (int i = 1; i <= 4; i++) {
 			get(i).setCenter(true);
 		}
+		get(1).setRotation(-90f);
+		get(3).setRotation(90f);
 		// set order
 		get(4).setCardComperator(getColorOrder());
 		// add a ButtonContainer
