@@ -57,13 +57,16 @@ public class Sprite extends Container {
 
 	private float len;
 
-	private float da, angle = 0, angleSave = 0, rot=0, rotc=1, rots=0, rotSave, drot;
+	private float da, angle = 0, angleSave = 0, rot = 0, rotc = 1, rots = 0,
+			rotSave, drot;
 
 	private boolean bShowBackSide = false;
 
 	private float pxCell, pyCell, pxCellBack, pyCellBack;
 
 	private float cos = 1;
+
+	private float height, width;
 
 	public Sprite() {
 		// this(null, 0, 0);
@@ -143,12 +146,12 @@ public class Sprite extends Container {
 		super.draw(gl);
 	}
 
-	public float getHeight(){
-		return h*2;
+	public float getHeight() {
+		return height;
 	}
 
-	public float getWidth(){
-		return wd*2;
+	public float getWidth() {
+		return width;
 	}
 
 	public float getX() {
@@ -171,13 +174,16 @@ public class Sprite extends Container {
 			dx = x - xSave;
 			dy = y - ySave;
 			da = angle - angleSave;
-			drot = rot- rotSave;
+			drot = rot - rotSave;
 
 			len = Math.max(0.001f,
 					Math.min(1, (float) Math.sqrt(dx * dx + dy * dy)));
 			if (da != 0) {
 				setInternalAngle(angleSave);
 				len = 1;
+			}
+			if (drot != 0) {
+				setInternalRotation(rotSave);
 			}
 			setPosition(xSave, ySave);
 		}
@@ -189,7 +195,7 @@ public class Sprite extends Container {
 		xSave = x;
 		ySave = y;
 		angleSave = angle;
-		rotSave=rot;
+		rotSave = rot;
 		moving = false;
 		setSliding(false);
 	}
@@ -198,23 +204,22 @@ public class Sprite extends Container {
 		setInternalAngle(angle2);
 		setPosition(x, y);
 	}
-	
-	public void setRotation(float a){
-		if (rot!=a){
+
+	public void setRotation(float a) {
+		if (rot != a) {
 			setInternalRotation(a);
-			setPosition(x,y);
+			setPosition(x, y);
 		}
 	}
-	
-	
-	public void setInternalRotation(float a){
-		if (rot!=a){
-			rot=a;
-			rotc=(float)Math.cos(Math.toRadians(a));
-			rots=(float)Math.sin(Math.toRadians(a));
+
+	public void setInternalRotation(float a) {
+		if (rot != a) {
+			rot = a;
+			rotc = (float) Math.cos(Math.toRadians(a));
+			rots = (float) Math.sin(Math.toRadians(a));
 		}
 	}
-	
+
 	private void setCell() {
 		if (tex == null) {
 			return;
@@ -334,7 +339,7 @@ public class Sprite extends Container {
 		}
 		w = wd * cos;
 	}
-	
+
 	public void setPosition(float px, float py) {
 		x = px;
 		y = py;
@@ -364,17 +369,35 @@ public class Sprite extends Container {
 			position[9] = position[3];
 			position[10] = position[7];
 		}
-		if (rot!=0){
-			for (int i=0;i<10;i+=3){
-				float xa=position[i]-x;
-				float ya=position[i+1]-y;
-				position[i]=x+rotc*xa-rots*ya;
-				position[i+1]=y+rots*xa+rotc*ya;
+		if (rot != 0) {
+			float[] minmax = new float[4];
+			for (int i = 0; i < 10; i += 3) {
+				float xa = position[i] - x;
+				float ya = position[i + 1] - y;
+				position[i] = x + rotc * xa - rots * ya;
+				position[i + 1] = y + rots * xa + rotc * ya;
+				// calculate the height/width
+				if (i == 0) {
+					minmax[0] = position[i];
+					minmax[1] = position[i + 1];
+					minmax[2] = position[i];
+					minmax[3] = position[i + 1];
+				} else {
+					minmax[0] = Math.min(minmax[0], position[i]);
+					minmax[1] = Math.min(minmax[1], position[i + 1]);
+					minmax[2] = Math.max(minmax[2], position[i]);
+					minmax[3] = Math.max(minmax[3], position[i + 1]);
+				}
 			}
+			width = minmax[2] - minmax[0];
+			height = minmax[3] - minmax[1];
+		} else {
+			width = w * 2;
+			height = h * 2;
 		}
 		setVertices(position);
 	}
-	
+
 	public void setSize(float width, float height) {
 		wd = width / 2;
 		h = height / 2;
@@ -427,8 +450,8 @@ public class Sprite extends Container {
 		if (da != 0) {
 			setInternalAngle(angleSave + d * da);
 		}
-		if (drot!=0){
-			setInternalRotation(rotSave + d*drot);
+		if (drot != 0) {
+			setInternalRotation(rotSave + d * drot);
 		}
 		setPosition(xSave + d * dx, ySave + d * dy);
 

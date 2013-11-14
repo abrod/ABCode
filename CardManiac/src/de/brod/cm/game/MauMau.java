@@ -249,6 +249,8 @@ public class MauMau extends Game {
 
 		// add the stacks
 		add(new Hand(5, 4, y2, 5, y2, 16));
+		get(1).setRotation(90f);
+		get(3).setRotation(-90f);
 
 		get(1).initText(TextAlign.RIGHT);
 		get(2).initText(TextAlign.BOTTOM);
@@ -257,8 +259,6 @@ public class MauMau extends Game {
 		for (int i = 1; i <= 4; i++) {
 			get(i).setCenter(true);
 		}
-		get(1).setRotation(-90f);
-		get(3).setRotation(90f);
 		// set order
 		get(4).setCardComperator(getColorOrder());
 		// add a ButtonContainer

@@ -36,7 +36,7 @@ public class Hand extends CardContainer {
 	private boolean bCenter = false;
 	private int covered = 0;
 	private Comparator<? super Card> cardComperator = null;
-	private float angle=0;
+	private float angle = 0;
 
 	/**
 	 * Create a Hand object. The
@@ -55,18 +55,17 @@ public class Hand extends CardContainer {
 		c0 = createCard(Card.Values.Ace, Card.Colors.Empty);
 		c0.setMoveable(false);
 		lstCards.clear();
-}
+	}
 
-public void setRotation(float p0)
-{
-	if (angle!=p0){
-		angle=p0;
-		c0.setRotation(angle);
-		for (Card c:lstCards){
-			c.setRotation(angle);
+	public void setRotation(float p0) {
+		if (angle != p0) {
+			angle = p0;
+			c0.setRotation(angle);
+			for (Card c : lstCards) {
+				c.setRotation(angle);
+			}
 		}
 	}
-}
 
 	public void add(Card card) {
 		if (cardComperator != null) {
@@ -277,4 +276,13 @@ public void setRotation(float p0)
 		return sb.toString();
 	}
 
+	@Override
+	public float getWidth() {
+		return c0.getWidth();
+	}
+
+	@Override
+	public float getHeight() {
+		return c0.getHeight();
+	}
 }

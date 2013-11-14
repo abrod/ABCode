@@ -66,4 +66,20 @@ public class Buttons extends CardContainer {
 		lstButtons.get(i).setEnabled(p1);
 	}
 
+	@Override
+	public float getWidth() {
+		if (lstButtons.size() > 0) {
+			return lstButtons.get(0).getWidth();
+		}
+		return 0;
+	}
+
+	@Override
+	public float getHeight() {
+		if (lstButtons.size() > 0) {
+			return lstButtons.get(0).getHeight();
+		}
+		return 0;
+	}
+
 }

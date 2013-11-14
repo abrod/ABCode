@@ -115,27 +115,34 @@ public abstract class CardContainer {
 					float fTitleHeight = Card.getCardHeight() / 4;
 					Text text;
 					int ia = 0;
+					float left = getX(-1f) - fTitleHeight / 4;
+					float center = getX(0f);
+					float right = getX(1f) + fTitleHeight / 4;
+
+					// float top = pos[1] + pos[3] + Card.getCardHeight() / 2;
+					// float middle = pos[1] + pos[3] / 2 - fTitleHeight / 2;
+					// float bottom = pos[1] + pos[3] - Card.getCardHeight() / 2
+					// - fTitleHeight;
+
+					float top = getY(1);
+					float middle = getY(0) - fTitleHeight / 2;
+					float bottom = getY(-1) - fTitleHeight;
+
 					if (_textAlign.equals(TextAlign.TOP)) {
-						text = Text.createText(psText, pos[0] + pos[2] / 2,
-								pos[1] + pos[3] + Card.getCardHeight() / 2,
+						text = Text.createText(psText, center, top,
 								fTitleHeight);
 						ia = 2;
 					} else if (_textAlign.equals(TextAlign.LEFT)) {
-						text = Text.createText(psText,
-								pos[0] - Card.getCardWidth() / 2, pos[1]
-										+ pos[3] / 2 - fTitleHeight / 2,
+						text = Text.createText(psText, left, middle,
 								fTitleHeight);
 						ia = 1;
 					} else if (_textAlign.equals(TextAlign.RIGHT)) {
-						text = Text.createText(psText,
-								pos[0] + pos[2] + Card.getCardWidth() / 2,
-								pos[1] + pos[3] / 2 - fTitleHeight / 2,
+						text = Text.createText(psText, right, middle,
 								fTitleHeight);
 					} else {
 						// bottom
-						text = Text.createText(psText, pos[0] + pos[2] / 2,
-								pos[1] + pos[3] - Card.getCardHeight() / 2
-										- fTitleHeight, fTitleHeight);
+						text = Text.createText(psText, center, bottom,
+								fTitleHeight);
 						ia = 2;
 					}
 
@@ -155,5 +162,19 @@ public abstract class CardContainer {
 		}
 		return textContainer;
 	}
+
+	public float getX(float f) {
+		float center = pos[0] + pos[2] / 2;
+		return center + getWidth() * f / 2;
+	}
+
+	public abstract float getWidth();
+
+	public float getY(float f) {
+		float center = pos[1] + pos[3] / 2;
+		return center + getHeight() * f / 2;
+	}
+
+	public abstract float getHeight();
 
 }
