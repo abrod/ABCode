@@ -561,7 +561,7 @@ public class OffizierSkat extends Game {
 			}
 		}
 		int iOther = getCounter(get(17));
-		int iPlayer = getCounter(get(17));
+		int iPlayer = getCounter(get(18));
 		if (iOther > iPlayer) {
 			return "You lost " + iPlayer + ":" + iOther + ".";
 		} else if (iOther < iPlayer) {

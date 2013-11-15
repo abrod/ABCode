@@ -219,8 +219,8 @@ public abstract class Game {
 		} else if (CardColor.GREEN.equals(pOK)) {
 			cl.setColor(Color.argb(255, c, a, b));
 		} else if (CardColor.GRAY.equals(pOK)) {
-			int d = (a + b) / 2;
-			cl.setColor(Color.argb(255, d, 255, d));
+			int d = (a + 255) / 2;
+			cl.setColor(Color.argb(255, a, d, a));
 		}
 	}
 
