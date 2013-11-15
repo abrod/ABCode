@@ -554,13 +554,24 @@ public class OffizierSkat extends Game {
 	}
 
 	@Override
-	public boolean isFinished() {
+	public String getFinishedText() {
 		for (int i = 0; i <= 16; i++) {
 			if (get(i).getCardCount() > 0) {
-				return false;
+				return null;
 			}
 		}
-		return true;
+		int iOther = getCounter(get(17));
+		int iPlayer = getCounter(get(17));
+		if (iOther > iPlayer) {
+			return "You lost " + iPlayer + ":" + iOther + ".";
+		} else if (iOther < iPlayer) {
+			return "You won " + iPlayer + ":" + iOther + ".";
+		}
+		int iLastPlayer = getSettingAsInt("lastPlayer");
+		if (iLastPlayer == 0) {
+			return "You lost " + iPlayer + ":" + iOther + ".";
+		}
+		return "You won " + iPlayer + ":" + iOther + ".";
 	}
 
 	private boolean isTrump(Card cp1) {
@@ -683,11 +694,17 @@ public class OffizierSkat extends Game {
 	}
 
 	private void setCounter(Hand hand) {
+
+		int cnt = getCounter(hand);
+		hand.setText(String.valueOf(cnt));
+	}
+
+	private int getCounter(Hand hand) {
 		List<Card> cards = hand.getCards();
 		int cnt = 0;
 		for (Card card : cards) {
 			cnt += getVal0(card);
 		}
-		hand.setText(String.valueOf(cnt));
+		return cnt;
 	}
 }

@@ -96,9 +96,6 @@ public class MauMau extends Game {
 	@Override
 	public IAction getNextAction() {
 
-		if (isFinished()) {
-			return null;
-		}
 		final XmlObject settings = getSettings();
 		if (settings.getAttributeAsBoolean("jack")) {
 			// player has to select color
@@ -239,12 +236,13 @@ public class MauMau extends Game {
 			top = 0;
 			maxCount = 10;
 		}
+		int maxCount2 = maxCount * 3 / 2;
 		add(new Hand(0, 2, y2, 3, y2, 16));
 		// add the players
-		add(new Hand(1, left - 1, top, left - 1, Card.maxCardY - top, maxCount));
+		add(new Hand(1, left - 1, top, left - 1, Card.maxCardY - top, maxCount2));
 		add(new Hand(2, left, 0, right, 0, maxCount));
 		add(new Hand(3, right + 1, top, right + 1, Card.maxCardY - top,
-				maxCount));
+				maxCount2));
 		add(new Hand(4, left, Card.maxCardY, right, Card.maxCardY, maxCount));
 
 		// add the stacks
@@ -345,13 +343,17 @@ public class MauMau extends Game {
 	}
 
 	@Override
-	public boolean isFinished() {
+	public String getFinishedText() {
 		for (int i = 1; i <= 4; i++) {
 			if (get(i).getCardCount() == 0) {
-				return true;
+				if (i == 4) {
+					return "You have won.";
+				} else {
+					return "Player " + i + " won.";
+				}
 			}
 		}
-		return false;
+		return null;
 	}
 
 	private boolean matchesStack(Card card, XmlObject settings) {
@@ -432,10 +434,6 @@ public class MauMau extends Game {
 
 	@Override
 	public void mouseDown(List<Card> plstMoves) {
-		if (isFinished() || plstMoves.size() == 0) {
-			plstMoves.clear();
-			return;
-		}
 		resetColors();
 		XmlObject settings = getSettings();
 		int iPlayer = settings.getAttributeAsInt("player");

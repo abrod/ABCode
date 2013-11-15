@@ -194,17 +194,17 @@ public class FreeCell extends Game {
 	}
 
 	@Override
-	public boolean isFinished() {
+	public String getFinishedText() {
 		for (int i = 0; i < 16; i++) {
 			if (i % 2 == 0 && i >= 8) {
 				// ignore
 			} else {
 				if (get(i).getCardCount() > 0) {
-					return false;
+					return null;
 				}
 			}
 		}
-		return true;
+		return "All cards played.";
 	}
 
 	private boolean matches(Card cLastCard, Card cFirstCardOfMovingStack) {

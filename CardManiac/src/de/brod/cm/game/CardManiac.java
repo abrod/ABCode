@@ -97,9 +97,9 @@ public class CardManiac extends Game {
 	}
 
 	@Override
-	public boolean isFinished() {
+	public String getFinishedText() {
 		// never finishes
-		return false;
+		return null;
 	}
 
 	@Override

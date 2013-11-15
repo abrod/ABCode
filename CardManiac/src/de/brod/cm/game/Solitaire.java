@@ -211,9 +211,14 @@ public class Solitaire extends Game {
 	}
 
 	@Override
-	public boolean isFinished() {
-		// is never finished
-		return false;
+	public String getFinishedText() {
+		for (int i = 0; i < 13; i++) {
+			int cardCount = get(i).getCardCount();
+			if (cardCount > 0 && cardCount < 13) {
+				return null;
+			}
+		}
+		return "All cards played.";
 	}
 
 	@Override

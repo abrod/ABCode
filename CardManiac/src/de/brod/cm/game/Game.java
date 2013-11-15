@@ -159,7 +159,7 @@ public abstract class Game {
 
 	public abstract void initNewCards();
 
-	public abstract boolean isFinished();
+	public abstract String getFinishedText();
 
 	public void menuPressed(String sItem, StateHandler stateHandler) {
 		if (sItem.equals("New")) {

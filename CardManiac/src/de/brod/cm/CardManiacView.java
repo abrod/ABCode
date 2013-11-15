@@ -27,6 +27,7 @@ import de.brod.cm.game.CardManiac;
 import de.brod.cm.game.Game;
 import de.brod.gui.GuiRendererView;
 import de.brod.gui.IAction;
+import de.brod.gui.IDialogAction;
 import de.brod.gui.StateHandler;
 import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Button.Type;
@@ -47,6 +48,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 	private int _piOffsetTop;
 
 	private GL10 _gl;
+	Boolean finished = null;
 
 	public CardManiacView(CardManiacActivity context) {
 		super(context);
@@ -100,7 +102,37 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected IAction getNextAction() {
-		if (game.isFinished()) {
+		String finishedText = game.getFinishedText();
+		if (finishedText != null) {
+			if (finished == null) {
+				IDialogAction[] sButtons = { new IDialogAction() {
+
+					@Override
+					public void action() {
+						applicationStateHandler.clear();
+						reload();
+					}
+
+					@Override
+					public String getName() {
+						return "Yes";
+					}
+				}, new IDialogAction() {
+
+					@Override
+					public void action() {
+
+					}
+
+					@Override
+					public String getName() {
+						return "No";
+					}
+				} };
+				showMessage("Finished", finishedText
+						+ "\nDo you want to start a new game ?", sButtons);
+				finished = Boolean.TRUE;
+			}
 			return null;
 		}
 		return game.getNextAction();
@@ -144,7 +176,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 			cc.organize();
 			cc.addAllSpritesTo(root);
 		}
-
+		finished = null;
 		game.prepareUpdate(applicationStateHandler, htTitleButtons);
 	}
 
@@ -180,7 +212,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected void mouseDown(List<Card> plstMoves) {
-		if (game.isFinished()) {
+		if (game.getFinishedText() != null) {
 			plstMoves.clear();
 			return;
 		}
@@ -190,7 +222,7 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected boolean mouseUp(List<Card> pLstMoves, Card cardTo) {
-		if (game.isFinished()) {
+		if (game.getFinishedText() != null) {
 			return false;
 		}
 		boolean bChanged = false;
@@ -239,6 +271,5 @@ public class CardManiacView extends GuiRendererView<Card> {
 	protected boolean showBackButton() {
 		return game == null || !(game instanceof CardManiac);
 	}
-
 
 }
