@@ -55,11 +55,13 @@ public class CardManiacView extends GuiRendererView<Card> {
 	}
 
 	@Override
-	protected void backButtonPressed() {
+	protected boolean backButtonPressed() {
 		Game prevGame = game.getPreviousGame(this);
 		if (prevGame != null) {
 			openGame(prevGame);
+			return true;
 		}
+		return false;
 	}
 
 	@Override

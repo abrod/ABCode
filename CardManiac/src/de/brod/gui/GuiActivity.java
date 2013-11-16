@@ -20,6 +20,7 @@ package de.brod.gui;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -49,4 +50,20 @@ public abstract class GuiActivity extends Activity {
 		setContentView(glSurfaceView);
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		System.out.println("KeyCode: " + keyCode);
+		if (keyCode == KeyEvent.KEYCODE_MENU) {
+			glSurfaceView.openMenu();
+			glSurfaceView.requestRender();
+			return true;
+		} else if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if (glSurfaceView.backButtonPressed()) {
+				glSurfaceView.requestRender();
+				return true;
+			}
+			// else handle default back
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }

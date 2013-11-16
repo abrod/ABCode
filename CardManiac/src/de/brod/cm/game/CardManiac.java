@@ -40,6 +40,11 @@ public class CardManiac extends Game {
 	}
 
 	@Override
+	public Game getPreviousGame(CardManiacView cardManiacView2) {
+		return null;
+	}
+
+	@Override
 	public void addButtonTypes(List<Type> lst) {
 		lst.add(Type.next);
 		lst.add(Type.info);

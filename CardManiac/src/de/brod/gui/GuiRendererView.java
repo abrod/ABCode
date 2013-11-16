@@ -47,21 +47,17 @@ import de.brod.gui.shape.Sprite;
 import de.brod.gui.shape.Text;
 
 public abstract class GuiRendererView<SPRITE extends Sprite> extends
-GuiView<SPRITE> implements Renderer
-{
+		GuiView<SPRITE> implements Renderer {
 
-	private class ButtonAction implements IAction
-	{
+	private class ButtonAction implements IAction {
 		public Type type;
 
-		public ButtonAction(Type pType)
-		{
+		public ButtonAction(Type pType) {
 			type = pType;
 		}
 
 		@Override
-		public void action()
-		{
+		public void action() {
 			buttonPressed(type);
 		}
 
@@ -77,13 +73,11 @@ GuiView<SPRITE> implements Renderer
 		setBackColor(Color.argb(255, 26, 100, 50));
 	}
 
-	public static int getBackColor()
-	{
+	public static int getBackColor() {
 		return backColor;
 	}
 
-	private static void setBackColor(int pBackColor)
-	{
+	private static void setBackColor(int pBackColor) {
 		r = Color.red(pBackColor) / 255f;
 		g = Color.green(pBackColor) / 255f;
 		b = Color.blue(pBackColor) / 255f;
@@ -100,8 +94,7 @@ GuiView<SPRITE> implements Renderer
 
 	protected Hashtable<Button.Type, Button> htTitleButtons = new Hashtable<Button.Type, Button>();
 
-	public GuiRendererView(GuiActivity context)
-	{
+	public GuiRendererView(GuiActivity context) {
 		super(context);
 		activity = context;
 		// set our renderer to be the main renderer with
@@ -110,136 +103,119 @@ GuiView<SPRITE> implements Renderer
 		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
 
-	protected abstract void backButtonPressed();
+	protected abstract boolean backButtonPressed();
 
-	protected void buttonPressed(Type type)
-	{
-		if (type.equals(Type.menu))
-		{
+	protected void buttonPressed(Type type) {
+		if (type.equals(Type.menu)) {
 			openMenu();
 		}
 	}
 
 	public void showMessage(final String psTitle, final String psMessage,
-							final IDialogAction[] sButtons)
-	{
+			final IDialogAction[] sButtons) {
 		activity.runOnUiThread(new Runnable() {
-				public void run()
-				{
-					AlertDialog.Builder dlgAlert = new AlertDialog.Builder(activity);
+			@Override
+			public void run() {
+				AlertDialog.Builder dlgAlert = new AlertDialog.Builder(activity);
 
-					dlgAlert.setMessage(psMessage);
-					dlgAlert.setTitle(psTitle);
-					if (sButtons.length > 0)
-					{
-						dlgAlert.setPositiveButton(sButtons[0].getName(),
+				dlgAlert.setMessage(psMessage);
+				dlgAlert.setTitle(psTitle);
+				if (sButtons.length > 0) {
+					dlgAlert.setPositiveButton(sButtons[0].getName(),
 							new DialogInterface.OnClickListener() {
 								@Override
-								public void onClick(DialogInterface dialog, int which)
-								{
+								public void onClick(DialogInterface dialog,
+										int which) {
 									sButtons[0].action();
 									// repaint
 									requestRender();
 								}
 							});
-						if (sButtons.length == 2)
-						{
-							dlgAlert.setNegativeButton(sButtons[1].getName(),
+					if (sButtons.length == 2) {
+						dlgAlert.setNegativeButton(sButtons[1].getName(),
 								new DialogInterface.OnClickListener() {
 									@Override
 									public void onClick(DialogInterface dialog,
-														int which)
-									{
+											int which) {
 										sButtons[1].action();
 										// repaint
 										requestRender();
 									}
 								});
-						}
-						else if (sButtons.length > 2)
-						{
-							dlgAlert.setNeutralButton(sButtons[1].getName(),
+					} else if (sButtons.length > 2) {
+						dlgAlert.setNeutralButton(sButtons[1].getName(),
 								new DialogInterface.OnClickListener() {
 									@Override
 									public void onClick(DialogInterface dialog,
-														int which)
-									{
+											int which) {
 										sButtons[1].action();
 										// repaint
 										requestRender();
 									}
 								});
-							dlgAlert.setNegativeButton(sButtons[2].getName(),
+						dlgAlert.setNegativeButton(sButtons[2].getName(),
 								new DialogInterface.OnClickListener() {
 									@Override
 									public void onClick(DialogInterface dialog,
-														int which)
-									{
+											int which) {
 										sButtons[2].action();
 										// repaint
 										requestRender();
 									}
 								});
-						}
-
 					}
-					else
-					{
-						dlgAlert.setPositiveButton("OK",
+
+				} else {
+					dlgAlert.setPositiveButton("OK",
 							new DialogInterface.OnClickListener() {
 								@Override
-								public void onClick(DialogInterface dialog, int which)
-								{
+								public void onClick(DialogInterface dialog,
+										int which) {
 									// make nothing
 								}
 							});
-					}
-					dlgAlert.setCancelable(true);
-					dlgAlert.create().show();
-				}});
+				}
+				dlgAlert.setCancelable(true);
+				dlgAlert.create().show();
+			}
+		});
 	}
 
 	Sprite createButton(Hashtable<Type, Button> htTitleButtons, Type pType,
-						int i, int maxCount, boolean bTop, Align align)
-	{
+			int i, int maxCount, boolean bTop, Align align) {
 		ButtonAction buttonAction = new ButtonAction(pType);
 		Button createButton = pType.createButton(i, maxCount, bTop, align,
-												 buttonAction);
+				buttonAction);
 		htTitleButtons.put(pType, createButton);
 		return createButton;
 
 	}
 
-	public Activity getActivity()
-	{
+	public Activity getActivity() {
 		return activity;
 	}
 
 	protected abstract List<Type> getButtonsBottom();
 
-	public List<Type> getButtonsTop()
-	{
+	public List<Type> getButtonsTop() {
 		ArrayList<Type> arrayList = new ArrayList<Type>();
 		arrayList.add(Button.Type.menu);
 		return arrayList;
 	}
 
 	@Override
-	public float getX(MotionEvent event)
-	{
+	public float getX(MotionEvent event) {
 		return (event.getX() * 2f * wd / width - wd);
 	}
 
 	@Override
-	public float getY(MotionEvent event)
-	{
+	public float getY(MotionEvent event) {
 		return (hg - event.getY() * 2f * hg / height);
 	}
 
-	protected void initApplication()
-	{
+	protected void initApplication() {
 		applicationStateHandler = new StateHandler(new File(
-													   activity.getFilesDir(), getApplicationName() + ".xml"));
+				activity.getFilesDir(), getApplicationName() + ".xml"));
 		root = new Sprite();
 
 		Sprite title = new Sprite();
@@ -251,7 +227,7 @@ GuiView<SPRITE> implements Renderer
 
 		// createa a title bar
 		Rectangle titleBar = new Rectangle(-Button.maxWidth, Button.maxHeight
-										   - fTitleHeight, Button.maxWidth * 2, fTitleHeight);
+				- fTitleHeight, Button.maxWidth * 2, fTitleHeight);
 		titleBar.setColor(Color.argb(128, 0, 0, 0));
 		title.add(titleBar);
 
@@ -259,40 +235,35 @@ GuiView<SPRITE> implements Renderer
 		float fMoveLeft = 0.5f;
 		// create a title icon
 		IAction backAction = null;
-		if (showBackButton())
-		{
+		if (showBackButton()) {
 			backAction = new IAction() {
 				@Override
-				public void action()
-				{
+				public void action() {
 					backButtonPressed();
 				}
 
 			};
-		}
-		else
-		{
+		} else {
 			fMoveLeft = 0;
 		}
 		float fontHeight = fTitleHeight * 0.7f;
 		Text textTitle = Text.createText(getApplicationName(), -Button.maxWidth
-										 + fTitleHeight * (1.1f + fMoveLeft), Button.maxHeight
-										 - (fTitleHeight + fontHeight) / 2, fontHeight);
+				+ fTitleHeight * (1.1f + fMoveLeft), Button.maxHeight
+				- (fTitleHeight + fontHeight) / 2, fontHeight);
 
 		textTitle.setColor(Color.WHITE);
 		title.add(textTitle);
 
 		Sprite icon = new Button(iconTexture, fTitleHeight, fTitleHeight,
-								 "Icon", backAction);
+				"Icon", backAction);
 		icon.setPosition(-Button.maxWidth + fTitleHeight * (0.5f + fMoveLeft),
-						 Button.maxHeight - (fTitleHeight / 2));
+				Button.maxHeight - (fTitleHeight / 2));
 		title.add(icon);
 
-		if (fMoveLeft > 0)
-		{
+		if (fMoveLeft > 0) {
 			Button leftButton = Button.Type.left.createButton(-Button.maxWidth
-															  + fTitleHeight * (0.25f), Button.maxHeight
-															  - (fTitleHeight / 2), backAction);
+					+ fTitleHeight * (0.25f), Button.maxHeight
+					- (fTitleHeight / 2), backAction);
 			leftButton.resize(0.7f);
 			title.add(leftButton);
 		}
@@ -302,30 +273,25 @@ GuiView<SPRITE> implements Renderer
 		List<Button.Type> lstButtonBottom = getButtonsBottom();
 
 		// portait mode
-		if (width < height)
-		{
+		if (width < height) {
 			Rectangle titleBar2 = new Rectangle(-Button.maxWidth,
-												-Button.maxHeight, Button.maxWidth * 2, fTitleHeight);
+					-Button.maxHeight, Button.maxWidth * 2, fTitleHeight);
 			titleBar2.setColor(Color.argb(128, 0, 0, 0));
 			title.add(titleBar2);
 			int maxCount = lstButtonBottom.size();
-			for (int i = 0; i < maxCount; i++)
-			{
+			for (int i = 0; i < maxCount; i++) {
 				title.add(createButton(htTitleButtons, lstButtonBottom.get(i),
-									   i, maxCount, false, Align.CENTER));
+						i, maxCount, false, Align.CENTER));
 			}
-		}
-		else
-		{
+		} else {
 			lstButtonTop.addAll(lstButtonBottom);
 			lstButtonBottom.clear();
 		}
 		int maxCount = Math.min(lstButtonTop.size(), 5);
 
-		for (int i = 0; i < lstButtonTop.size(); i++)
-		{
+		for (int i = 0; i < lstButtonTop.size(); i++) {
 			title.add(createButton(htTitleButtons, lstButtonTop.get(i), i,
-								   maxCount, true, Align.RIGHT));
+					maxCount, true, Align.RIGHT));
 		}
 
 		lstTitleItems = title.getChildren();
@@ -342,8 +308,7 @@ GuiView<SPRITE> implements Renderer
 	 * khronos.opengles.GL10)
 	 */
 	@Override
-	public synchronized void onDrawFrame(GL10 gl)
-	{
+	public synchronized void onDrawFrame(GL10 gl) {
 		// Clears the screen and depth buffer.
 		gl.glClearColor(r, g, b, 1.0f);
 		// Clears the screen and depth buffer.
@@ -393,8 +358,7 @@ GuiView<SPRITE> implements Renderer
 	 * .khronos.opengles.GL10, int, int)
 	 */
 	@Override
-	public void onSurfaceChanged(GL10 gl, int width, int height)
-	{
+	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		this.width = width;
 		this.height = height;
 
@@ -407,12 +371,9 @@ GuiView<SPRITE> implements Renderer
 		float ratio = width * 1f / height;
 		wd = 1;
 		hg = 1;
-		if (ratio < 1)
-		{
+		if (ratio < 1) {
 			hg = 1 / ratio;
-		}
-		else
-		{
+		} else {
 			wd = ratio;
 		}
 		// Calculate the aspect ratio of the window
@@ -435,8 +396,7 @@ GuiView<SPRITE> implements Renderer
 	 * .khronos.opengles.GL10, javax.microedition.khronos.egl.EGLConfig)
 	 */
 	@Override
-	public void onSurfaceCreated(GL10 gl, EGLConfig config)
-	{
+	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// Set the background color to black ( rgba ).
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 		// Enable Smooth Shading, default not really needed.
@@ -468,12 +428,12 @@ GuiView<SPRITE> implements Renderer
 
 		// add the current image
 		Bitmap bitmapIcon = Texture.base2image(BitmapFactory.decodeResource(
-												   activity.getResources(), R.drawable.ic_launcher));
+				activity.getResources(), R.drawable.ic_launcher));
 		iconTexture = new Texture(gl, bitmapIcon, 1, 1);
 		bitmapIcon.recycle();
 
 		globalStateHandler = new StateHandler(new File(activity.getFilesDir(),
-													   "Gui.Settings.xml"));
+				"Gui.Settings.xml"));
 
 		// init the textures
 		initTextures(gl, width, height, statusBarHeight);
