@@ -361,12 +361,12 @@ public class XmlObject {
 
 	}
 
-	public void setAttribute(String psAttributeName, boolean b) {
-		setAttribute(psAttributeName, String.valueOf(b));
+	public boolean setAttribute(String psAttributeName, boolean b) {
+		return setAttribute(psAttributeName, String.valueOf(b));
 	}
 
-	public void setAttribute(String psAttributeName, int i) {
-		setAttribute(psAttributeName, String.valueOf(i));
+	public boolean setAttribute(String psAttributeName, int i) {
+		return setAttribute(psAttributeName, String.valueOf(i));
 	}
 
 	public boolean setAttribute(String psAttributeName, String psAttributeValue) {

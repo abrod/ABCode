@@ -24,7 +24,7 @@ import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.graphics.Color;
+import de.brod.gui.GuiColors;
 import de.brod.gui.Texture;
 
 public class Sprite extends Container {
@@ -278,12 +278,8 @@ public class Sprite extends Container {
 		super.setColor(red, green, blue, alpha);
 	}
 
-	public void setColor(int color) {
-		float r = Color.red(color);
-		float g = Color.green(color);
-		float b = Color.blue(color);
-		float a = Color.alpha(color);
-		setColor(r / 255, g / 255, b / 255, a / 255);
+	public void setColor(GuiColors color) {
+		setColor(color.red, color.green, color.blue, color.alpha);
 	}
 
 	/**

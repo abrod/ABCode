@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import android.graphics.Color;
 import de.brod.cm.Buttons;
 import de.brod.cm.Card;
 import de.brod.cm.Card.Colors;
@@ -29,6 +28,7 @@ import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.cm.TextAlign;
+import de.brod.gui.GuiColors;
 import de.brod.gui.IAction;
 import de.brod.gui.StateHandler;
 import de.brod.gui.shape.Button;
@@ -522,11 +522,11 @@ public class OffizierSkat extends Game {
 				}
 			});
 			if (i < 2) {
-				b.setTextColor(Color.BLACK);
+				b.setTextColor(GuiColors.TEXT_BLACK);
 			} else if (i < 4) {
-				b.setTextColor(Color.RED);
+				b.setTextColor(GuiColors.TEXT_RED);
 			} else {
-				b.setTextColor(Color.WHITE);
+				b.setTextColor(GuiColors.TEXT_WHITE);
 			}
 			b.setEnabled(true);
 			buttons.add(b);

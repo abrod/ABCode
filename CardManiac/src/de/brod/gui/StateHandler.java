@@ -78,6 +78,15 @@ public class StateHandler {
 		return xmlState.getAttribute(psAttributeName);
 	}
 
+	public int getAttributeAsInt(String psAttributeName) {
+		try {
+			return Integer.parseInt("0"
+					+ xmlState.getAttribute(psAttributeName));
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
 	public int getEntriesCount() {
 		return xmlState.getAttributeAsInt("maxcounter");
 	}
@@ -156,6 +165,12 @@ public class StateHandler {
 
 	public void setAttibute(String psAttributeName, String psAttributeValue) {
 		if (xmlState.setAttribute(psAttributeName, psAttributeValue)) {
+			saveState();
+		}
+	}
+
+	public void setAttibute(String psAttributeName, int piAttributeValue) {
+		if (xmlState.setAttribute(psAttributeName, piAttributeValue)) {
 			saveState();
 		}
 	}

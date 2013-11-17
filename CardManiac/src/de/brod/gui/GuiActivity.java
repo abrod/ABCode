@@ -45,6 +45,11 @@ public abstract class GuiActivity extends Activity {
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
 		// create an instance with this activity
+		restartView();
+	}
+
+	public void restartView() {
+		// create a new instance with this activity
 		glSurfaceView = createGuiRendererView();
 
 		setContentView(glSurfaceView);

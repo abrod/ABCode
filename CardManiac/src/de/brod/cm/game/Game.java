@@ -22,12 +22,12 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
-import android.graphics.Color;
 import de.brod.cm.Buttons;
 import de.brod.cm.Card;
 import de.brod.cm.CardContainer;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
+import de.brod.gui.GuiColors;
 import de.brod.gui.IAction;
 import de.brod.gui.IDialogAction;
 import de.brod.gui.StateHandler;
@@ -121,6 +121,7 @@ public abstract class Game {
 
 	public void getMenuItems(List<String> menuItems) {
 		menuItems.add("New");
+		menuItems.add("ChangeColor");
 	}
 
 	public String getName() {
@@ -164,6 +165,8 @@ public abstract class Game {
 	public void menuPressed(String sItem, StateHandler stateHandler) {
 		if (sItem.equals("New")) {
 			stateHandler.clear();
+		} else if (sItem.equals("ChangeColor")) {
+			cardManiacView.changeGlobalColor();
 		}
 	}
 
@@ -202,7 +205,7 @@ public abstract class Game {
 	protected void resetColors() {
 		for (Hand h : hands) {
 			for (Card c : h.getCards()) {
-				c.setColor(Color.WHITE);
+				c.setColor(GuiColors.ITEM_WHITE);
 			}
 		}
 	}
@@ -211,16 +214,12 @@ public abstract class Game {
 		if (cl == null) {
 			return;
 		}
-		int a = 220;
-		int b = 128;
-		int c = 96;
 		if (CardColor.RED.equals(pOK)) {
-			cl.setColor(Color.argb(255, a, b, c));
+			cl.setColor(GuiColors.ITEM_RED);
 		} else if (CardColor.GREEN.equals(pOK)) {
-			cl.setColor(Color.argb(255, c, a, b));
+			cl.setColor(GuiColors.ITEM_GREEN);
 		} else if (CardColor.GRAY.equals(pOK)) {
-			int d = (a + 255) / 2;
-			cl.setColor(Color.argb(255, a, d, a));
+			cl.setColor(GuiColors.ITEM_SELECTED);
 		}
 	}
 

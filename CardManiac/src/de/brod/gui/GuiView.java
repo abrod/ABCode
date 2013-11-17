@@ -24,7 +24,6 @@ import java.util.List;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 import de.brod.gui.shape.Button;
@@ -53,8 +52,11 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 				sprite.savePosition();
 				sprite.setMoving(false);
 			}
+			menu.activateBack();
+			requestRender();
 
 			a.action();
+			menu.clear();
 
 			resetSlidePositions();
 			// reset the actionThread
@@ -163,12 +165,12 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 					if (lstSelected.size() > 0) {
 
 						for (Sprite moveItem : lstSelected) {
-							moveItem.setColor(Color.WHITE);
+							moveItem.setColor(GuiColors.ITEM_WHITE);
 							moveItem.setMoving(false);
 						}
 						if (mouseUp(lstSelected, (SPRITE) sprite)) {
 							for (SPRITE spritec : lstSelected) {
-								spritec.setColor(Color.WHITE);
+								spritec.setColor(GuiColors.ITEM_WHITE);
 							}
 							lstSelected.clear();
 							resetSlidePositions();
@@ -176,7 +178,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 							return true;
 						}
 						for (SPRITE spritec : lstSelected) {
-							spritec.setColor(Color.WHITE);
+							spritec.setColor(GuiColors.ITEM_WHITE);
 						}
 						lstSelected.clear();
 					}
@@ -185,7 +187,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 						mouseDown(lstMoves);
 						for (Sprite moveItem : lstMoves) {
 							moveItem.setMoving(true);
-							moveItem.setColor(Color.LTGRAY);
+							moveItem.setColor(GuiColors.ITEM_SELECTED);
 						}
 						return true;
 					}
@@ -201,7 +203,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		}
 		if (lstSelected.size() > 0) {
 			for (SPRITE spritec : lstSelected) {
-				spritec.setColor(Color.WHITE);
+				spritec.setColor(GuiColors.ITEM_WHITE);
 			}
 			lstSelected.clear();
 			return true;
@@ -260,7 +262,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			}
 			if (mouseUp(lstMoves, selected)) {
 				for (SPRITE sprite : lstSelected) {
-					sprite.setColor(Color.WHITE);
+					sprite.setColor(GuiColors.ITEM_WHITE);
 				}
 				lstSelected.clear();
 			}

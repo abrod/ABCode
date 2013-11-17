@@ -17,7 +17,7 @@
  */
 package de.brod.cm;
 
-import android.graphics.Color;
+import de.brod.gui.GuiColors;
 import de.brod.gui.shape.Container;
 import de.brod.gui.shape.Sprite;
 import de.brod.gui.shape.Text;
@@ -155,7 +155,7 @@ public abstract class CardContainer {
 								text.getY());
 					}
 					text.setMoveable(false);
-					text.setColor(Color.WHITE);
+					text.setColor(GuiColors.TEXT_WHITE);
 					textContainer.add(text);
 				}
 			}

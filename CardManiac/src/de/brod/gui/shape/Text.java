@@ -29,6 +29,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import de.brod.gui.GuiColors;
 import de.brod.gui.Texture;
 
 public class Text extends Sprite {
@@ -123,7 +124,7 @@ public class Text extends Sprite {
 		// create canvas to draw to
 		Canvas c = new Canvas(bitmap);
 		Paint paint = new Paint();
-		c.drawColor(Color.argb(0, 0, 0, 0));
+		c.drawColor(GuiColors.EMPTY.getColor());
 		paint.setColor(Color.WHITE);
 		float w = wd / 10;
 		paint.setTextSize(w);

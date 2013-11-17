@@ -32,6 +32,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
+import de.brod.gui.GuiColors;
 import de.brod.gui.IAction;
 import de.brod.gui.Texture;
 
@@ -52,7 +53,8 @@ public class Button extends Sprite {
 			y = py;
 		}
 
-		public Button createButton(float px, float py, float pfHeight,IAction action) {
+		public Button createButton(float px, float py, float pfHeight,
+				IAction action) {
 			Button button = new Button(this.toString(), pfHeight, action);
 			button.setCell(x, y, x + 6, y);
 			button.setPosition(px, py);
@@ -65,7 +67,7 @@ public class Button extends Sprite {
 			button.setPosition(px, py);
 			return button;
 		}
-		
+
 		public Button createButton(int i, int piCount, boolean bTop,
 				Align align, IAction action) {
 			float px;
@@ -96,16 +98,22 @@ public class Button extends Sprite {
 	public static float maxHeight;
 
 	public static float maxWidth;
-	public static Button createTextButton(float px, float py, float pfHeight, String psText,
-			IAction action) {
-		if (pfHeight==0) pfHeight=1;
-		       else pfHeight=height/pfHeight;
-		Button button = new Button(emptyTexture, width/pfHeight, height/pfHeight, psText, action);
+
+	public static Button createTextButton(float px, float py, float pfHeight,
+			String psText, IAction action) {
+		if (pfHeight == 0) {
+			pfHeight = 1;
+		} else {
+			pfHeight = height / pfHeight;
+		}
+		Button button = new Button(emptyTexture, width / pfHeight, height
+				/ pfHeight, psText, action);
 		button.setCell(0, 0, 1, 0);
 		button.setPosition(px, py);
 		button.setText(psText);
 		return button;
 	}
+
 	private static void drawEmptyButton(Bitmap bitmap) {
 		int h = bitmap.getHeight();
 		Canvas c = new Canvas(bitmap);
@@ -133,6 +141,7 @@ public class Button extends Sprite {
 		c.drawRoundRect(rect2, r, r, paint);
 
 	}
+
 	public static void init(AssetManager assetManager, GL10 gl, int pWidth,
 			int pHeight, float pfTitleHeight) {
 		float ratio = pWidth * 1f / pHeight;
@@ -169,21 +178,24 @@ public class Button extends Sprite {
 			e.printStackTrace();
 		}
 	}
+
 	private Text createText = null;
 
-	private int foreColor = -1;
+	private GuiColors foreColor = null;
 	private String type;
 
 	IAction action;
 
 	private boolean enabled = true;
 
-	private Button(String psType, float pfHeight,IAction action) {
-		this(texture, pfHeight* width/height, pfHeight, psType, action);
+	private Button(String psType, float pfHeight, IAction action) {
+		this(texture, pfHeight * width / height, pfHeight, psType, action);
 	}
+
 	private Button(String psType, IAction action) {
 		this(texture, width, height, psType, action);
 	}
+
 	public Button(Texture pTexture, float piWidth, float piHeight,
 			String psType, IAction action) {
 		super(pTexture, piWidth, piHeight);
@@ -202,7 +214,7 @@ public class Button extends Sprite {
 			action.action();
 		}
 	}
-	
+
 	public void release() {
 		// setColor(Color.WHITE);
 	}
@@ -212,7 +224,7 @@ public class Button extends Sprite {
 	}
 
 	@Override
-	public void setColor(int col) {
+	public void setColor(GuiColors col) {
 		if (createText == null) {
 			super.setColor(col);
 		} else {
@@ -227,8 +239,8 @@ public class Button extends Sprite {
 			setAngle(pbEnabled ? 0 : 180);
 		}
 		if (createText != null) {
-			createText
-					.setColor(pbEnabled ? foreColor : Color.argb(64, 0, 0, 0));
+			createText.setColor(pbEnabled ? foreColor
+					: GuiColors.TEXT_BLACK_TRANSPARENT);
 		}
 	}
 
@@ -243,7 +255,7 @@ public class Button extends Sprite {
 		add(createText);
 	}
 
-	public void setTextColor(int col) {
+	public void setTextColor(GuiColors col) {
 		foreColor = col;
 		setColor(col);
 	}

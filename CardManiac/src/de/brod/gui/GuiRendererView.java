@@ -30,7 +30,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Paint.Align;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
@@ -63,26 +62,9 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	}
 
-	private static float r = 0.1f;
-	private static float g = 0.4f;
-	private static float b = 0.2f;
-
-	private static int backColor;
-
-	static {
-		setBackColor(Color.argb(255, 26, 100, 50));
-	}
-
-	public static int getBackColor() {
-		return backColor;
-	}
-
-	private static void setBackColor(int pBackColor) {
-		r = Color.red(pBackColor) / 255f;
-		g = Color.green(pBackColor) / 255f;
-		b = Color.blue(pBackColor) / 255f;
-		backColor = pBackColor;
-	}
+	private static float r = 0;
+	private static float g = 0;
+	private static float b = 0;
 
 	private int width, height;
 	float wd, hg;
@@ -95,8 +77,40 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 	protected Hashtable<Button.Type, Button> htTitleButtons = new Hashtable<Button.Type, Button>();
 
 	public GuiRendererView(GuiActivity context) {
+
 		super(context);
 		activity = context;
+
+		globalStateHandler = new StateHandler(new File(activity.getFilesDir(),
+				"Gui.Settings.xml"));
+
+		// set the color
+		int baseColor = globalStateHandler.getAttributeAsInt("baseColor");
+		if (baseColor == 1) {
+			// blue
+			GuiColors.setBackColor("0099CC");
+		} else if (baseColor == 2) {
+			// lavender
+			GuiColors.setBackColor("9933CC");
+		} else if (baseColor == 3) {
+			// orange
+			GuiColors.setBackColor("FF8800");
+		} else if (baseColor == 4) {
+			// lavender
+			GuiColors.setBackColor("CC0000");
+		} else if (baseColor == 5) {
+			// lavender
+			GuiColors.setBackColor("333333");
+		} else {
+			// default
+			// green
+			GuiColors.setBackColor("669900");
+		}
+		GuiColors bACKGROUND = GuiColors.BACKGROUND;
+		r = bACKGROUND.red;
+		g = bACKGROUND.green;
+		b = bACKGROUND.blue;
+
 		// set our renderer to be the main renderer with
 		// the current activity context
 		setRenderer(this);
@@ -228,7 +242,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		// createa a title bar
 		Rectangle titleBar = new Rectangle(-Button.maxWidth, Button.maxHeight
 				- fTitleHeight, Button.maxWidth * 2, fTitleHeight);
-		titleBar.setColor(Color.argb(128, 0, 0, 0));
+		titleBar.setColor(GuiColors.TITLE_BACK);
 		title.add(titleBar);
 
 		// create a title text
@@ -251,7 +265,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 				+ fTitleHeight * (1.1f + fMoveLeft), Button.maxHeight
 				- (fTitleHeight + fontHeight) / 2, fontHeight);
 
-		textTitle.setColor(Color.WHITE);
+		textTitle.setColor(GuiColors.TITLE_TEXT);
 		title.add(textTitle);
 
 		Sprite icon = new Button(iconTexture, fTitleHeight, fTitleHeight,
@@ -276,7 +290,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		if (width < height) {
 			Rectangle titleBar2 = new Rectangle(-Button.maxWidth,
 					-Button.maxHeight, Button.maxWidth * 2, fTitleHeight);
-			titleBar2.setColor(Color.argb(128, 0, 0, 0));
+			titleBar2.setColor(GuiColors.TITLE_BACK);
 			title.add(titleBar2);
 			int maxCount = lstButtonBottom.size();
 			for (int i = 0; i < maxCount; i++) {
@@ -432,9 +446,6 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		iconTexture = new Texture(gl, bitmapIcon, 1, 1);
 		bitmapIcon.recycle();
 
-		globalStateHandler = new StateHandler(new File(activity.getFilesDir(),
-				"Gui.Settings.xml"));
-
 		// init the textures
 		initTextures(gl, width, height, statusBarHeight);
 
@@ -444,4 +455,10 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	protected abstract boolean showBackButton();
 
+	public void changeGlobalColor() {
+		int baseColor = globalStateHandler.getAttributeAsInt("baseColor");
+		baseColor = (baseColor + 1) % 6;
+		globalStateHandler.setAttibute("baseColor", baseColor);
+		activity.restartView();
+	}
 }

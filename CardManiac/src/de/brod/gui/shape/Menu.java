@@ -20,7 +20,7 @@ package de.brod.gui.shape;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.graphics.Color;
+import de.brod.gui.GuiColors;
 
 public class Menu extends Sprite {
 
@@ -31,11 +31,11 @@ public class Menu extends Sprite {
 		if (size() == 0) {
 			back = new Rectangle(-Button.maxWidth, -Button.maxHeight,
 					Button.maxWidth * 2, Button.maxHeight * 2);
-			back.setColor(Color.argb(192, 0, 0, 0));
+			back.setColor(GuiColors.MENU_BACK);
 			add(back);
 			back2 = new Rectangle(-Button.maxWidth, -Button.maxHeight,
 					Button.maxWidth * 2, Button.maxHeight * 2);
-			back2.setColor(Color.argb(128, 192, 192, 192));
+			back2.setColor(GuiColors.MENU_GRAY);
 			add(back2);
 		}
 
@@ -69,12 +69,20 @@ public class Menu extends Sprite {
 		}
 		float fTotalTitleHeight = lstMenuItems.size() * (border + fTitleHeight)
 				+ border * 2;
-		back2.setDimension(x //- border
-		        , y+border
-				, maxWidth //+ border * 2
-				,fTotalTitleHeight -border*2
-				);
+		back2.setDimension(x // - border
+				, y + border, maxWidth // + border * 2
+				, fTotalTitleHeight - border * 2);
 		plstMenuItems.clear();
 		plstMenuItems.addAll(lstMenuItems);
+	}
+
+	public void activateBack() {
+		if (size() == 0) {
+			back = new Rectangle(-Button.maxWidth, -Button.maxHeight,
+					Button.maxWidth * 2, Button.maxHeight * 2);
+			back.setColor(GuiColors.MENU_GREEN);
+			add(back);
+		}
+
 	}
 }

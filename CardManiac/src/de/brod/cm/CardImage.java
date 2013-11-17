@@ -26,7 +26,7 @@ import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import de.brod.cm.Card.Values;
-import de.brod.gui.GuiRendererView;
+import de.brod.gui.GuiColors;
 
 public class CardImage {
 
@@ -120,30 +120,27 @@ public class CardImage {
 			drawText(c, rect, bounds, sColor, paint, false, true);
 		} else if (piColor == 4) {
 			if (piValue == 0) {
-				drawEmptyCard(c, left, top, wd, hg, paint, rect,
-						GuiRendererView.getBackColor());
+				int backColor = GuiColors.BACKGROUND.getColor();
+				drawEmptyCard(c, left, top, wd, hg, paint, rect, backColor);
 			} else if (piValue == 1) {
-				int bc = GuiRendererView.getBackColor();
-				bc = Color.argb(255, Color.red(bc) / 2, Color.green(bc) / 2,
-						Color.blue(bc) / 2);
-				drawEmptyCard(c, left, top, wd, hg, paint, rect, bc);
+				int backColor = GuiColors.BACKGROUND.contrast(255, 0.5f)
+						.getColor();
+				drawEmptyCard(c, left, top, wd, hg, paint, rect, backColor);
 				rect.set(l, t, r, bt);
 				String sValue = Values.Ace.toString();
 				paint.setColor(Color.BLACK);
 				drawText(c, rect, bounds, sValue, paint, true, true);
 				drawText(c, rect, bounds, sValue, paint, false, false);
 			} else if (piValue == 2) {
-				int bc = GuiRendererView.getBackColor();
-				int bc2 = Color.argb(255,
-						(int) Math.min(255, Color.red(bc) * 1.3f),
-						(int) Math.min(255, Color.green(bc) * 1.3f),
-						(int) Math.min(255, Color.blue(bc) * 1.3f));
-				paint.setColor(bc2);
+				int backColor0 = GuiColors.BACKGROUND.getColor();
+				int backColor = GuiColors.BACKGROUND.contrast(255, 30)
+						.getColor();
+				paint.setColor(backColor);
 				c.drawRect(rect, paint);
 
 				rect.set(l + border / 2, t + border / 2, r - border / 2, bt
 						- border / 2);
-				paint.setColor(bc);
+				paint.setColor(backColor0);
 				drawText(c, rect, bounds, Card.Colors.Clubs.toString(), paint,
 						true, true);
 				drawText(c, rect, bounds, Card.Colors.Spades.toString(), paint,
@@ -154,16 +151,15 @@ public class CardImage {
 						false, false);
 
 			} else if (piValue == 3) {
-				int bc = GuiRendererView.getBackColor();
-				bc = Color.argb(255, Color.red(bc) / 2, Color.green(bc) / 2,
-		 		  Color.blue(bc) / 2);
-				drawEmptyCard(c, left, top, wd, hg, paint, rect, bc);
+				int backColor = GuiColors.BACKGROUND.contrast(255, 0.5f)
+						.getColor();
+				drawEmptyCard(c, left, top, wd, hg, paint, rect, backColor);
 				rect.set(l, t, r, bt);
 				String sValue = Values.King.toString();
 				paint.setColor(Color.BLACK);
 				drawText(c, rect, bounds, sValue, paint, true, true);
 				drawText(c, rect, bounds, sValue, paint, false, false);
-			} 
+			}
 
 		}
 	}

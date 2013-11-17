@@ -20,10 +20,12 @@ package de.brod.cm.game;
 import java.util.Hashtable;
 import java.util.List;
 
+import de.brod.cm.Buttons;
 import de.brod.cm.Card;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.IAction;
+import de.brod.gui.IDialogAction;
 import de.brod.gui.StateHandler;
 import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Button.Type;
@@ -59,6 +61,8 @@ public class CardManiac extends Game {
 	@Override
 	public void getMenuItems(List<String> menuItems) {
 		// make nothing
+		super.getMenuItems(menuItems);
+		menuItems.remove("New");
 	}
 
 	@Override
@@ -105,6 +109,30 @@ public class CardManiac extends Game {
 	public String getFinishedText() {
 		// never finishes
 		return null;
+	}
+
+	@Override
+	public Buttons.UpdateType buttonPressed(Type type, StateHandler stateHandler) {
+		if (type.equals(Type.info)) {
+			IDialogAction infoAction = new IDialogAction() {
+
+				@Override
+				public void action() {
+					// make nothing
+
+				}
+
+				@Override
+				public String getName() {
+					return "OK";
+				}
+			};
+			cardManiacView.showMessage("Info",
+					"Card Maniac\n(c) 2013 by Andreas Brod",
+					new IDialogAction[] { infoAction });
+			return Buttons.UpdateType.REFRESH;
+		}
+		return super.buttonPressed(type, stateHandler);
 	}
 
 	@Override

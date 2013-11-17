@@ -274,4 +274,5 @@ public class CardManiacView extends GuiRendererView<Card> {
 		return game == null || !(game instanceof CardManiac);
 	}
 
+
 }
