@@ -78,10 +78,19 @@ public class Menu extends Sprite {
 
 	public void activateBack() {
 		if (size() == 0) {
-			back = new Rectangle(-Button.maxWidth, -Button.maxHeight,
-					Button.maxWidth * 2, Button.maxHeight * 2);
+			float h = Button.maxHeight;
+			float w = Button.maxWidth;
+			float titleHeight = Button.height;
+
+			back = new Rectangle(-w, h - titleHeight, w * 2, titleHeight);
 			back.setColor(GuiColors.MENU_GREEN);
 			add(back);
+
+			if (h > w) {
+				back2 = new Rectangle(-w, -h, w * 2, titleHeight);
+				back2.setColor(GuiColors.MENU_GREEN);
+				add(back2);
+			}
 		}
 
 	}

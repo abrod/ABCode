@@ -50,7 +50,7 @@ public class GuiColors {
 	public static void setBackColor(int pBackColor) {
 		BACKGROUND = new GuiColors(Color.alpha(pBackColor),
 				Color.red(pBackColor), Color.green(pBackColor),
-				Color.blue(pBackColor));
+				Color.blue(pBackColor)).contrast(255, 0.6f);
 		MENU_GREEN = BACKGROUND.contrast(192, 0.5f);
 		MENU_BACK = BACKGROUND.contrast(192, 0.2f);
 	}
