@@ -78,7 +78,7 @@ public class CardImage {
 		cloneRectangle(bitmap, c, 1, 4, 1, 0, dx, dy, src, dst, paint);
 		cloneRectangle(bitmap, c, 2, 4, 2, 0, dx, dy, src, dst, paint);
 		cloneRectangle(bitmap, c, 2, 4, 4, 0, dx, dy, src, dst, paint);
-
+		// 4*6=24 cards
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 6; i++) {
 				float x = i * dx + 1;
@@ -128,7 +128,7 @@ public class CardImage {
 				drawEmptyCard(c, left, top, wd, hg, paint, rect, backColor);
 				rect.set(l, t, r, bt);
 				String sValue = Values.Ace.toString();
-				paint.setColor(Color.BLACK);
+				paint.setColor(Color.WHITE);
 				drawText(c, rect, bounds, sValue, paint, true, true);
 				drawText(c, rect, bounds, sValue, paint, false, false);
 			} else if (piValue == 2) {
@@ -156,7 +156,7 @@ public class CardImage {
 				drawEmptyCard(c, left, top, wd, hg, paint, rect, backColor);
 				rect.set(l, t, r, bt);
 				String sValue = Values.King.toString();
-				paint.setColor(Color.BLACK);
+				paint.setColor(Color.WHITE);
 				drawText(c, rect, bounds, sValue, paint, true, true);
 				drawText(c, rect, bounds, sValue, paint, false, false);
 			}
