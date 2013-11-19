@@ -36,7 +36,7 @@ public class Menu extends Sprite {
 			add(back);
 			back2 = new Frame(-Button.maxWidth, -Button.maxHeight,
 					Button.maxWidth * 2, Button.maxHeight * 2);
-			back2.setColor(GuiColors.MENU_GRAY);
+			back2.setColor(GuiColors.BACKGROUND);
 			add(back2);
 		}
 
