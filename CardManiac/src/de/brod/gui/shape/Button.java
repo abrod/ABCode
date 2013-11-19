@@ -114,7 +114,7 @@ public class Button extends Sprite {
 		return button;
 	}
 
-	private static void drawEmptyButton(Bitmap bitmap) {
+	protected static void drawEmptyButton(Bitmap bitmap) {
 		int h = bitmap.getHeight();
 		Canvas c = new Canvas(bitmap);
 		float r = h / 10f;

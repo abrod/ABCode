@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import de.brod.gui.GuiColors;
 import de.brod.gui.Texture;
 
 public class Container implements Comparable<Container> {
@@ -157,6 +158,12 @@ public class Container implements Comparable<Container> {
 	public void setColor(float red, float green, float blue, float alpha) {
 		for (Container child : lstChildren) {
 			child.setColor(red, green, blue, alpha);
+		}
+	}
+
+	public void setColor(GuiColors pColor) {
+		for (Container child : lstChildren) {
+			child.setColor(pColor);
 		}
 	}
 

@@ -24,7 +24,8 @@ import de.brod.gui.GuiColors;
 
 public class Menu extends Sprite {
 
-	private Rectangle back, back2;
+	private Rectangle back;
+	private Frame back2;
 	private List<MenuItem> lstMenuItems = new ArrayList<MenuItem>();
 
 	public void addItem(String psText) {
@@ -33,7 +34,7 @@ public class Menu extends Sprite {
 					Button.maxWidth * 2, Button.maxHeight * 2);
 			back.setColor(GuiColors.MENU_BACK);
 			add(back);
-			back2 = new Rectangle(-Button.maxWidth, -Button.maxHeight,
+			back2 = new Frame(-Button.maxWidth, -Button.maxHeight,
 					Button.maxWidth * 2, Button.maxHeight * 2);
 			back2.setColor(GuiColors.MENU_GRAY);
 			add(back2);
@@ -87,9 +88,9 @@ public class Menu extends Sprite {
 			add(back);
 
 			if (h > w) {
-				back2 = new Rectangle(-w, -h, w * 2, titleHeight);
-				back2.setColor(GuiColors.MENU_GREEN);
-				add(back2);
+				back = new Rectangle(-w, -h, w * 2, titleHeight);
+				back.setColor(GuiColors.MENU_GREEN);
+				add(back);
 			}
 		}
 

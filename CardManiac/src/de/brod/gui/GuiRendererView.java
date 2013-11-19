@@ -39,6 +39,7 @@ import android.view.MotionEvent;
 import de.brod.cm.R;
 import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Button.Type;
+import de.brod.gui.shape.Frame;
 import de.brod.gui.shape.Menu;
 import de.brod.gui.shape.MenuItem;
 import de.brod.gui.shape.Rectangle;
@@ -437,6 +438,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		fTitleHeight = statusBarHeight * 2f / Math.min(height, width);
 
 		Button.init(activity.getAssets(), gl, width, height, fTitleHeight);
+		Frame.init(activity.getAssets(), gl, width, height, fTitleHeight);
 		Text.init(gl, width, height, fTitleHeight, activity);
 		Rectangle.init(gl, fTitleHeight);
 
