@@ -89,7 +89,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 
 	protected abstract String getApplicationName();
 
-	protected abstract void getMenuItems(List<String> menuItems);
+	protected abstract void getMenuItems(List<IDialogAction> menuItems,
+			StateHandler stateHandler);
 
 	protected abstract IAction getNextAction();
 
@@ -108,8 +109,6 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		return actionThread != null && actionThread.isAlive();
 	}
 
-	protected abstract void menuPressed(String sItem, StateHandler stateHandler);
-
 	@SuppressWarnings("unchecked")
 	private boolean mouseDown(float eventX, float eventY) {
 		if (isThinking()) {
@@ -124,7 +123,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		}
 		lstMoves.clear();
 		if (lstMenuItems.size() > 0) {
-			String sMenuItem = "";
+			IDialogAction sMenuItem = null;
 			for (MenuItem item : lstMenuItems) {
 				if (item.touches(eventX, eventY)) {
 					sMenuItem = item.getText();
@@ -132,8 +131,9 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			}
 			menu.clear();
 			lstMenuItems.clear();
-			if (sMenuItem.length() > 0) {
-				menuPressed(sMenuItem, applicationStateHandler);
+			if (sMenuItem != null) {
+				// ... and action
+				sMenuItem.action();
 				reload();
 			}
 			return true;
@@ -308,16 +308,21 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	}
 
 	public void openMenu() {
+
+		List<IDialogAction> menuItems = new ArrayList<IDialogAction>();
+
+		getMenuItems(menuItems, applicationStateHandler);
+
+		openMenu(menuItems);
+	}
+
+	public void openMenu(List<IDialogAction> menuItems) {
 		System.out.println("open menu");
 
 		menu.clear();
 
-		List<String> menuItems = new ArrayList<String>();
-
-		getMenuItems(menuItems);
-
-		for (String string : menuItems) {
-			menu.addItem(string);
+		for (IDialogAction item : menuItems) {
+			menu.addItem(item);
 		}
 		menu.finish(lstMenuItems);
 	}

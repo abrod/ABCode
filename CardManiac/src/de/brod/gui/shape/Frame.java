@@ -27,43 +27,57 @@ import de.brod.gui.Texture;
 public class Frame extends Container {
 
 	private static Texture emptyTexture;
-	private Sprite[] ul=new Sprite[9] ;
+	private Sprite[] ul = new Sprite[9];
 
-	private static float border=0;
+	public static float border = 0;
 
 	public Frame(float px, float py, float width, float height) {
-		for (int j=0;j<3;j++)
-		for (int i=0;i<3;i++)
-		{
-			int a=j*3+i;
-		ul[a] = new Sprite(emptyTexture, border, border);
-		ul[a].setCell(i, j, 3+i, j);
-		add(ul[a]);
+		for (int j = 0; j < 3; j++) {
+			for (int i = 0; i < 3; i++) {
+				int a = j * 3 + i;
+				ul[a] = new Sprite(emptyTexture, border, border);
+				ul[a].setCell(i, j, 3 + i, j);
+				add(ul[a]);
+			}
 		}
-		
-		setDimension(px,py,width,height);
+
+		setDimension(px, py, width, height);
 	}
 
 	public void setDimension(float x, float y, float width, float height) {
-		x-=border;y-=border;
-		width+=border*2;height+=border*2;
-		ul[6].setDimension(x + border / 2, y + border / 2, border, border);
-		ul[7].setDimension(x + width / 2, y + border / 2, width-border*2, border);
-		ul[8].setDimension(x +width- border / 2, y + border / 2, border, border);
-		
-		ul[3].setDimension(x + border / 2, y + height / 2, border, height-border*2);
-		ul[4].setDimension(x + width / 2, y + height / 2, width-border*2,height-border*2);
-		ul[5].setDimension(x +width- border / 2, y + height / 2, border, height-border*2);
-		
-		ul[0].setDimension(x + border / 2, y + height-border / 2, border, border);
-		ul[1].setDimension(x + width / 2, y + height-border / 2, width-border*2, border);
-		ul[2].setDimension(x +width- border / 2, y + height-border / 2, border, border);
-		
+		// x -= border;
+		// y -= border;
+		// width += border * 2;
+		// height += border * 2;
+
+		float left = x + border / 2;
+		float center = x + width / 2;
+		float right = x + width - border / 2;
+
+		float bottom = y + border / 2;
+		float middle = y + height / 2;
+		float top = y + height - border / 2;
+
+		float maxW = width - border * 2;
+		float maxH = height - border * 2;
+
+		ul[0].setDimension(left, top, border, border);
+		ul[1].setDimension(center, top, maxW, border);
+		ul[2].setDimension(right, top, border, border);
+
+		ul[3].setDimension(left, middle, border, maxH);
+		ul[4].setDimension(center, middle, maxW, maxH);
+		ul[5].setDimension(right, middle, border, maxH);
+
+		ul[6].setDimension(left, bottom, border, border);
+		ul[7].setDimension(center, bottom, maxW, border);
+		ul[8].setDimension(right, bottom, border, border);
+
 	}
 
 	public static void init(AssetManager assetManager, GL10 gl, int pWidth,
 			int pHeight, float pfTitleHeight) {
-		border = pfTitleHeight/3;
+		border = pfTitleHeight / 3;
 		// create an empty texture
 		int wdEmpty = 8;
 		int minWd = Math.min(pWidth, pHeight) / 8;
@@ -72,7 +86,7 @@ public class Frame extends Container {
 		}
 		Bitmap bitmap = Bitmap.createBitmap(wdEmpty * 2, wdEmpty,
 				Config.ARGB_8888);
-		Button.drawEmptyButton(bitmap,220);
+		Button.drawEmptyButton(bitmap, 220);
 		emptyTexture = new Texture(gl, bitmap, 6, 3);
 		bitmap.recycle();
 	}

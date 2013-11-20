@@ -25,6 +25,7 @@ import javax.microedition.khronos.opengles.GL10;
 import de.brod.cm.Buttons.UpdateType;
 import de.brod.cm.game.CardManiac;
 import de.brod.cm.game.Game;
+import de.brod.gui.DefaultDialogAction;
 import de.brod.gui.GuiRendererView;
 import de.brod.gui.IAction;
 import de.brod.gui.IDialogAction;
@@ -97,9 +98,16 @@ public class CardManiacView extends GuiRendererView<Card> {
 	}
 
 	@Override
-	protected void getMenuItems(List<String> menuItems) {
-		game.getMenuItems(menuItems);
-		menuItems.add("Close");
+	protected void getMenuItems(List<IDialogAction> menuItems,
+			StateHandler stateHandler) {
+		game.getMenuItems(menuItems, stateHandler);
+		menuItems.add(new DefaultDialogAction("Close") {
+
+			@Override
+			public void action() {
+				getActivity().finish();
+			}
+		});
 	}
 
 	@Override
@@ -205,14 +213,6 @@ public class CardManiacView extends GuiRendererView<Card> {
 	}
 
 	@Override
-	protected void menuPressed(String sItem, StateHandler stateHandler) {
-		if (sItem.equalsIgnoreCase("Close")) {
-			getActivity().finish();
-		}
-		game.menuPressed(sItem, stateHandler);
-	}
-
-	@Override
 	protected void mouseDown(List<Card> plstMoves) {
 		if (game.getFinishedText() != null) {
 			plstMoves.clear();
@@ -273,6 +273,5 @@ public class CardManiacView extends GuiRendererView<Card> {
 	protected boolean showBackButton() {
 		return game == null || !(game instanceof CardManiac);
 	}
-
 
 }

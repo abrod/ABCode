@@ -27,6 +27,7 @@ import de.brod.cm.Card;
 import de.brod.cm.CardContainer;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
+import de.brod.gui.DefaultDialogAction;
 import de.brod.gui.GuiColors;
 import de.brod.gui.IAction;
 import de.brod.gui.IDialogAction;
@@ -119,9 +120,53 @@ public abstract class Game {
 		};
 	}
 
-	public void getMenuItems(List<String> menuItems) {
-		menuItems.add("New");
-		menuItems.add("ChangeColor");
+	public void getMenuItems(List<IDialogAction> menuItems,
+			final StateHandler stateHandler) {
+		menuItems.add(new DefaultDialogAction("New") {
+
+			@Override
+			public void action() {
+
+				IDialogAction[] sButtons = { new DefaultDialogAction("Yes") {
+
+					@Override
+					public void action() {
+						stateHandler.clear();
+						cardManiacView.reload();
+					}
+				}, new DefaultDialogAction("No") {
+
+					@Override
+					public void action() {
+						// no Action
+					}
+				} };
+				cardManiacView.showMessage("Confirm",
+						"Do really want to start a new game", sButtons);
+			}
+		});
+		menuItems.add(new DefaultDialogAction("Change Color ...") {
+
+			@Override
+			public void action() {
+
+				String[] colors = { "green", "blue", "purple", "orange", "red",
+						"black" };
+
+				List<IDialogAction> lst = new ArrayList<IDialogAction>();
+				for (int i = 0; i < colors.length; i++) {
+					final int col = i;
+					lst.add(new DefaultDialogAction(colors[i]) {
+
+						@Override
+						public void action() {
+							cardManiacView.changeGlobalColor(col);
+						}
+					});
+				}
+				cardManiacView.openMenu(lst);
+			}
+		});
 	}
 
 	public String getName() {
@@ -161,14 +206,6 @@ public abstract class Game {
 	public abstract void initNewCards();
 
 	public abstract String getFinishedText();
-
-	public void menuPressed(String sItem, StateHandler stateHandler) {
-		if (sItem.equals("New")) {
-			stateHandler.clear();
-		} else if (sItem.equals("ChangeColor")) {
-			cardManiacView.changeGlobalColor();
-		}
-	}
 
 	public abstract void mouseDown(List<Card> plstMoves);
 

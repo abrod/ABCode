@@ -18,24 +18,26 @@
 package de.brod.gui.shape;
 
 import de.brod.gui.GuiColors;
+import de.brod.gui.IDialogAction;
 
 public class MenuItem extends Rectangle {
 
-	private String text;
+	private IDialogAction text;
 	private Text textMenu;
 	private float fontHeight;
 
-	public MenuItem(float px, float py, float width, float height, String sText) {
+	public MenuItem(float px, float py, float width, float height,
+			IDialogAction sText) {
 		super(px, py, width, height);
 		setColor(GuiColors.MENUITEM_BACK);
 		fontHeight = height * 0.7f;
-		textMenu = Text.createText(sText, px, py + (height - fontHeight) / 2,
-				fontHeight);
+		textMenu = Text.createText(sText.getName(), px, py
+				+ (height - fontHeight) / 2, fontHeight);
 		add(textMenu);
 		text = sText;
 	}
 
-	public String getText() {
+	public IDialogAction getText() {
 		return text;
 	}
 

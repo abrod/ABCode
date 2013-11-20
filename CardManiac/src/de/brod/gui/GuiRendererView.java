@@ -457,9 +457,8 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 
 	protected abstract boolean showBackButton();
 
-	public void changeGlobalColor() {
-		int baseColor = globalStateHandler.getAttributeAsInt("baseColor");
-		baseColor = (baseColor + 1) % 6;
+	public void changeGlobalColor(int baseColor) {
+		baseColor = baseColor % 6;
 		globalStateHandler.setAttibute("baseColor", baseColor);
 		activity.restartView();
 	}

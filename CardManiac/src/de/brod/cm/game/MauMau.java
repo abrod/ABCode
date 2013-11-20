@@ -27,6 +27,7 @@ import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.cm.TextAlign;
+import de.brod.gui.DefaultDialogAction;
 import de.brod.gui.GuiColors;
 import de.brod.gui.IAction;
 import de.brod.gui.IDialogAction;
@@ -88,9 +89,35 @@ public class MauMau extends Game {
 	}
 
 	@Override
-	public void getMenuItems(List<String> menuItems) {
-		super.getMenuItems(menuItems);
-		menuItems.add("Reset Score");
+	public void getMenuItems(List<IDialogAction> menuItems,
+			StateHandler stateHandler) {
+		super.getMenuItems(menuItems, stateHandler);
+		menuItems.add(new DefaultDialogAction("Reset Score") {
+
+			@Override
+			public void action() {
+				showMessage("Question",
+						"Do you really want to reset the scores",
+						new DefaultDialogAction("Yes") {
+
+							@Override
+							public void action() {
+								for (int i = 1; i <= 4; i++) {
+									Hand hand = get(i);
+									hand.setCenter(true);
+									hand.setText("0");
+									setSettings("points" + i, 0);
+								}
+							}
+						}, new DefaultDialogAction("No") {
+
+							@Override
+							public void action() {
+								// make nothing
+							}
+						});
+			}
+		});
 	}
 
 	@Override
@@ -143,7 +170,6 @@ public class MauMau extends Game {
 
 				private Card playCard(Hand hand) {
 					Card cPlay = getNextCard(hand);
-					XmlObject xmlSettings = getSettings();
 					if (cPlay != null) {
 						cPlay.moveTo(h5);
 						h5.organize();
@@ -162,7 +188,6 @@ public class MauMau extends Game {
 
 			};
 		}
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -405,43 +430,6 @@ public class MauMau extends Game {
 		}
 
 		return false;
-	}
-
-	@Override
-	public void menuPressed(String sItem, StateHandler stateHandler) {
-		if (sItem.equals("Reset Score")) {
-			showMessage("Question", "Do you really want to reset the scores",
-					new IDialogAction() {
-
-						@Override
-						public void action() {
-							for (int i = 1; i <= 4; i++) {
-								Hand hand = get(i);
-								hand.setCenter(true);
-								hand.setText("0");
-								setSettings("points" + i, 0);
-							}
-						}
-
-						@Override
-						public String getName() {
-							return "Yes";
-						}
-					}, new IDialogAction() {
-
-						@Override
-						public void action() {
-							// make nothing
-						}
-
-						@Override
-						public String getName() {
-							return "No";
-						}
-					});
-		} else {
-			super.menuPressed(sItem, stateHandler);
-		}
 	}
 
 	@Override

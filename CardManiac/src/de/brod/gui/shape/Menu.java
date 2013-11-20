@@ -21,23 +21,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.brod.gui.GuiColors;
+import de.brod.gui.IDialogAction;
 
 public class Menu extends Sprite {
 
 	private Rectangle back;
-	private Frame back2;
+	private Frame frame;
 	private List<MenuItem> lstMenuItems = new ArrayList<MenuItem>();
 
-	public void addItem(String psText) {
+	public void addItem(IDialogAction psText) {
 		if (size() == 0) {
 			back = new Rectangle(-Button.maxWidth, -Button.maxHeight,
 					Button.maxWidth * 2, Button.maxHeight * 2);
 			back.setColor(GuiColors.MENU_BACK);
 			add(back);
-			back2 = new Frame(-Button.maxWidth, -Button.maxHeight,
+			frame = new Frame(-Button.maxWidth, -Button.maxHeight,
 					Button.maxWidth * 2, Button.maxHeight * 2);
-			back2.setColor(GuiColors.BACKGROUND);
-			add(back2);
+			frame.setColor(GuiColors.BACKGROUND);
+			add(frame);
 		}
 
 		float fTitleHeight = Button.height;
@@ -60,7 +61,7 @@ public class Menu extends Sprite {
 		}
 		float fTitleHeight = Button.height;
 		float border = fTitleHeight / 30;
-		float x = Button.maxWidth - maxWidth - border;
+		float x = Button.maxWidth - maxWidth - border - Frame.border;
 		float y = Button.maxHeight - (border + fTitleHeight);
 		for (int i = 0; i < lstMenuItems.size(); i++) {
 			MenuItem menuItem = lstMenuItems.get(i);
@@ -68,11 +69,10 @@ public class Menu extends Sprite {
 			menuItem.setDimension(x, y, maxWidth, fTitleHeight);
 			y -= border;
 		}
-		float fTotalTitleHeight = lstMenuItems.size() * (border + fTitleHeight)
-				+ border * 2;
-		back2.setDimension(x // - border
-				, y + border, maxWidth // + border * 2
-				, fTotalTitleHeight - border * 2);
+		float fTotalTitleHeight = lstMenuItems.size() * (border + fTitleHeight);
+		float fBorder = Frame.border / 2;
+		frame.setDimension(x - fBorder, y - fBorder, maxWidth + fBorder * 2,
+				fTotalTitleHeight + fBorder * 2);
 		plstMenuItems.clear();
 		plstMenuItems.addAll(lstMenuItems);
 	}

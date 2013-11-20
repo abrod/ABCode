@@ -114,17 +114,18 @@ public class Button extends Sprite {
 		return button;
 	}
 
-	protected static void drawEmptyButton(Bitmap bitmap,int alpha) {
+	protected static void drawEmptyButton(Bitmap bitmap, int alpha) {
 		int h = bitmap.getHeight();
 		Canvas c = new Canvas(bitmap);
-		float r = h / 10f;
+		float r = h / 20f;
+		float round = r * 2;
 		Paint paint = new Paint();
 		RectF rect = new RectF(r, r, h - r, h - r);
 		RectF rect2 = new RectF(r + h, r, h - r + h, h - r);
 
 		paint.setColor(Color.argb(alpha, 255, 255, 255));
 		paint.setStyle(Style.FILL);
-		c.drawRoundRect(rect, r, r, paint);
+		c.drawRoundRect(rect, round, round, paint);
 
 		// paint.setColor(Color.argb(32, 255,255,255));
 		// paint.setStyle(Style.FILL);
@@ -133,12 +134,12 @@ public class Button extends Sprite {
 		paint.setColor(Color.argb(128, 0, 0, 0));
 		paint.setStyle(Style.STROKE);
 		paint.setStrokeWidth(Math.max(1, r / 2));
-		c.drawRoundRect(rect, r, r, paint);
+		c.drawRoundRect(rect, round, round, paint);
 
 		paint.setColor(Color.argb(32, 0, 0, 0));
 		paint.setStyle(Style.STROKE);
 		paint.setStrokeWidth(Math.max(1, r / 2));
-		c.drawRoundRect(rect2, r, r, paint);
+		c.drawRoundRect(rect2, round, round, paint);
 
 	}
 
@@ -164,7 +165,7 @@ public class Button extends Sprite {
 			}
 			Bitmap bitmap = Bitmap.createBitmap(wdEmpty * 2, wdEmpty,
 					Config.ARGB_8888);
-			drawEmptyButton(bitmap,64);
+			drawEmptyButton(bitmap, 64);
 			emptyTexture = new Texture(gl, bitmap, 2, 1);
 			bitmap.recycle();
 			// open the icons

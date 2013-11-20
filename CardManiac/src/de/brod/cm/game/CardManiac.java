@@ -59,10 +59,17 @@ public class CardManiac extends Game {
 	}
 
 	@Override
-	public void getMenuItems(List<String> menuItems) {
+	public void getMenuItems(List<IDialogAction> menuItems,
+			StateHandler stateHandler) {
 		// make nothing
-		super.getMenuItems(menuItems);
-		menuItems.remove("New");
+		super.getMenuItems(menuItems, stateHandler);
+		for (int i = 0; i < menuItems.size();) {
+			if (menuItems.get(i).getName().equals("New")) {
+				menuItems.remove(menuItems.get(i));
+			} else {
+				i++;
+			}
+		}
 	}
 
 	@Override
