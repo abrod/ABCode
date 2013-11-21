@@ -186,6 +186,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 						lstMoves.add((SPRITE) sprite);
 						mouseDown(lstMoves);
 						for (Sprite moveItem : lstMoves) {
+							if (moveItem!=sprite)
+								moveItem.touches(eventX, eventY);
 							moveItem.setMoving(true);
 							moveItem.setColor(GuiColors.ITEM_SELECTED);
 						}

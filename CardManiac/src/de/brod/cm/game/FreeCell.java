@@ -273,7 +273,7 @@ public class FreeCell extends Game {
 	}
 
 	@Override
-	public boolean mouseUp(List<Card> pLstMoves, Hand handTo) {
+	public boolean mouseUp(List<Card> pLstMoves, Hand handTo, Card cardTo) {
 		if (handTo == null) {
 			return false;
 		}
@@ -307,7 +307,7 @@ public class FreeCell extends Game {
 			}
 		}
 
-		return super.mouseUp(pLstMoves, handTo);
+		return super.mouseUp(pLstMoves, handTo, cardTo);
 	}
 
 }

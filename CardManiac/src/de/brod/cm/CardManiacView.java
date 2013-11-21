@@ -231,9 +231,9 @@ public class CardManiacView extends GuiRendererView<Card> {
 		if (pLstMoves.size() > 0) {
 			if (cardTo != null) {
 				Hand handTo = cardTo.getHand();
-				bChanged = game.mouseUp(pLstMoves, handTo);
+				bChanged = game.mouseUp(pLstMoves, handTo, cardTo);
 			} else {
-				bChanged = game.mouseUp(pLstMoves, null);
+				bChanged = game.mouseUp(pLstMoves, null, null);
 			}
 			// organize the hands
 			for (CardContainer cc : _cardContainers) {

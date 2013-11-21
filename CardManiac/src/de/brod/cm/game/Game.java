@@ -209,7 +209,7 @@ public abstract class Game {
 
 	public abstract void mouseDown(List<Card> plstMoves);
 
-	public boolean mouseUp(List<Card> pLstMoves, Hand handTo) {
+	public boolean mouseUp(List<Card> pLstMoves, Hand handTo, Card cardTo) {
 		if (handTo == null) {
 			return false;
 		}
