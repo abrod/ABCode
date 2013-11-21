@@ -33,7 +33,7 @@ import de.brod.gui.shape.Button.Type;
 public class CardManiac extends Game {
 
 	private static Class<?>[] classes = { FreeCell.class, Solitaire.class,
-			MauMau.class, OffizierSkat.class };
+			MauMau.class, OffizierSkat.class, Schwimmen.class };
 
 	private Game[] games;
 
