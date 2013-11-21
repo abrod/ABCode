@@ -55,13 +55,13 @@ public class Schwimmen extends Game {
 	@Override
 	public void initHands(boolean bLandscape) {
 		// TODO Auto-generated method stub
-		float left = 2f;
-		float right = 5f;
+		float left = 2.5f;
+		float right = 4.5f;
 		add(new Hand(0, left, Card.maxCardY, right, Card.maxCardY, 3));
 		// add the players
 		float middle = Card.maxCardY / 2;
-		float top = middle - 0.6f;
-		float bottom = middle + 0.6f;
+		float top = middle - 0.8f;
+		float bottom = middle + 0.8f;
 
 		add(new Hand(1, 0, top, 0, bottom, 3));
 		add(new Hand(2, 7, top, 7, bottom, 3));
@@ -96,7 +96,16 @@ public class Schwimmen extends Game {
 	@Override
 	public void mouseDown(List<Card> plstMoves) {
 		// TODO Auto-generated method stub
-
+        int i=plstMoves.get(0).getHand().getId();
+		if (i==0){
+			// ok
+		} else if (i==3){
+			// ok
+			plstMoves.clear();
+			plstMoves.addAll(get(i).getCards());
+		} else {
+			plstMoves.clear();
+		}
 	}
 
 }
