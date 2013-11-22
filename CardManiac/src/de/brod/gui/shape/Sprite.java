@@ -278,8 +278,13 @@ public class Sprite extends Container {
 		super.setColor(red, green, blue, alpha);
 	}
 
+	@Override
 	public void setColor(GuiColors color) {
-		setColor(color.red, color.green, color.blue, color.alpha);
+		if (color == null) {
+			setColor(1, 1, 1, 1);
+		} else {
+			setColor(color.red, color.green, color.blue, color.alpha);
+		}
 	}
 
 	/**

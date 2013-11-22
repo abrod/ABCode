@@ -465,7 +465,7 @@ public class MauMau extends Game {
 	}
 
 	@Override
-	public boolean mouseUp(List<Card> pLstMoves, Hand handTo) {
+	public boolean mouseUp(List<Card> pLstMoves, Hand handTo, Card card) {
 		XmlObject settings = getSettings();
 		int iPlayer = settings.getAttributeAsInt("player");
 		if (iPlayer != 0 || settings.getAttributeAsBoolean("jack")) {

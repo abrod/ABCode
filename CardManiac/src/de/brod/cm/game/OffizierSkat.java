@@ -632,7 +632,7 @@ public class OffizierSkat extends Game {
 	}
 
 	@Override
-	public boolean mouseUp(List<Card> pLstMoves, Hand handTo) {
+	public boolean mouseUp(List<Card> pLstMoves, Hand handTo, Card pCard) {
 		XmlObject settings = getSettings();
 		boolean pickColor = settings.getAttributeAsBoolean("pickColor");
 		if (pickColor) {
