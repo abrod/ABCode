@@ -15,7 +15,7 @@
  * limitations under the License.
  * *****************************************************************************
  */
-package de.brod.gui;
+package de.brod.gui.action;
 
 public interface IAction {
 

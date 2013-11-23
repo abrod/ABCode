@@ -15,14 +15,13 @@
  * limitations under the License.
  * *****************************************************************************
  */
-package de.brod.gui;
+package de.brod.tools;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.brod.tools.IOTools;
 import de.brod.xml.XmlObject;
 
 public class StateHandler {

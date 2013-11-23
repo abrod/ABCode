@@ -37,6 +37,8 @@ import android.opengl.GLU;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import de.brod.cm.R;
+import de.brod.gui.action.IAction;
+import de.brod.gui.action.IDialogAction;
 import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Button.Type;
 import de.brod.gui.shape.Frame;
@@ -45,6 +47,7 @@ import de.brod.gui.shape.MenuItem;
 import de.brod.gui.shape.Rectangle;
 import de.brod.gui.shape.Sprite;
 import de.brod.gui.shape.Text;
+import de.brod.tools.StateHandler;
 
 public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		GuiView<SPRITE> implements Renderer {

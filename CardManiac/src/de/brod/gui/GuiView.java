@@ -26,12 +26,15 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
+import de.brod.gui.action.IAction;
+import de.brod.gui.action.IDialogAction;
 import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Container;
 import de.brod.gui.shape.Menu;
 import de.brod.gui.shape.MenuItem;
 import de.brod.gui.shape.Sprite;
 import de.brod.gui.shape.Text;
+import de.brod.tools.StateHandler;
 import de.brod.xml.XmlObject;
 
 public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {

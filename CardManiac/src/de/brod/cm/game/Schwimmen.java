@@ -11,14 +11,15 @@ import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.cm.TextAlign;
 import de.brod.gui.GuiColors;
-import de.brod.gui.IAction;
+import de.brod.gui.action.IAction;
+import de.brod.gui.action.NoAction;
 import de.brod.gui.shape.Button;
 import de.brod.xml.XmlObject;
 
 public class Schwimmen extends Game {
 
 	private Buttons buttons;
-	private Button stopButton;
+	private Button[] stopButton = new Button[3];
 
 	public Schwimmen(CardManiacView pCardManiacView) {
 		super(pCardManiacView);
@@ -51,13 +52,17 @@ public class Schwimmen extends Game {
 						get(i).organize();
 					}
 					h4.setCovered(h4.getCardCount());
-					settings.setAttribute("skip", 0);
+					for (int j = 0; j < 3; j++) {
+						settings.setAttribute("skip" + j, 0);
+						settings.setAttribute("stop" + j, 0);
+					}
 					updateText();
 				}
 
 			};
 		}
-		if (settings.getAttributeAsInt("skip") >= 3) {
+		int iSkip = getSkipCount(settings);
+		if (iSkip >= 3) {
 			return new IAction() {
 
 				@Override
@@ -69,11 +74,11 @@ public class Schwimmen extends Game {
 					for (int i = 0; i < 3; i++) {
 						h3.getCards().get(0).moveTo(h4);
 						h4.getCards().get(0).moveTo(h3);
+						settings.setAttribute("skip" + i, 0);
 					}
 					h4.setCovered(Math.max(0, covered));
 					h4.organize();
 					h3.organize();
-					settings.setAttribute("skip", 0);
 					updateText();
 				}
 			};
@@ -111,20 +116,26 @@ public class Schwimmen extends Game {
 							lst.get(0).moveTo(get(3));
 							lst3.get(0).moveTo(get(iPlayer));
 						}
-						settings.setAttribute("skip", 0);
+						settings.setAttribute("skip" + iPlayer, false);
 					} else if (cs != null) {
 						cs.moveTo(get(3));
 						ct.moveTo(get(iPlayer));
-						settings.setAttribute("skip", 0);
+						settings.setAttribute("skip" + iPlayer, false);
 					} else {
 						lst.add(lst.remove(0));
-						settings.setAttribute("skip",
-								settings.getAttributeAsInt("skip") + 1);
+						settings.setAttribute("skip" + iPlayer, true);
+					}
+					if (settings.getAttributeAsInt("stop" + iPlayer) == 1) {
+						stopRound(iPlayer, settings);
 					}
 					get(iPlayer).organize();
 					get(3).organize();
-
-					settings.setAttribute("player", (iPlayer + 1) % 3);
+					// set next player
+					int iNextPlayer = (iPlayer + 1) % 3;
+					settings.setAttribute("player", iNextPlayer);
+					if (getSkipCount(settings) < 3) {
+						settings.setAttribute("skip" + iNextPlayer, false);
+					}
 					updateText();
 				}
 
@@ -135,6 +146,16 @@ public class Schwimmen extends Game {
 		return null;
 	}
 
+	private int getSkipCount(XmlObject settings) {
+		int iSkip = 0;
+		for (int i = 0; i < 3; i++) {
+			if (settings.getAttributeAsBoolean("skip" + i)) {
+				iSkip++;
+			}
+		}
+		return iSkip;
+	}
+
 	@Override
 	public boolean hasHistory() {
 		// TODO Auto-generated method stub
@@ -143,7 +164,6 @@ public class Schwimmen extends Game {
 
 	@Override
 	public void initHands(boolean bLandscape) {
-		// TODO Auto-generated method stub
 		float left = 2.5f;
 		float right = 4.5f;
 		add(new Hand(0, left, Card.maxCardY, right, Card.maxCardY, 3));
@@ -152,15 +172,18 @@ public class Schwimmen extends Game {
 		float top = middle - 0.8f;
 		float bottom = middle + 0.8f;
 
-		add(new Hand(1, 0, top, 0, bottom, 3));
-		add(new Hand(2, 7, top, 7, bottom, 3));
-
+		if (bLandscape) {
+			add(new Hand(1, -1, top, -1, bottom, 3));
+			add(new Hand(2, 8, top, 8, bottom, 3));
+		} else {
+			add(new Hand(1, 0, top, 0, bottom, 3));
+			add(new Hand(2, 7, top, 7, bottom, 3));
+		}
 		add(new Hand(3, left, middle, right, middle, 3));
-
 		add(new Hand(4, 0f, 0, 7f, 0, 10));
 
-		// get(1).setCovered(999);
-		// get(2).setCovered(999);
+		get(1).setCovered(999);
+		get(2).setCovered(999);
 		get(4).setCovered(32);
 
 		get(1).setRotation(90f);
@@ -173,39 +196,60 @@ public class Schwimmen extends Game {
 		get(4).initText(TextAlign.BOTTOM);
 
 		buttons = new Buttons(99);
+		float w = Card.getCardWidth();
 		Button skipButton = Button.Type.reload.createButton(
-				Card.getCardWidth(), Card.getY(Card.maxCardY * 3 / 4),
-				Card.getCardWidth(), new IAction() {
-
+				Card.getX(right + 1),
+				Card.getY(Card.maxCardY - (bLandscape ? 0 : 1)), w,
+				new IAction() {
 					@Override
 					public void action() {
 						XmlObject settings = getSettings();
 						int iPlayer = settings.getAttributeAsInt("player");
-						int iSkip = settings.getAttributeAsInt("skip");
-						settings.setAttribute("skip", iSkip + 1);
+						int iStop = settings.getAttributeAsInt("stop0");
+						if (iStop == 1) {
+							stopRound(0, settings);
+						}
 						settings.setAttribute("player", iPlayer + 1);
 						updateText();
 					}
 				});
-		stopButton = Button.Type.star_on.createButton(-Card.getCardWidth(),
-				Card.getY(Card.maxCardY * 3 / 4), Card.getCardWidth(),
+		stopButton[0] = Button.Type.star_off.createButton(Card.getX(left - 1),
+				Card.getY(Card.maxCardY - (bLandscape ? 0 : 1)), w,
 				new IAction() {
 
 					@Override
 					public void action() {
 						XmlObject settings = getSettings();
-						int iStop = settings.getAttributeAsInt("stop");
-						if (iStop > 0) {
-							settings.setAttribute("stop", 0);
+						int iStop = settings.getAttributeAsInt("stop0");
+						if (iStop == 1) {
+							settings.setAttribute("stop0", 0);
 						} else {
-							settings.setAttribute("stop", 1);
+							settings.setAttribute("stop0", 1);
 						}
 						updateText();
 					}
 				});
+		// add stop buttons for each player
+		stopButton[1] = Button.Type.star_off.createButton(get(1).getX(1) + w
+				/ 2, get(1).getY(1), w, new NoAction());
+
+		stopButton[2] = Button.Type.star_off.createButton(get(2).getX(-1) - w
+				/ 2, get(2).getY(1), w, new NoAction());
+
 		buttons.add(skipButton);
-		buttons.add(stopButton);
+		for (Button b : stopButton) {
+			buttons.add(b);
+		}
+
 		add(buttons);
+	}
+
+	protected void stopRound(int piPlayer, XmlObject settings) {
+		settings.setAttribute("stop" + piPlayer, 2);
+		for (int i = 0; i < 3; i++) {
+			settings.setAttribute("stop" + i,
+					Math.max(1, settings.getAttributeAsInt("stop" + i)));
+		}
 	}
 
 	private XmlObject getSettings() {
@@ -216,11 +260,16 @@ public class Schwimmen extends Game {
 	public void initNewCards() {
 		get(4).create32Cards();
 
-		get(1).setCovered(0);
-		get(2).setCovered(0);
+		get(1).setCovered(999);
+		get(2).setCovered(999);
 		get(4).setCovered(32);
 
-		getSettings().setAttribute("player", 0);
+		XmlObject settings = getSettings();
+		settings.setAttribute("player", 0);
+		for (int i = 0; i < 3; i++) {
+			settings.setAttribute("skip" + i, false);
+			settings.setAttribute("stop" + i, 0);
+		}
 	}
 
 	@Override
@@ -261,13 +310,13 @@ public class Schwimmen extends Game {
 		if (pLstMoves.size() == 1) {
 			pLstMoves.get(0).moveTo(handTo);
 			cardTo.moveTo(handFrom);
-			getSettings().setAttribute("skip", -1);
+			getSettings().setAttribute("skip0", false);
 		} else {
 			for (Card c : pLstMoves) {
 				c.moveTo(handTo);
 				handTo.getCards().get(0).moveTo(handFrom);
 			}
-			getSettings().setAttribute("skip", -1);
+			getSettings().setAttribute("skip0", false);
 		}
 		updateText();
 		return true;
@@ -278,12 +327,24 @@ public class Schwimmen extends Game {
 		updateText(0);
 		updateText(3);
 		XmlObject settings = getSettings();
-		String iSkip = settings.getAttribute("skip");
-		int iStop = settings.getAttributeAsInt("stop");
-		if (iStop > 0) {
-			stopButton.setColor(GuiColors.TEXT_RED);
-		} else {
-			stopButton.setColor(null);
+		int iSkip = 0;
+		for (int i = 0; i < 3; i++) {
+			if (settings.getAttributeAsBoolean("skip" + i)) {
+				iSkip++;
+			}
+			int iStop = settings.getAttributeAsInt("stop" + i);
+			Button b = stopButton[i];
+			if (iStop > 1) {
+				b.setColor(GuiColors.TEXT_RED);
+				Button.Type.star_on.paintToButton(b);
+			} else if (iStop == 1) {
+				b.setColor(GuiColors.TEXT_RED);
+				Button.Type.star_off.paintToButton(b);
+			} else {
+				Button.Type.star_off.paintToButton(b);
+				b.setColor(null);
+			}
+
 		}
 		get(4).setText("Skip:" + iSkip);
 

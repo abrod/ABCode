@@ -25,7 +25,7 @@ import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
-import de.brod.gui.IAction;
+import de.brod.gui.action.IAction;
 
 public class Solitaire extends Game {
 

@@ -27,13 +27,13 @@ import de.brod.cm.Card;
 import de.brod.cm.CardContainer;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
-import de.brod.gui.DefaultDialogAction;
 import de.brod.gui.GuiColors;
-import de.brod.gui.IAction;
-import de.brod.gui.IDialogAction;
-import de.brod.gui.StateHandler;
+import de.brod.gui.action.DefaultDialogAction;
+import de.brod.gui.action.IAction;
+import de.brod.gui.action.IDialogAction;
 import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Button.Type;
+import de.brod.tools.StateHandler;
 
 public abstract class Game {
 	public enum CardColor {

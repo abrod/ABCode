@@ -15,8 +15,19 @@
  * limitations under the License.
  * *****************************************************************************
  */
-package de.brod.gui;
+package de.brod.gui.action;
 
-public interface IDialogAction extends IAction {
-	public String getName();
+public abstract class DefaultDialogAction implements IDialogAction {
+
+	private String sName;
+
+	public DefaultDialogAction(String psName) {
+		sName = psName;
+	}
+
+	@Override
+	public String getName() {
+		return sName;
+	}
+
 }

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.brod.gui.GuiColors;
-import de.brod.gui.IDialogAction;
+import de.brod.gui.action.IDialogAction;
 
 public class Menu extends Sprite {
 

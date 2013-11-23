@@ -27,12 +27,12 @@ import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.cm.TextAlign;
-import de.brod.gui.DefaultDialogAction;
 import de.brod.gui.GuiColors;
-import de.brod.gui.IAction;
-import de.brod.gui.IDialogAction;
-import de.brod.gui.StateHandler;
+import de.brod.gui.action.DefaultDialogAction;
+import de.brod.gui.action.IAction;
+import de.brod.gui.action.IDialogAction;
 import de.brod.gui.shape.Button;
+import de.brod.tools.StateHandler;
 import de.brod.xml.XmlObject;
 
 public class MauMau extends Game {

@@ -33,10 +33,12 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import de.brod.gui.GuiColors;
-import de.brod.gui.IAction;
 import de.brod.gui.Texture;
+import de.brod.gui.action.IAction;
 
 public class Button extends Sprite {
+
+	public Type _imageType = null;
 
 	public enum Type {
 		bluetoth(0, 0), statistcs(1, 0), wlan(2, 0), sound_off(3, 0), sound_on(
@@ -63,9 +65,16 @@ public class Button extends Sprite {
 
 		public Button createButton(float px, float py, IAction action) {
 			Button button = new Button(this.toString(), action);
-			button.setCell(x, y, x + 6, y);
+			paintToButton(button);
 			button.setPosition(px, py);
 			return button;
+		}
+
+		public void paintToButton(Button button) {
+			if (button._imageType != this) {
+				button._imageType = this;
+				button.setCell(x, y, x + 6, y);
+			}
 		}
 
 		public Button createButton(int i, int piCount, boolean bTop,

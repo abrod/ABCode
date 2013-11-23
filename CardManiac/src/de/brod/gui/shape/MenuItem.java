@@ -18,7 +18,7 @@
 package de.brod.gui.shape;
 
 import de.brod.gui.GuiColors;
-import de.brod.gui.IDialogAction;
+import de.brod.gui.action.IDialogAction;
 
 public class MenuItem extends Rectangle {
 

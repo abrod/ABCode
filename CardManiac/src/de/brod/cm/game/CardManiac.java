@@ -24,11 +24,11 @@ import de.brod.cm.Buttons;
 import de.brod.cm.Card;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
-import de.brod.gui.IAction;
-import de.brod.gui.IDialogAction;
-import de.brod.gui.StateHandler;
+import de.brod.gui.action.IAction;
+import de.brod.gui.action.IDialogAction;
 import de.brod.gui.shape.Button;
 import de.brod.gui.shape.Button.Type;
+import de.brod.tools.StateHandler;
 
 public class CardManiac extends Game {
 
