@@ -35,6 +35,7 @@ public class GuiColors {
 
 	public static GuiColors TEXT_BLACK = new GuiColors(255, 0, 0, 0);
 	public static GuiColors TEXT_RED = new GuiColors(255, 255, 0, 0);
+	public static GuiColors TEXT_GREEN = new GuiColors(255, 0, 255, 0);
 	public static GuiColors TEXT_WHITE = new GuiColors(255, 255, 255, 255);
 	public static GuiColors TEXT_BLACK_TRANSPARENT = new GuiColors(64, 0, 0, 0);
 
