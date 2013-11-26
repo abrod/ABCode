@@ -437,7 +437,7 @@ public class Schwimmen extends Game {
 	private String count(int i) {
 		double val = count(get(i).getCards());
 		if (val == 30.5) {
-			return "30 ½";
+			return "30 "+(char)189;
 		}
 		return String.valueOf((int) val);
 	}

@@ -151,7 +151,7 @@ public abstract class Game {
 			public void action() {
 
 				String[] colors = { "green", "blue", "purple", "orange", "red",
-						"black" };
+						"black", "white" };
 
 				List<IDialogAction> lst = new ArrayList<IDialogAction>();
 				for (int i = 0; i < colors.length; i++) {

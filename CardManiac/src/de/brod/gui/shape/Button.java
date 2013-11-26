@@ -250,10 +250,10 @@ public class Button extends Sprite {
 		}
 		if (createText != null) {
 			createText.setColor(pbEnabled ? foreColor
-					: GuiColors.TEXT_BLACK_TRANSPARENT);
+								: GuiColors.TEXT_BLACK_TRANSPARENT);
 		}
 	}
-
+	
 	public void setText(String psText) {
 		float px = getX();
 		float py = getY();

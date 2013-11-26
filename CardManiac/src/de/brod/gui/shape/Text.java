@@ -140,7 +140,7 @@ public class Text extends Sprite {
 		}
 		// Clubs=9827, Spades=9824, Hearts=9829, Diamonds=9830
 		String sAddChar = "" + (char) 9827 + "" + (char) 9824 + ""
-				+ (char) 9829 + "" + (char) 9830 + "½";
+				+ (char) 9829 + "" + (char) 9830 + ""+(char)189;
 		sb.append(sAddChar);
 		paint.getTextBounds(sb.toString(), 0, sb.length(), bounds);
 		paint.setTextSize(w * w / bounds.height());

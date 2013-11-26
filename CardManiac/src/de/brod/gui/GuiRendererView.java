@@ -105,6 +105,9 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		} else if (baseColor == 5) {
 			// lavender
 			GuiColors.setBackColor("333333");
+		}  else if (baseColor == 6) {
+			// lavender
+			GuiColors.setBackColor("DDDDDD");
 		} else {
 			// default
 			// green
@@ -461,7 +464,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 	protected abstract boolean showBackButton();
 
 	public void changeGlobalColor(int baseColor) {
-		baseColor = baseColor % 6;
+		baseColor = baseColor % 7;
 		globalStateHandler.setAttibute("baseColor", baseColor);
 		activity.restartView();
 	}
