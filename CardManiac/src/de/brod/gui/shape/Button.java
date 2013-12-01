@@ -175,13 +175,13 @@ public class Button extends Sprite {
 			Bitmap bitmap = Bitmap.createBitmap(wdEmpty * 2, wdEmpty,
 					Config.ARGB_8888);
 			drawEmptyButton(bitmap, 64);
-			emptyTexture = new Texture(gl, bitmap, 2, 1);
+			emptyTexture = new Texture("SYS_BUTTON", gl, bitmap, 2, 1);
 			bitmap.recycle();
 			// open the icons
 			open = assetManager.open("icons.png");
 			bitmap = BitmapFactory.decodeStream(open);
 			open.close();
-			texture = new Texture(gl, bitmap, 12, 5);
+			texture = new Texture("SYS_BUTTON_ICON", gl, bitmap, 12, 5);
 			bitmap.recycle();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -250,10 +250,10 @@ public class Button extends Sprite {
 		}
 		if (createText != null) {
 			createText.setColor(pbEnabled ? foreColor
-								: GuiColors.TEXT_BLACK_TRANSPARENT);
+					: GuiColors.TEXT_BLACK_TRANSPARENT);
 		}
 	}
-	
+
 	public void setText(String psText) {
 		float px = getX();
 		float py = getY();

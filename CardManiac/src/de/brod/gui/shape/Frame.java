@@ -87,7 +87,7 @@ public class Frame extends Container {
 		Bitmap bitmap = Bitmap.createBitmap(wdEmpty * 2, wdEmpty,
 				Config.ARGB_8888);
 		Button.drawEmptyButton(bitmap, 220);
-		emptyTexture = new Texture(gl, bitmap, 6, 3);
+		emptyTexture = new Texture("SYS_FRAME", gl, bitmap, 6, 3);
 		bitmap.recycle();
 	}
 

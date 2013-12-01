@@ -33,7 +33,7 @@ public class Rectangle extends Sprite {
 		// create an empty bitmap
 		Bitmap bmp = Bitmap.createBitmap(128, 128, Config.ARGB_8888);
 		new Canvas(bmp).drawColor(Color.WHITE);
-		texture = new Texture(gl, bmp, 3, 3);
+		texture = new Texture("SYS_WHITE", gl, bmp, 3, 3);
 		bmp.recycle();
 	}
 

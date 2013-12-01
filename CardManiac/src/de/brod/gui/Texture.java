@@ -57,9 +57,9 @@ public class Texture {
 	int mTextureId = -1; // New variable.
 
 	// The bitmap we want to load as a texture.
-	private Bitmap mBitmap; // New variable.
 
-	private float cX, cY, width, height;
+	private float cX, cY;
+	int width, height;
 
 	private Texture addTexture = null;
 
@@ -68,16 +68,18 @@ public class Texture {
 	 *
 	 * @param bitmap
 	 */
-	public Texture(GL10 gl, Bitmap bitmap, float countX, float countY) { // New
-																			// function.
+	public Texture(String psTextureId, GL10 gl, Bitmap bitmap, float countX,
+			float countY) { // New
+
+		// function.
 		cX = countX;
 		cY = countY;
 		width = bitmap.getWidth();
 		height = bitmap.getHeight();
-		this.mBitmap = bitmap;
 		// Generate one texture pointer...
 		int[] textures = new int[1];
 		gl.glGenTextures(1, textures, 0);
+
 		mTextureId = textures[0];
 
 		// ...and bind it to our array
@@ -95,9 +97,16 @@ public class Texture {
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T,
 				GL10.GL_REPEAT);
 
+		// ByteBuffer byteBuffer = ByteBuffer.allocate(width * height * 4);
+		// bitmap.copyPixelsToBuffer(byteBuffer);
+		//
+		// gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA, width, height,
+		// 0,
+		// GL10.GL_BYTE, GL10.GL_UNSIGNED_BYTE, byteBuffer);
+
 		// Use the Android GLUtils to specify a two-dimensional texture image
 		// from our bitmap
-		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, mBitmap, 0);
+		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
 	}
 
 	public void add(Texture texture) {
@@ -133,8 +142,8 @@ public class Texture {
 		return mTextureId;
 	}
 
-	public int setBuffer(FloatBuffer mTextureBuffer, int px1, int py1, int px2,
-			int py2) {
+	public int setBuffer(FloatBuffer mTextureBuffer, float px1, float py1,
+			float px2, float py2) {
 		float x0 = px1 / width;
 		float x1 = px2 / width;
 		float y0 = py1 / height;

@@ -79,6 +79,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 	protected StateHandler globalStateHandler;
 
 	protected Hashtable<Button.Type, Button> htTitleButtons = new Hashtable<Button.Type, Button>();
+	private int statusBarHeight;
 
 	public GuiRendererView(GuiActivity context) {
 
@@ -105,7 +106,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		} else if (baseColor == 5) {
 			// lavender
 			GuiColors.setBackColor("333333");
-		}  else if (baseColor == 6) {
+		} else if (baseColor == 6) {
 			// lavender
 			GuiColors.setBackColor("DDDDDD");
 		} else {
@@ -332,6 +333,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 	public synchronized void onDrawFrame(GL10 gl) {
 		// Clears the screen and depth buffer.
 		gl.glClearColor(r, g, b, 1.0f);
+
 		// Clears the screen and depth buffer.
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		// Replace the current matrix with the identity matrix
@@ -434,16 +436,20 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		// Enable blending using premultiplied alpha.
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		
+
 		gl.glDisable(GL10.GL_DITHER); // Disable dithering for better
 		// init the textures
 		DisplayMetrics metrics = getResources().getDisplayMetrics();
 		width = metrics.widthPixels;
 		height = metrics.heightPixels;
+		statusBarHeight = Math.round(48 * metrics.density);
+		fTitleHeight = statusBarHeight * 2f / Math.min(height, width);
 
 		// init
-		int statusBarHeight = Math.round(48 * metrics.density);
-		fTitleHeight = statusBarHeight * 2f / Math.min(height, width);
+		// clear all textures
+		gl.glDisable(GL10.GL_TEXTURE_2D);
+		// reset the textures
+		gl.glEnable(GL10.GL_TEXTURE_2D);
 
 		Button.init(activity.getAssets(), gl, width, height, fTitleHeight);
 		Frame.init(activity.getAssets(), gl, width, height, fTitleHeight);
@@ -453,7 +459,7 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		// add the current image
 		Bitmap bitmapIcon = Texture.base2image(BitmapFactory.decodeResource(
 				activity.getResources(), R.drawable.ic_launcher));
-		iconTexture = new Texture(gl, bitmapIcon, 1, 1);
+		iconTexture = new Texture("SYS_ICON", gl, bitmapIcon, 1, 1);
 		bitmapIcon.recycle();
 
 		// init the textures

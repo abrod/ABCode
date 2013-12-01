@@ -33,7 +33,7 @@ import de.brod.tools.StateHandler;
 public class CardManiac extends Game {
 
 	private static Class<?>[] classes = { FreeCell.class, Solitaire.class,
-			MauMau.class, OffizierSkat.class, Schwimmen.class };
+			MauMau.class, OffizierSkat.class, Schwimmen.class, TGC.class };
 
 	private Game[] games;
 

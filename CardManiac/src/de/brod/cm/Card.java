@@ -143,17 +143,17 @@ public class Card extends Sprite {
 
 		Bitmap bitmap = CardImage.createBitmap(Math.min(width, height), 0,
 				amountOfCardsPerWidth);
-		cardTextures = new Texture(gl, bitmap, 6, 4);
+		cardTextures = new Texture("CARD0", gl, bitmap, 6, 4);
 		bitmap.recycle();
 
 		bitmap = CardImage.createBitmap(Math.min(width, height), 24,
 				amountOfCardsPerWidth);
-		Texture cardTexture1 = new Texture(gl, bitmap, 6, 4);
+		Texture cardTexture1 = new Texture("CARD1", gl, bitmap, 6, 4);
 		bitmap.recycle();
 
 		bitmap = CardImage.createBitmap(Math.min(width, height), 48,
 				amountOfCardsPerWidth);
-		Texture cardTexture2 = new Texture(gl, bitmap, 6, 4);
+		Texture cardTexture2 = new Texture("CARD2", gl, bitmap, 6, 4);
 		bitmap.recycle();
 		// cleanup
 		System.gc();
