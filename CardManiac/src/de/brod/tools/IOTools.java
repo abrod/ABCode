@@ -32,12 +32,12 @@ import android.provider.MediaStore;
 
 public class IOTools {
 
-	public static void writeBitmap(File file, Bitmap bitmap, Context activity,
+	public static void writeBitmap(Bitmap bitmap, Context activity,
 			String sFileName) throws IOException {
 
 		// <uses-permission
 		// android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-		// new File("/mnt/sdcard", sFileName);
+		File file= new File("/mnt/sdcard", sFileName);
 
 		OutputStream fOut = new FileOutputStream(file);
 

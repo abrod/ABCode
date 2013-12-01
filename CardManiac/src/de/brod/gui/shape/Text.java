@@ -31,14 +31,19 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import de.brod.gui.GuiColors;
 import de.brod.gui.Texture;
+import de.brod.tools.*;
+import java.io.*;
 
-public class Text extends Sprite {
+public class Text extends Sprite
+{
 
-	private static class CharType {
+	private static class CharType
+	{
 		Rect bounds = new Rect();
 		private int x, y, h, ox, size, boundLeft, boundRight;
 
-		public Text create(float pfHeight) {
+		public Text create(float pfHeight)
+		{
 			float fact = pfHeight / h;
 			Text text = new Text(size * fact, pfHeight);
 
@@ -52,7 +57,8 @@ public class Text extends Sprite {
 		}
 
 		private void drawText(Canvas c, char ch, Paint paint, Point cursor,
-				int pwd, int piMaxHeight, int pfBottom) {
+							  int pwd, int piMaxHeight, int pfBottom)
+		{
 			h = piMaxHeight - 1;
 			x = cursor.x;
 			y = cursor.y;
@@ -63,9 +69,10 @@ public class Text extends Sprite {
 			boundRight = bounds.right;
 
 			size = 4 + bounds.left + ox + bounds.width();// (int)
-															// paint.measureText(text);
+			// paint.measureText(text);
 			println(ch + " " + x + " " + y + " " + size, bounds);
-			if (x + size >= pwd) {
+			if (x + size >= pwd)
+			{
 				x = 0;
 				y += piMaxHeight;
 			}
@@ -75,7 +82,8 @@ public class Text extends Sprite {
 
 	}
 
-	private static void println(String string, Rect bounds2) {
+	private static void println(String string, Rect bounds2)
+	{
 		// System.out.println(string + " [" + bounds2.left + " " +
 		// bounds2.width()
 		// + " " + bounds2.right + "/" + bounds2.top + " "
@@ -90,16 +98,20 @@ public class Text extends Sprite {
 	private static Hashtable<String, CharType> ht;
 	private static int wd;
 
-	private static Text createText(String psText, float fHeight) {
-		if (psText.length() == 0) {
+	private static Text createText(String psText, float fHeight)
+	{
+		if (psText.length() == 0)
+		{
 			psText = " ";
 		}
 		CharType charType = ht.get(psText.substring(0, 1));
-		if (charType == null) {
+		if (charType == null)
+		{
 			charType = ht.get(" ");
 		}
 		Text t = charType.create(fHeight);
-		if (psText.length() > 1) {
+		if (psText.length() > 1)
+		{
 			t.setNext(createText(psText.substring(1), fHeight));
 		}
 		return t;
@@ -107,17 +119,20 @@ public class Text extends Sprite {
 	}
 
 	public static Text createText(String string, float x, float y,
-			float fTitleHeight) {
+								  float fTitleHeight)
+	{
 		Text createText = createText(string, fTitleHeight);
 		createText.setPosition(x, y);
 		return createText;
 	}
 
 	public static void init(GL10 gl, int pWidth, int pHeight,
-			float pfTitleHeight, Context activity) {
+							float pfTitleHeight, Context activity)
+	{
 		int min = Math.min(pWidth, pHeight) * 2;
 		wd = 512;
-		while (wd < min) {
+		while (wd < min)
+		{
 			wd = wd * 2;
 		}
 		Bitmap bitmap = Bitmap.createBitmap(wd, wd, Config.ARGB_8888);
@@ -126,7 +141,7 @@ public class Text extends Sprite {
 		Paint paint = new Paint();
 		c.drawColor(GuiColors.EMPTY.getColor());
 		paint.setColor(Color.WHITE);
-		float w = wd / 10;
+		float w = wd / 9;
 		paint.setTextSize(w);
 
 		Rect bounds = new Rect();
@@ -135,12 +150,13 @@ public class Text extends Sprite {
 
 		int maxHeight = 0;
 		StringBuilder sb = new StringBuilder();
-		for (char ch = ' '; ch <= 127; ch++) {
+		for (char ch = ' '; ch <= 127; ch++)
+		{
 			sb.append(ch);
 		}
 		// Clubs=9827, Spades=9824, Hearts=9829, Diamonds=9830
 		String sAddChar = "" + (char) 9827 + "" + (char) 9824 + ""
-				+ (char) 9829 + "" + (char) 9830 + ""+(char)189;
+			+ (char) 9829 + "" + (char) 9830 + "" + (char)189;
 		sb.append(sAddChar);
 		paint.getTextBounds(sb.toString(), 0, sb.length(), bounds);
 		paint.setTextSize(w * w / bounds.height());
@@ -149,54 +165,70 @@ public class Text extends Sprite {
 		int iBottom = bounds.bottom;
 		maxHeight = bounds.height() + iBottom;
 
-		for (char ch : sb.toString().toCharArray()) {
+		for (char ch : sb.toString().toCharArray())
+		{
 			CharType charType = new CharType();
 			charType.drawText(c, ch, paint, cursor, wd, maxHeight, iBottom);
 			ht.put(String.valueOf(ch), charType);
 		}
 		textTex = new Texture(gl, bitmap, 1, 1);
 
-		// IOTools.writeBitmap(bitmap, activity, "text.jpg");
+		//try
+		//{
+		//IOTools.writeBitmap(bitmap, activity, "text.jpg");
+		//}
+		//catch (Exception e)
+		//{}
 		bitmap.recycle();
 	}
 
-	public Text(float pWidth, float pHeight) {
+	public Text(float pWidth, float pHeight)
+	{
 		super(textTex, pWidth, pHeight);
 		setCenter(false);
 	}
 
 	@Override
-	public int compareTo(Container another) {
-		if (!(another instanceof Text)) {
+	public int compareTo(Container another)
+	{
+		if (!(another instanceof Text))
+		{
 			return 1;
 		}
 		return super.compareTo(another);
 	}
 
-	public float getTextWdith() {
-		if (next != null) {
+	public float getTextWdith()
+	{
+		if (next != null)
+		{
 			return next.getTextWidth() + width + boundLeft;
 		}
 		return width + boundLeft;
 	}
 
-	public float getTextWidth() {
-		if (next != null) {
+	public float getTextWidth()
+	{
+		if (next != null)
+		{
 			return next.getTextWdith() + width;
 		}
 		return width + boundRight;
 	}
 
-	private void setNext(Text createText) {
+	private void setNext(Text createText)
+	{
 		clear();
 		add(createText);
 		next = createText;
 	}
 
 	@Override
-	public void setPosition(float px, float py) {
+	public void setPosition(float px, float py)
+	{
 		super.setPosition(px, py);
-		if (next != null) {
+		if (next != null)
+		{
 			next.setPosition(px + width, py);
 		}
 	}

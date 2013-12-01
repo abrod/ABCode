@@ -434,6 +434,8 @@ public abstract class GuiRendererView<SPRITE extends Sprite> extends
 		// Enable blending using premultiplied alpha.
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		
+		gl.glDisable(GL10.GL_DITHER); // Disable dithering for better
 		// init the textures
 		DisplayMetrics metrics = getResources().getDisplayMetrics();
 		width = metrics.widthPixels;
