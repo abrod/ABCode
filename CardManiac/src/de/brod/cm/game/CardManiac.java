@@ -21,7 +21,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import de.brod.cm.Buttons;
-import de.brod.cm.Card;
+import de.brod.cm.ICard;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.action.IAction;
@@ -143,7 +143,7 @@ public class CardManiac extends Game {
 	}
 
 	@Override
-	public void mouseDown(List<Card> plstMoves) {
+	public void mouseDown(List<ICard> plstMoves) {
 		int id = plstMoves.get(0).getHand().getId();
 		if (id >= 0 && id < games.length) {
 			super.openGame(games[id]);

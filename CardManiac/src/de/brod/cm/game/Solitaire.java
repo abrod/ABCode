@@ -25,6 +25,7 @@ import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
+import de.brod.cm.ICard;
 import de.brod.gui.action.IAction;
 
 public class Solitaire extends Game {
@@ -45,7 +46,7 @@ public class Solitaire extends Game {
 	public IAction getNextAction() {
 		// turn cards arround
 		for (int i = 0; i < 7; i++) {
-			final Card lastCard = get(i + 6).getLastCard();
+			final ICard lastCard = get(i + 6).getLastCard();
 			if (lastCard != null && lastCard.isCovered()) {
 				return new IAction() {
 
@@ -67,7 +68,7 @@ public class Solitaire extends Game {
 					public void action() {
 						Hand h0 = get(0);
 						Hand h1 = get(1);
-						Card[] cards = h1.getCards().toArray(new Card[0]);
+						ICard[] cards = h1.getCards().toArray(new ICard[0]);
 						for (int i = 0; i < cards.length - 1; i++) {
 							cards[i].moveTo(h0);
 						}
@@ -82,7 +83,7 @@ public class Solitaire extends Game {
 		int iMin = 999;
 		for (int i = 2; i < 6; i++) {
 			Hand h = get(i);
-			Card c = h.getLastCard();
+			ICard c = h.getLastCard();
 			if (c == null) {
 				iMin = 0;
 				break;
@@ -90,12 +91,12 @@ public class Solitaire extends Game {
 				iMin = Math.min(iMin, c.getValue().getId() + 1);
 			}
 		}
-		final List<Card> lst = new ArrayList<Card>();
+		final List<ICard> lst = new ArrayList<ICard>();
 		for (int i = 1; i < 13; i++) {
 			if (i >= 2 && i < 6) {
 				continue;
 			}
-			Card lastCard = get(i).getLastCard();
+			ICard lastCard = get(i).getLastCard();
 			if (lastCard != null && lastCard.getValue().getId() == iMin) {
 				lst.add(lastCard);
 			}
@@ -106,12 +107,12 @@ public class Solitaire extends Game {
 
 				@Override
 				public void action() {
-					for (Card card : lst) {
+					for (ICard card : lst) {
 						Hand hand = card.getHand();
 						// hand.setCovered(hand.getCardCount() - 1);
 						for (int i = 2; i < 6; i++) {
 							Hand h = get(i);
-							Card c = h.getLastCard();
+							ICard c = h.getLastCard();
 							if (c == null) {
 								card.moveTo(h);
 								h.organize();
@@ -190,11 +191,11 @@ public class Solitaire extends Game {
 
 	@Override
 	public void initNewCards() {
-		Card[] cards = get(0).create52Cards();
+		ICard[] cards = get(0).create52Cards();
 		get(0).setCovered(999);
 		int iPos = 6;
 		int iOff = 0;
-		for (Card card : cards) {
+		for (ICard card : cards) {
 			card.moveTo(get(iPos));
 			iPos++;
 			if (iPos >= 13) {
@@ -222,8 +223,8 @@ public class Solitaire extends Game {
 	}
 
 	@Override
-	public void mouseDown(List<Card> plstMoves) {
-		Card card = plstMoves.get(0);
+	public void mouseDown(List<ICard> plstMoves) {
+		ICard card = plstMoves.get(0);
 		Hand hand = card.getHand();
 		if (hand.getId() >= 6) {
 			plstMoves.clear();
@@ -232,7 +233,7 @@ public class Solitaire extends Game {
 				return;
 			}
 			boolean bAdd = false;
-			for (Card c : hand.getCards()) {
+			for (ICard c : hand.getCards()) {
 				if (c == card) {
 					bAdd = true;
 				}
@@ -249,13 +250,13 @@ public class Solitaire extends Game {
 	}
 
 	@Override
-	public boolean mouseUp(List<Card> pLstMoves, Hand handTo, Card cardTo) {
+	public boolean mouseUp(List<ICard> pLstMoves, Hand handTo, ICard cardTo) {
 		if (handTo == null) {
 			// dont move
 			return false;
 		}
-		Card c0 = pLstMoves.get(0);
-		Card cto = handTo.getLastCard();
+		ICard c0 = pLstMoves.get(0);
+		ICard cto = handTo.getLastCard();
 		// pLstMoves.clear();
 		if (handTo == c0.getHand()) {
 			if (c0.getHand().getId() == 0) {

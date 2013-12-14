@@ -26,6 +26,7 @@ import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
+import de.brod.cm.ICard;
 import de.brod.cm.TextAlign;
 import de.brod.gui.GuiColors;
 import de.brod.gui.action.DefaultDialogAction;
@@ -75,7 +76,7 @@ public class MauMau extends Game {
 			if (h0.getCardCount() == 0) {
 				updateStack();
 			}
-			Card c = h0.getLastCard();
+			ICard c = h0.getLastCard();
 			if (c != null) {
 				c.moveTo(handTo);
 			}
@@ -150,7 +151,7 @@ public class MauMau extends Game {
 				@Override
 				public void action() {
 					Hand hand = get(iPlayer);
-					Card playedCard = null;
+					ICard playedCard = null;
 					// if card could not be played
 					if ((playedCard = playCard(hand)) == null) {
 						if (settings.getAttributeAsBoolean("drawCard")) {
@@ -168,8 +169,8 @@ public class MauMau extends Game {
 					setNextPlayer(playedCard, settings);
 				}
 
-				private Card playCard(Hand hand) {
-					Card cPlay = getNextCard(hand);
+				private ICard playCard(Hand hand) {
+					ICard cPlay = getNextCard(hand);
 					if (cPlay != null) {
 						cPlay.moveTo(h5);
 						h5.organize();
@@ -191,16 +192,16 @@ public class MauMau extends Game {
 		return null;
 	}
 
-	protected Card getNextCard(Hand hand) {
+	protected ICard getNextCard(Hand hand) {
 		XmlObject xmlSettings = getSettings();
-		Card cPlay = null;
+		ICard cPlay = null;
 		double imax = -1;
-		List<Card> lst = hand.getCards();
-		for (Card c : lst) {
+		List<ICard> lst = hand.getCards();
+		for (ICard c : lst) {
 			if (matchesStack(c, xmlSettings)) {
 				double i = Math.random();
 				if (!c.getValue().equals(Values.Jack)) {
-					for (Card c1 : lst) {
+					for (ICard c1 : lst) {
 						if (c1.getValue().equals(c.getValue())) {
 							i++;
 						} else if (c1.getColor().equals(c.getColor())) {
@@ -231,14 +232,14 @@ public class MauMau extends Game {
 	@Override
 	protected void help() {
 		Hand player = get(4);
-		Card nextCard = getNextCard(player);
+		ICard nextCard = getNextCard(player);
 		XmlObject settings = getSettings();
 		if (nextCard == null) {
-			for (Card c : player.getCards()) {
+			for (ICard c : player.getCards()) {
 				setColor(c, CardColor.RED);
 			}
 		} else {
-			for (Card c : player.getCards()) {
+			for (ICard c : player.getCards()) {
 				if (c == nextCard) {
 					setColor(c, CardColor.GREEN);
 				} else if (matchesStack(c, settings)) {
@@ -252,7 +253,7 @@ public class MauMau extends Game {
 		if (!settings.getAttributeAsBoolean("drawCard")) {
 			col = CardColor.RED;
 		}
-		for (Card c : get(0).getCards()) {
+		for (ICard c : get(0).getCards()) {
 			setColor(c, col);
 		}
 		super.help();
@@ -276,7 +277,8 @@ public class MauMau extends Game {
 		int maxCount2 = maxCount * 3 / 2;
 		add(new Hand(0, 2, y2, 3, y2, 16));
 		// add the players
-		add(new Hand(1, left - 1, top, left - 1, Card.maxCardY - top, maxCount2));
+		add(new Hand(1, left - 1, top, left - 1, Card.maxCardY - top,
+				maxCount2));
 		add(new Hand(2, left, 0, right, 0, maxCount));
 		add(new Hand(3, right + 1, top, right + 1, Card.maxCardY - top,
 				maxCount2));
@@ -284,8 +286,8 @@ public class MauMau extends Game {
 
 		// add the stacks
 		add(new Hand(5, 4, y2, 5, y2, 16));
-		get(1).setRotation(90f);
-		get(3).setRotation(-90f);
+		get(1).setRotation(1);
+		get(3).setRotation(-1);
 
 		get(1).initText(TextAlign.RIGHT);
 		get(2).initText(TextAlign.BOTTOM);
@@ -393,7 +395,7 @@ public class MauMau extends Game {
 		return null;
 	}
 
-	private boolean matchesStack(Card card, XmlObject settings) {
+	private boolean matchesStack(ICard card, XmlObject settings) {
 		Values cValue = card.getValue();
 
 		if (settings.getAttributeAsInt("drawCardCount") > 0) {
@@ -411,7 +413,7 @@ public class MauMau extends Game {
 			return true;
 		}
 
-		Card lastCard = get(5).getLastCard();
+		ICard lastCard = get(5).getLastCard();
 
 		int f = settings.getAttributeAsInt("force");
 		if (f > 0) {
@@ -433,7 +435,7 @@ public class MauMau extends Game {
 	}
 
 	@Override
-	public void mouseDown(List<Card> plstMoves) {
+	public void mouseDown(List<ICard> plstMoves) {
 		resetColors();
 		XmlObject settings = getSettings();
 		int iPlayer = settings.getAttributeAsInt("player");
@@ -443,7 +445,7 @@ public class MauMau extends Game {
 			return;
 		}
 
-		Card cl = plstMoves.get(0);
+		ICard cl = plstMoves.get(0);
 		int hid = cl.getHand().getId();
 		if (hid == 0) {
 			// ok
@@ -465,14 +467,14 @@ public class MauMau extends Game {
 	}
 
 	@Override
-	public boolean mouseUp(List<Card> pLstMoves, Hand handTo, Card card) {
+	public boolean mouseUp(List<ICard> pLstMoves, Hand handTo, ICard card) {
 		XmlObject settings = getSettings();
 		int iPlayer = settings.getAttributeAsInt("player");
 		if (iPlayer != 0 || settings.getAttributeAsBoolean("jack")) {
 			// it's not your turn
 			return false;
 		}
-		Card selectedCard = pLstMoves.get(0);
+		ICard selectedCard = pLstMoves.get(0);
 		Hand selectedHand = selectedCard.getHand();
 		int hSelectedId = selectedHand.getId();
 		if (selectedHand == handTo) {
@@ -537,7 +539,7 @@ public class MauMau extends Game {
 		}
 	}
 
-	private void setNextPlayer(Card playedCard, XmlObject settings) {
+	private void setNextPlayer(ICard playedCard, XmlObject settings) {
 		int iPlayer = settings.getAttributeAsInt("player");
 		int iDrawCardCount = settings.getAttributeAsInt("drawCardCount");
 		boolean bNextPlayerMayDrawCard = true;
@@ -580,7 +582,7 @@ public class MauMau extends Game {
 	private void updateStack() {
 		Hand h0 = get(0);
 		Hand h5 = get(5);
-		Card[] cards = h5.getCards().toArray(new Card[0]);
+		ICard[] cards = h5.getCards().toArray(new ICard[0]);
 		for (int i = 0; i < cards.length - 1; i++) {
 			cards[i].moveTo(h0);
 		}

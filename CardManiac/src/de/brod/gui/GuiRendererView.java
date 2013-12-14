@@ -49,8 +49,7 @@ import de.brod.gui.shape.Sprite;
 import de.brod.gui.shape.Text;
 import de.brod.tools.StateHandler;
 
-public abstract class GuiRendererView<SPRITE extends Sprite> extends
-		GuiView<SPRITE> implements Renderer {
+public abstract class GuiRendererView extends GuiView implements Renderer {
 
 	private class ButtonAction implements IAction {
 		public Type type;

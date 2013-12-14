@@ -36,7 +36,7 @@ import de.brod.gui.shape.Sprite;
 import de.brod.tools.StateHandler;
 import de.brod.xml.XmlObject;
 
-public class CardManiacView extends GuiRendererView<Card> {
+public class CardManiacView extends GuiRendererView {
 
 	Game game;
 
@@ -209,31 +209,48 @@ public class CardManiacView extends GuiRendererView<Card> {
 
 	@Override
 	protected boolean isInstanceOf(Container sprite) {
-		return sprite instanceof Card;
+		if (sprite instanceof ICard) {
+			return true;
+		}
+		if (sprite instanceof CardFrame) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
-	protected void mouseDown(List<Card> plstMoves) {
+	protected void mouseDown(List<Container> plstMoves) {
 		if (game.getFinishedText() != null) {
 			plstMoves.clear();
 			return;
 		}
 		game.clearHelp();
-		game.mouseDown(plstMoves);
+		game.mouseDown(getCards(plstMoves));
+	}
+
+	private List<ICard> getCards(List<Container> plstMoves) {
+		List<ICard> lst = new ArrayList<ICard>();
+		for (Container sprite : plstMoves) {
+			if (sprite instanceof ICard) {
+				lst.add((ICard) sprite);
+			}
+		}
+		return lst;
 	}
 
 	@Override
-	protected boolean mouseUp(List<Card> pLstMoves, Card cardTo) {
+	protected boolean mouseUp(List<Container> pLstMoves, Container pCardTo) {
 		if (game.getFinishedText() != null) {
 			return false;
 		}
 		boolean bChanged = false;
 		if (pLstMoves.size() > 0) {
-			if (cardTo != null) {
+			if (pCardTo != null && pCardTo instanceof ICard) {
+				ICard cardTo = (ICard) pCardTo;
 				Hand handTo = cardTo.getHand();
-				bChanged = game.mouseUp(pLstMoves, handTo, cardTo);
+				bChanged = game.mouseUp(getCards(pLstMoves), handTo, cardTo);
 			} else {
-				bChanged = game.mouseUp(pLstMoves, null, null);
+				bChanged = game.mouseUp(getCards(pLstMoves), null, null);
 			}
 			// organize the hands
 			for (CardContainer cc : _cardContainers) {

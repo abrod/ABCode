@@ -28,6 +28,9 @@ public class Frame extends Container {
 
 	private static Texture emptyTexture;
 	private Sprite[] ul = new Sprite[9];
+	private float _width;
+	private float _height;
+	private float x, y;
 
 	public static float border = 0;
 
@@ -41,10 +44,31 @@ public class Frame extends Container {
 			}
 		}
 
-		setDimension(px, py, width, height);
+		setDimension(px, py, width, height, false);
 	}
 
-	public void setDimension(float x, float y, float width, float height) {
+	public void setDimension(float px, float py, float width, float height,
+			boolean pbAddBorder) {
+
+		x = px;
+		y = py;
+		y = py;
+		if (height < 0) {
+			y += height;
+			height = -height;
+		}
+		if (width < 0) {
+			x += width;
+			width = -width;
+		}
+		_width = width;
+		_height = height;
+		if (pbAddBorder) {
+			x -= border / 2;
+			y -= border / 2;
+			width += border;
+			height += border;
+		}
 		// x -= border;
 		// y -= border;
 		// width += border * 2;
@@ -89,6 +113,30 @@ public class Frame extends Container {
 		Button.drawEmptyButton(bitmap, 220);
 		emptyTexture = new Texture("SYS_FRAME", gl, bitmap, 6, 3);
 		bitmap.recycle();
+	}
+
+	@Override
+	public boolean touches(float eventX, float eventY) {
+		if (x > eventX || y > eventY) {
+			return false;
+		}
+		if (x + _width < eventX || y + _height < eventY) {
+			return false;
+		}
+		return true;
+	}
+
+	public float getWidth() {
+		return _height;
+	}
+
+	public float getHeight() {
+		return _width;
+	}
+
+	public void setValue(int i) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

@@ -2,7 +2,7 @@ package de.brod.cm.game;
 
 import java.util.List;
 
-import de.brod.cm.Card;
+import de.brod.cm.ICard;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
 import de.brod.gui.action.IAction;
@@ -50,7 +50,7 @@ public class TGC extends Game {
 	}
 
 	@Override
-	public void mouseDown(List<Card> plstMoves) {
+	public void mouseDown(List<ICard> plstMoves) {
 		// TODO Auto-generated method stub
 
 	}

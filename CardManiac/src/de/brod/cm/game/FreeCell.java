@@ -25,6 +25,7 @@ import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
+import de.brod.cm.ICard;
 import de.brod.gui.action.IAction;
 
 public class FreeCell extends Game {
@@ -32,14 +33,14 @@ public class FreeCell extends Game {
 	private class FinishAction implements IAction {
 
 		private Hand h;
-		private Card c;
+		private ICard c;
 		List<FinishAction> lst;
 
 		public FinishAction() {
 			lst = new ArrayList<FinishAction>();
 		}
 
-		public FinishAction(Card c, Hand h) {
+		public FinishAction(ICard c, Hand h) {
 			lst = null;
 			this.c = c;
 			this.h = h;
@@ -80,14 +81,14 @@ public class FreeCell extends Game {
 	}
 
 	private FinishAction getAction(Hand hand, int iMinValue) {
-		Card c = hand.getLastCard();
+		ICard c = hand.getLastCard();
 		if (c != null) {
 			if (c.getValue().getId() == iMinValue) {
 				if (iMinValue == 0) {
 					// search empty entry
 					for (int j = 4; j < 8; j++) {
 						Hand h = get(j * 2);
-						Card c1 = h.getLastCard();
+						ICard c1 = h.getLastCard();
 						if (c1 == null) {
 							return new FinishAction(c, h);
 						}
@@ -96,7 +97,7 @@ public class FreeCell extends Game {
 					// search empty entry
 					for (int j = 4; j < 8; j++) {
 						Hand h = get(j * 2);
-						Card c1 = h.getLastCard();
+						ICard c1 = h.getLastCard();
 						if (c1 != null
 								&& c1.getColor().getId() == c.getColor()
 										.getId()
@@ -116,7 +117,7 @@ public class FreeCell extends Game {
 		int iMinValue = 10000;
 		for (int i = 4; i < 8; i++) {
 			Hand hand = get(i * 2);
-			Card c = hand.getLastCard();
+			ICard c = hand.getLastCard();
 			if (c != null) {
 				iMinValue = Math.min(c.getValue().getId() + 1, iMinValue);
 			} else {
@@ -182,9 +183,9 @@ public class FreeCell extends Game {
 
 	@Override
 	public void initNewCards() {
-		Card[] cards = get(0).create52Cards();
+		ICard[] cards = get(0).create52Cards();
 		int iPos = 1;
-		for (Card card : cards) {
+		for (ICard card : cards) {
 			card.moveTo(get(iPos));
 			iPos += 2;
 			if (iPos >= 16) {
@@ -207,7 +208,7 @@ public class FreeCell extends Game {
 		return "All cards played.";
 	}
 
-	private boolean matches(Card cLastCard, Card cFirstCardOfMovingStack) {
+	private boolean matches(ICard cLastCard, ICard cFirstCardOfMovingStack) {
 		int i = cLastCard.getColor().getId() / 2;
 		int i0 = cFirstCardOfMovingStack.getColor().getId() / 2;
 		// color has to be different
@@ -224,8 +225,8 @@ public class FreeCell extends Game {
 	}
 
 	@Override
-	public void mouseDown(List<Card> plstMoves) {
-		Card c = plstMoves.get(0);
+	public void mouseDown(List<ICard> plstMoves) {
+		ICard c = plstMoves.get(0);
 		Hand hand = c.getHand();
 		int id = hand.getId();
 		int y = id % 2;
@@ -248,10 +249,10 @@ public class FreeCell extends Game {
 			}
 
 			plstMoves.clear();
-			List<Card> cards = hand.getCards();
-			Card cLast = null;
+			List<ICard> cards = hand.getCards();
+			ICard cLast = null;
 			for (int i = cards.size() - 1; i >= 0; i--) {
-				Card card = cards.get(i);
+				ICard card = cards.get(i);
 				if (cLast != null && !matches(card, cLast)) {
 					break;
 				}
@@ -273,15 +274,15 @@ public class FreeCell extends Game {
 	}
 
 	@Override
-	public boolean mouseUp(List<Card> pLstMoves, Hand handTo, Card cardTo) {
+	public boolean mouseUp(List<ICard> pLstMoves, Hand handTo, ICard cardTo) {
 		if (handTo == null) {
 			return false;
 		}
 		int id = handTo.getId();
 		int y = id % 2;
 		int x = id / 2;
-		Card c0 = pLstMoves.get(0);
-		Card c = handTo.getLastCard();
+		ICard c0 = pLstMoves.get(0);
+		ICard c = handTo.getLastCard();
 		if (y == 0) {
 			// only one card allowed
 			if (pLstMoves.size() > 1) {

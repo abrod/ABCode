@@ -27,6 +27,7 @@ import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
+import de.brod.cm.ICard;
 import de.brod.cm.TextAlign;
 import de.brod.gui.GuiColors;
 import de.brod.gui.action.IAction;
@@ -80,7 +81,7 @@ public class Schwimmen extends Game {
 				public void action() {
 					// play the cards
 					Hand h4 = get(4);
-					Card[] cards = h4.getCards().toArray(new Card[0]);
+					ICard[] cards = h4.getCards().toArray(new ICard[0]);
 					for (int i = 0; i <= 3; i++) {
 						for (int j = 0; j < 3; j++) {
 							cards[i * 3 + j].moveTo(get(i));
@@ -129,17 +130,17 @@ public class Schwimmen extends Game {
 				@Override
 				public void action() {
 
-					List<Card> lst = get(iPlayer).getCards();
-					List<Card> lst3 = get(3).getCards();
-					List<Card> lstTo = new ArrayList<Card>();
+					List<ICard> lst = get(iPlayer).getCards();
+					List<ICard> lst3 = get(3).getCards();
+					List<ICard> lstTo = new ArrayList<ICard>();
 					double max = count(lst);
-					Card cs = null;
-					Card ct = null;
-					for (Card c1 : lst) {
+					ICard cs = null;
+					ICard ct = null;
+					for (ICard c1 : lst) {
 						lstTo.clear();
 						lstTo.addAll(lst);
 						lstTo.remove(c1);
-						for (Card c2 : lst3) {
+						for (ICard c2 : lst3) {
 							lstTo.add(c2);
 							double m = count(lstTo);
 							if (m > max) {
@@ -216,8 +217,8 @@ public class Schwimmen extends Game {
 		get(2).setCovered(999);
 		get(4).setCovered(32);
 
-		get(1).setRotation(90f);
-		get(2).setRotation(-90f);
+		get(1).setRotation(1);
+		get(2).setRotation(-1);
 		for (int i = 0; i < 5; i++) {
 			get(i).setCenter(true);
 		}
@@ -359,7 +360,7 @@ public class Schwimmen extends Game {
 	}
 
 	@Override
-	public void mouseDown(List<Card> plstMoves) {
+	public void mouseDown(List<ICard> plstMoves) {
 		if (hasStopped(getSettings())) {
 			// no more moves possible
 			plstMoves.clear();
@@ -378,7 +379,7 @@ public class Schwimmen extends Game {
 	}
 
 	@Override
-	public boolean mouseUp(List<Card> pLstMoves, Hand handTo, Card cardTo) {
+	public boolean mouseUp(List<ICard> pLstMoves, Hand handTo, ICard cardTo) {
 		if (handTo == null || cardTo == null) {
 			// dont move
 			return false;
@@ -396,7 +397,7 @@ public class Schwimmen extends Game {
 			pLstMoves.get(0).moveTo(handTo);
 			cardTo.moveTo(handFrom);
 		} else {
-			for (Card c : pLstMoves) {
+			for (ICard c : pLstMoves) {
 				c.moveTo(handTo);
 				handTo.getCards().get(0).moveTo(handFrom);
 			}
@@ -437,16 +438,16 @@ public class Schwimmen extends Game {
 	private String count(int i) {
 		double val = count(get(i).getCards());
 		if (val == 30.5) {
-			return "30 "+(char)189;
+			return "30 " + (char) 189;
 		}
 		return String.valueOf((int) val);
 	}
 
-	private double count(List<Card> cards) {
+	private double count(List<ICard> cards) {
 		int max = 0;
 		Card.Values v0 = null;
 		for (int i = 0; i < cards.size(); i++) {
-			Card c = cards.get(i);
+			ICard c = cards.get(i);
 			int v = val(c);
 			if (i == 0) {
 				v0 = c.getValue();
@@ -454,7 +455,7 @@ public class Schwimmen extends Game {
 				v0 = null;
 			}
 			for (int j = i + 1; j < cards.size(); j++) {
-				Card c2 = cards.get(j);
+				ICard c2 = cards.get(j);
 				if (c.getColor().equals(c2.getColor())) {
 					v += val(c2);
 				}
@@ -470,7 +471,7 @@ public class Schwimmen extends Game {
 		return max;
 	}
 
-	private int val(Card get) {
+	private int val(ICard get) {
 		Card.Values v = get.getValue();
 		if (v.equals(Values.Ace)) {
 			return 11;

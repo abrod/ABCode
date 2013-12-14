@@ -26,9 +26,9 @@ import android.view.WindowManager;
 
 public abstract class GuiActivity extends Activity {
 
-	private GuiRendererView<?> glSurfaceView;
+	private GuiRendererView glSurfaceView;
 
-	protected abstract GuiRendererView<?> createGuiRendererView();
+	protected abstract GuiRendererView createGuiRendererView();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

@@ -70,9 +70,7 @@ public class Menu extends Sprite {
 			y -= border;
 		}
 		float fTotalTitleHeight = lstMenuItems.size() * (border + fTitleHeight);
-		float fBorder = Frame.border / 2;
-		frame.setDimension(x - fBorder, y - fBorder, maxWidth + fBorder * 2,
-				fTotalTitleHeight + fBorder * 2);
+		frame.setDimension(x, y, maxWidth, fTotalTitleHeight, true);
 		plstMenuItems.clear();
 		plstMenuItems.addAll(lstMenuItems);
 	}

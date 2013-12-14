@@ -23,7 +23,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import de.brod.cm.Buttons;
-import de.brod.cm.Card;
+import de.brod.cm.ICard;
 import de.brod.cm.CardContainer;
 import de.brod.cm.CardManiacView;
 import de.brod.cm.Hand;
@@ -96,11 +96,11 @@ public abstract class Game {
 		return cardContainer.toArray(new CardContainer[cardContainer.size()]);
 	}
 
-	public Comparator<? super Card> getColorOrder() {
-		return new Comparator<Card>() {
+	public Comparator<? super ICard> getColorOrder() {
+		return new Comparator<ICard>() {
 
 			@Override
-			public int compare(Card lhs, Card rhs) {
+			public int compare(ICard lhs, ICard rhs) {
 				int diff = lhs.getColor().getId() - rhs.getColor().getId();
 				if (diff != 0) {
 					return diff;
@@ -109,7 +109,7 @@ public abstract class Game {
 				return getValue(lhs) - getValue(rhs);
 			}
 
-			private int getValue(Card rhs) {
+			private int getValue(ICard rhs) {
 				int id = rhs.getValue().getId();
 				if (id == 0) {
 					// shift ace
@@ -207,16 +207,16 @@ public abstract class Game {
 
 	public abstract String getFinishedText();
 
-	public abstract void mouseDown(List<Card> plstMoves);
+	public abstract void mouseDown(List<ICard> plstMoves);
 
-	public boolean mouseUp(List<Card> pLstMoves, Hand handTo, Card cardTo) {
+	public boolean mouseUp(List<ICard> pLstMoves, Hand handTo, ICard cardTo) {
 		if (handTo == null) {
 			return false;
 		}
 		boolean bChanged = false;
 		Hand handFrom = pLstMoves.get(0).getHand();
 		if (handFrom != handTo) {
-			for (Card card : pLstMoves) {
+			for (ICard card : pLstMoves) {
 				card.moveTo(handTo);
 				bChanged = true;
 			}
@@ -241,13 +241,13 @@ public abstract class Game {
 
 	protected void resetColors() {
 		for (Hand h : hands) {
-			for (Card c : h.getCards()) {
+			for (ICard c : h.getCards()) {
 				c.setColor(GuiColors.ITEM_WHITE);
 			}
 		}
 	}
 
-	protected void setColor(Card cl, CardColor pOK) {
+	protected void setColor(ICard cl, CardColor pOK) {
 		if (cl == null) {
 			return;
 		}

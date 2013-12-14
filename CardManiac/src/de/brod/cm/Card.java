@@ -23,7 +23,7 @@ import android.graphics.Bitmap;
 import de.brod.gui.Texture;
 import de.brod.gui.shape.Sprite;
 
-public class Card extends Sprite {
+public class Card extends Sprite implements ICard {
 
 	public enum Colors {
 		Clubs(9827, 0), Spades(9824, 1), Hearts(9829, 2), Diamonds(9830, 3), Empty(
@@ -173,32 +173,39 @@ public class Card extends Sprite {
 		hand = pHand;
 	}
 
+	@Override
 	public Colors getColor() {
 		return color;
 	}
 
+	@Override
 	public Hand getHand() {
 		return hand;
 	}
 
+	@Override
 	public Values getValue() {
 		return value;
 	}
 
+	@Override
 	public int getValueId() {
 		return valueId;
 	}
 
+	@Override
 	public boolean isCovered() {
 		return covered;
 	}
 
+	@Override
 	public void moveTo(Hand pHand) {
 		hand.remove(this);
 		pHand.add(this);
 		setMoving(true);
 	}
 
+	@Override
 	public void setCovered(boolean pbCovered) {
 		this.covered = pbCovered;
 		setAngle(pbCovered ? 180 : 0);
@@ -219,5 +226,15 @@ public class Card extends Sprite {
 	@Override
 	public String toString() {
 		return valueId + " " + value.toString() + "" + color.toString();
+	}
+
+	@Override
+	public void setHand(Hand hand) {
+		this.hand = hand;
+	}
+
+	@Override
+	public void addTo(Sprite sprite) {
+		sprite.add(this);
 	}
 }

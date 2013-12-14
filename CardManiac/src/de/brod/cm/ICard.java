@@ -17,14 +17,35 @@
  */
 package de.brod.cm;
 
-import de.brod.gui.GuiActivity;
-import de.brod.gui.GuiRendererView;
+import de.brod.cm.Card.Colors;
+import de.brod.gui.GuiColors;
+import de.brod.gui.shape.Sprite;
 
-public class CardManiacActivity extends GuiActivity {
+public interface ICard {
 
-	@Override
-	protected GuiRendererView createGuiRendererView() {
+	Hand getHand();
 
-		return new CardManiacView(this);
-	}
+	void setId(int pId);
+
+	void setRotation(float angle);
+
+	void setCovered(boolean b);
+
+	void setHand(Hand hand);
+
+	void moveTo(Hand h);
+
+	Card.Values getValue();
+
+	Colors getColor();
+
+	void setColor(GuiColors iTEM_RED);
+
+	int getValueId();
+
+	boolean isCovered();
+
+	void setPosition(float x, float y);
+
+	void addTo(Sprite sprite);
 }

@@ -25,17 +25,18 @@ import java.util.StringTokenizer;
 
 import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
+import de.brod.gui.shape.Frame;
 import de.brod.gui.shape.Sprite;
 import de.brod.xml.XmlObject;
 
 public class Hand extends CardContainer {
 
-	private List<Card> lstCards = new ArrayList<Card>();
+	private List<ICard> lstCards = new ArrayList<ICard>();
 	private int iCardCount;
-	private Card c0;
+	private CardFrame c0;
 	private boolean bCenter = false;
 	private int covered = 0;
-	private Comparator<? super Card> cardComperator = null;
+	private Comparator<? super ICard> cardComperator = null;
 	private float angle = 0;
 
 	/**
@@ -52,22 +53,42 @@ public class Hand extends CardContainer {
 			int piCardCount) {
 		super(piId, px1, py1, px2, py2);
 		iCardCount = piCardCount;
-		c0 = createCard(Card.Values.Ace, Card.Colors.Empty);
+
+		c0 = new CardFrame(this, pos[0] - Card.getCardWidth() / 2, pos[1]
+				- Card.getCardHeight() / 2, pos[2] + Card.getCardWidth(),
+				pos[3] + Card.getCardHeight());
+
 		c0.setMoveable(false);
 		lstCards.clear();
 	}
 
-	public void setRotation(float p0) {
+	public void setRotation(int piRotation) {
+		float p0 = 0;
+		if (piRotation < 0) {
+			p0 = -90;
+		} else if (piRotation > 0) {
+			p0 = 90;
+		}
 		if (angle != p0) {
 			angle = p0;
-			c0.setRotation(angle);
-			for (Card c : lstCards) {
+			for (ICard c : lstCards) {
 				c.setRotation(angle);
+			}
+			if (piRotation != 0) {
+				c0.setDimension(pos[0] - Card.getCardHeight() / 2, pos[1]
+						- Card.getCardWidth() / 2,
+						pos[2] + Card.getCardHeight(),
+						pos[3] + Card.getCardWidth(), false);
+			} else {
+				c0.setDimension(pos[0] - Card.getCardWidth() / 2,
+						pos[1] - Card.getCardHeight() / 2,
+						pos[2] + Card.getCardWidth(),
+						pos[3] + Card.getCardHeight(), false);
 			}
 		}
 	}
 
-	public void add(Card card) {
+	public void add(ICard card) {
 		if (cardComperator != null) {
 			int iIndex = -1;
 			for (int i = 0; i < lstCards.size(); i++) {
@@ -89,15 +110,15 @@ public class Hand extends CardContainer {
 			lstCards.add(card);
 		}
 		card.setRotation(angle);
-		card.hand = this;
+		card.setHand(this);
 		card.setCovered(lstCards.size() <= covered);
 	}
 
 	@Override
 	public void addAllSpritesTo(Sprite sprite) {
 		sprite.add(c0);
-		for (Card c : lstCards) {
-			sprite.add(c);
+		for (ICard c : lstCards) {
+			c.addTo(sprite);
 		}
 		super.addAllSpritesTo(sprite);
 	}
@@ -107,7 +128,7 @@ public class Hand extends CardContainer {
 		lstCards.clear();
 	}
 
-	public Card[] create32Cards() {
+	public ICard[] create32Cards() {
 		for (int i = 0; i < 13; i++) {
 			for (int j = 0; j < 4; j++) {
 				createCard(Values.getValue(i), Colors.getValue(j));
@@ -117,20 +138,20 @@ public class Hand extends CardContainer {
 			}
 		}
 		shuffleCards();
-		return lstCards.toArray(new Card[0]);
+		return lstCards.toArray(new ICard[0]);
 	}
 
-	public Card[] create52Cards() {
+	public ICard[] create52Cards() {
 		for (int i = 0; i < 13; i++) {
 			for (int j = 0; j < 4; j++) {
 				createCard(Values.getValue(i), Colors.getValue(j));
 			}
 		}
 		shuffleCards();
-		return lstCards.toArray(new Card[0]);
+		return lstCards.toArray(new ICard[0]);
 	}
 
-	public Card createCard(Card.Values value, Card.Colors color) {
+	public ICard createCard(Card.Values value, Card.Colors color) {
 		Card c = new Card(this);
 		c.setPosition(pos[0], pos[1]);
 		c.setValue(value, color);
@@ -142,7 +163,7 @@ public class Hand extends CardContainer {
 		return lstCards.size();
 	}
 
-	public List<Card> getCards() {
+	public List<ICard> getCards() {
 		return lstCards;
 	}
 
@@ -150,7 +171,7 @@ public class Hand extends CardContainer {
 		return covered;
 	}
 
-	public Card getLastCard() {
+	public ICard getLastCard() {
 		int size = lstCards.size();
 		if (size > 0) {
 			return lstCards.get(size - 1);
@@ -163,7 +184,7 @@ public class Hand extends CardContainer {
 		return "Hand";
 	}
 
-	public Card getStackCard() {
+	public Frame getStackCard() {
 		return c0;
 	}
 
@@ -200,13 +221,13 @@ public class Hand extends CardContainer {
 		c0.setId(pId);
 		if (bCenter) {
 			if (bLandScape) {
-				c0.setPosition(x + pos[2] / 2, y);
+				// c0.setPosition(x + pos[2] / 2, y);
 				float offSetX = pos[2] - dx * (lstCards.size() - 1);
 				if (offSetX > 0) {
 					x += offSetX / 2;
 				}
 			} else {
-				c0.setPosition(x, y + pos[3] / 2);
+				// c0.setPosition(x, y + pos[3] / 2);
 				float offSetY = pos[3] - dy * (lstCards.size() - 1);
 				if (offSetY > 0 && pos[3] > 0) {
 					y += offSetY / 2;
@@ -217,9 +238,9 @@ public class Hand extends CardContainer {
 			}
 
 		} else {
-			c0.setPosition(x, y);
+			// c0.setPosition(x, y);
 		}
-		for (Card c : lstCards) {
+		for (ICard c : lstCards) {
 			pId++;
 			c.setId(pId);
 			c.setPosition(x, y);
@@ -228,14 +249,14 @@ public class Hand extends CardContainer {
 		}
 	}
 
-	public void remove(Card card) {
+	public void remove(ICard card) {
 		lstCards.remove(card);
 	}
 
 	@Override
 	public void saveState(XmlObject xmlHand) {
 		StringBuilder sb = new StringBuilder();
-		for (Card c : lstCards) {
+		for (ICard c : lstCards) {
 			if (sb.length() > 0) {
 				sb.append(" ");
 			}
@@ -246,7 +267,7 @@ public class Hand extends CardContainer {
 		super.saveState(xmlHand);
 	}
 
-	public void setCardComperator(Comparator<? super Card> cardComperator) {
+	public void setCardComperator(Comparator<? super ICard> cardComperator) {
 		this.cardComperator = cardComperator;
 	}
 
@@ -269,7 +290,7 @@ public class Hand extends CardContainer {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("@" + getId());
-		for (Card c : lstCards) {
+		for (ICard c : lstCards) {
 			sb.append(",");
 			sb.append(c.toString());
 		}

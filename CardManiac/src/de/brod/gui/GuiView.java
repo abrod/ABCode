@@ -37,7 +37,7 @@ import de.brod.gui.shape.Text;
 import de.brod.tools.StateHandler;
 import de.brod.xml.XmlObject;
 
-public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
+public abstract class GuiView extends GLSurfaceView {
 
 	private class ActionThread extends Thread {
 
@@ -51,9 +51,9 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		public void run() {
 			System.out.println("Start action");
 			// reset the slides
-			for (Container sprite : lstSprites) {
-				sprite.savePosition();
-				sprite.setMoving(false);
+			for (Container Sprite : lstSprites) {
+				Sprite.savePosition();
+				Sprite.setMoving(false);
 			}
 			menu.activateBack();
 			requestRender();
@@ -73,11 +73,11 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	/** The OpenGL view */
 	protected StateHandler applicationStateHandler;
 	List<Container> lstTitleItems;
-	List<MenuItem> lstMenuItems;
+	List<MenuItem> lstMenuItems = new ArrayList<MenuItem>();
 
 	private List<Container> lstSprites;
-	private List<SPRITE> lstMoves = new ArrayList<SPRITE>();
-	private List<SPRITE> lstSelected = new ArrayList<SPRITE>();
+	private List<Container> lstMoves = new ArrayList<Container>();
+	private List<Container> lstSelected = new ArrayList<Container>();
 	private List<Container> lstSlides = new ArrayList<Container>();
 	Sprite area;
 	Menu menu;
@@ -106,7 +106,7 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 	protected abstract void initTextures(GL10 gl, int width2, int height2,
 			int statusBarHeight);
 
-	protected abstract boolean isInstanceOf(Container sprite);
+	protected abstract boolean isInstanceOf(Container Sprite);
 
 	private boolean isThinking() {
 		return actionThread != null && actionThread.isAlive();
@@ -119,8 +119,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		}
 		pressedButton = null;
 		if (lstSlides.size() > 0) {
-			for (Container sprite : lstSlides) {
-				sprite.slide(1);
+			for (Container Sprite : lstSlides) {
+				Sprite.slide(1);
 			}
 			lstSlides.clear();
 		}
@@ -142,19 +142,19 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			return true;
 		}
 		// reset the slides
-		for (Container spritec : lstSprites) {
-			spritec.savePosition();
+		for (Container Spritec : lstSprites) {
+			Spritec.savePosition();
 		}
 		for (int i = lstTitleItems.size() - 1; i >= 0; i--) {
-			Container sprite = lstTitleItems.get(i);
-			if (sprite.touches(eventX, eventY)) {
-				if (sprite instanceof Button) {
-					System.out.println("Button " + sprite + " pressed");
-					pressedButton = (Button) sprite;
+			Container Sprite = lstTitleItems.get(i);
+			if (Sprite.touches(eventX, eventY)) {
+				if (Sprite instanceof Button) {
+					System.out.println("Button " + Sprite + " pressed");
+					pressedButton = (Button) Sprite;
 					pressedButton.pressed();
 					return true;
-				} else if (sprite instanceof Text) {
-					System.out.println("Text " + sprite + " pressed");
+				} else if (Sprite instanceof Text) {
+					System.out.println("Text " + Sprite + " pressed");
 					return true;
 				}
 			}
@@ -167,30 +167,31 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 					System.out.println("touch " + i + " " + sprite.toString());
 					if (lstSelected.size() > 0) {
 
-						for (Sprite moveItem : lstSelected) {
+						for (Container moveItem : lstSelected) {
 							moveItem.setColor(GuiColors.ITEM_WHITE);
 							moveItem.setMoving(false);
 						}
-						if (mouseUp(lstSelected, (SPRITE) sprite)) {
-							for (SPRITE spritec : lstSelected) {
-								spritec.setColor(GuiColors.ITEM_WHITE);
+						if (mouseUp(lstSelected, sprite)) {
+							for (Container Spritec : lstSelected) {
+								Spritec.setColor(GuiColors.ITEM_WHITE);
 							}
 							lstSelected.clear();
 							resetSlidePositions();
 							update(true);
 							return true;
 						}
-						for (SPRITE spritec : lstSelected) {
-							spritec.setColor(GuiColors.ITEM_WHITE);
+						for (Container Spritec : lstSelected) {
+							Spritec.setColor(GuiColors.ITEM_WHITE);
 						}
 						lstSelected.clear();
 					}
 					if (sprite.isMoveable()) {
-						lstMoves.add((SPRITE) sprite);
+						lstMoves.add(sprite);
 						mouseDown(lstMoves);
-						for (Sprite moveItem : lstMoves) {
-							if (moveItem!=sprite)
+						for (Container moveItem : lstMoves) {
+							if (moveItem != sprite) {
 								moveItem.touches(eventX, eventY);
+							}
 							moveItem.setMoving(true);
 							moveItem.setColor(GuiColors.ITEM_SELECTED);
 						}
@@ -207,8 +208,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 			}
 		}
 		if (lstSelected.size() > 0) {
-			for (SPRITE spritec : lstSelected) {
-				spritec.setColor(GuiColors.ITEM_WHITE);
+			for (Container Spritec : lstSelected) {
+				Spritec.setColor(GuiColors.ITEM_WHITE);
 			}
 			lstSelected.clear();
 			return true;
@@ -216,16 +217,16 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		return true;
 	}
 
-	protected abstract void mouseDown(List<SPRITE> plstMoves);
+	protected abstract void mouseDown(List<Container> plstMoves);
 
 	private boolean mouseMove(float eventX, float eventY) {
 		if (isThinking()) {
 			return false;
 		}
 		if (lstMoves.size() > 0) {
-			for (Sprite moveItem : lstMoves) {
-				if (moveItem.isMoveable()) {
-					moveItem.touchMove(eventX, eventY);
+			for (Container moveItem : lstMoves) {
+				if (moveItem.isMoveable() && moveItem instanceof Sprite) {
+					((Sprite) moveItem).touchMove(eventX, eventY);
 				}
 			}
 			return true;
@@ -246,28 +247,28 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		if (lstMoves.size() > 0) {
 
 			// reset the slides
-			for (Container sprite : lstSprites) {
-				sprite.savePosition();
+			for (Container Sprite : lstSprites) {
+				Sprite.savePosition();
 			}
 			lstSelected.clear();
 			lstSelected.addAll(lstMoves);
-			for (Sprite moveItem : lstMoves) {
+			for (Container moveItem : lstMoves) {
 				moveItem.setMoving(false);
 			}
-			SPRITE selected = null;
+			Container selected = null;
 			for (int i = lstSprites.size() - 1; i >= 0; i--) {
 				Container sprite = lstSprites.get(i);
 				if (!isInstanceOf(sprite)) {
 					// ignore
 				} else if (!lstMoves.contains(sprite)
 						&& sprite.touches(eventX, eventY)) {
-					selected = (SPRITE) sprite;
+					selected = sprite;
 					break;
 				}
 			}
 			if (mouseUp(lstMoves, selected)) {
-				for (SPRITE sprite : lstSelected) {
-					sprite.setColor(GuiColors.ITEM_WHITE);
+				for (Container Sprite : lstSelected) {
+					Sprite.setColor(GuiColors.ITEM_WHITE);
 				}
 				lstSelected.clear();
 			}
@@ -278,7 +279,8 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 		return false;
 	}
 
-	protected abstract boolean mouseUp(List<SPRITE> plstMoves, SPRITE sprite);
+	protected abstract boolean mouseUp(List<Container> plstMoves,
+			Container Sprite);
 
 	@Override
 	public synchronized boolean onTouchEvent(MotionEvent event) {
@@ -374,9 +376,9 @@ public abstract class GuiView<SPRITE extends Sprite> extends GLSurfaceView {
 
 	protected boolean resetSlidePositions() {
 		lstSlides.clear();
-		for (Container sprite : lstSprites) {
-			if (sprite.resetPosition()) {
-				lstSlides.add(sprite);
+		for (Container Sprite : lstSprites) {
+			if (Sprite.resetPosition()) {
+				lstSlides.add(Sprite);
 			}
 		}
 		lstMoves.clear();
