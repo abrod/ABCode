@@ -56,7 +56,7 @@ public class Hand extends CardContainer {
 
 		c0 = new CardFrame(this, pos[0] - Card.getCardWidth() / 2, pos[1]
 				- Card.getCardHeight() / 2, pos[2] + Card.getCardWidth(),
-				pos[3] + Card.getCardHeight());
+				(pos[3] + Card.getCardHeight()));
 
 		c0.setMoveable(false);
 		lstCards.clear();
@@ -78,12 +78,12 @@ public class Hand extends CardContainer {
 				c0.setDimension(pos[0] - Card.getCardHeight() / 2, pos[1]
 						- Card.getCardWidth() / 2,
 						pos[2] + Card.getCardHeight(),
-						pos[3] + Card.getCardWidth(), false);
+						(pos[3] + Card.getCardWidth()), false);
 			} else {
 				c0.setDimension(pos[0] - Card.getCardWidth() / 2,
 						pos[1] - Card.getCardHeight() / 2,
 						pos[2] + Card.getCardWidth(),
-						pos[3] + Card.getCardHeight(), false);
+						(pos[3] + Card.getCardHeight()), false);
 			}
 		}
 	}

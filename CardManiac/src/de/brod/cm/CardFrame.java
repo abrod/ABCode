@@ -4,6 +4,7 @@ import de.brod.cm.Card.Colors;
 import de.brod.cm.Card.Values;
 import de.brod.gui.shape.Frame;
 import de.brod.gui.shape.Sprite;
+import de.brod.gui.*;
 
 public class CardFrame extends Frame implements ICard {
 
@@ -11,6 +12,7 @@ public class CardFrame extends Frame implements ICard {
 
 	public CardFrame(Hand pHand, float px, float py, float width, float height) {
 		super(px, py, width, height);
+		setColor(GuiColors.MENUITEM_BACK);
 		_hand = pHand;
 	}
 

@@ -34,11 +34,11 @@ public abstract class CardContainer {
 
 	public CardContainer(int piId, float px1, float py1, float px2, float py2) {
 		id = piId;
-		float x1 = Card.getX(px1);
-		float y1 = Card.getY(py1);
-		float x2 = Card.getX(px2);
-		float y2 = Card.getY(py2);
-		pos = new float[] { x1, y1, x2 - x1, y2 - y1 };
+		float x1 = Card.getX(Math.min(px1,px2));
+		float y1 = Card.getY(Math.min(py1,py2));
+		float x2 = Card.getX(Math.max(px2,px1));
+		float y2 = Card.getY(Math.max(py2,py1));
+		pos = new float[] { x1, y1, x2 - x1, y2 - y1, x2, y2 };
 		bLandScape = Math.abs(pos[2]) > Math.abs(pos[3]);
 	}
 

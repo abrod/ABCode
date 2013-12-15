@@ -52,7 +52,6 @@ public class Frame extends Container {
 
 		x = px;
 		y = py;
-		y = py;
 		if (height < 0) {
 			y += height;
 			height = -height;
