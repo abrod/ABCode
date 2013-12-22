@@ -225,7 +225,25 @@ public class CardManiacView extends GuiRendererView {
 			return;
 		}
 		game.clearHelp();
-		game.mouseDown(getCards(plstMoves));
+		List<ICard> cards = getCards(plstMoves);
+		game.mouseDown(cards);
+		removeCards(plstMoves, cards);
+	}
+
+	private void removeCards(List<Container> plstMoves, List<ICard> cards) {
+		for (int i = 0; i < plstMoves.size();) {
+			if (cards.contains(plstMoves.get(i))) {
+				i++;
+			} else {
+				plstMoves.remove(i);
+			}
+		}
+		for (ICard iCard : cards) {
+			if (!plstMoves.contains(iCard)) {
+				plstMoves.add((Container) iCard);
+			}
+		}
+
 	}
 
 	private List<ICard> getCards(List<Container> plstMoves) {
@@ -245,13 +263,16 @@ public class CardManiacView extends GuiRendererView {
 		}
 		boolean bChanged = false;
 		if (pLstMoves.size() > 0) {
+			List<ICard> cards = getCards(pLstMoves);
 			if (pCardTo != null && pCardTo instanceof ICard) {
 				ICard cardTo = (ICard) pCardTo;
 				Hand handTo = cardTo.getHand();
-				bChanged = game.mouseUp(getCards(pLstMoves), handTo, cardTo);
+				bChanged = game.mouseUp(cards, handTo, cardTo);
 			} else {
-				bChanged = game.mouseUp(getCards(pLstMoves), null, null);
+				bChanged = game.mouseUp(cards, null, null);
 			}
+			removeCards(pLstMoves, cards);
+
 			// organize the hands
 			for (CardContainer cc : _cardContainers) {
 				cc.organize();
