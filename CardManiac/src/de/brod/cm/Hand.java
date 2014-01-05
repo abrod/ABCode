@@ -57,6 +57,7 @@ public class Hand extends CardContainer {
 		// c0 = new CardFrame(this, pos[0] - Card.getCardWidth() / 2, pos[1]
 		// - Card.getCardHeight() / 2, pos[2] + Card.getCardWidth(),
 		// (pos[3] + Card.getCardHeight()));
+
 		c0 = new CardFrame(this, pos[0] - Card.getCardWidth() / 2, pos[1]
 				+ Card.getCardHeight() / 2, pos[2] + Card.getCardWidth(),
 				(pos[3] - Card.getCardHeight()));

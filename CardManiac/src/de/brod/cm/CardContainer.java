@@ -34,10 +34,10 @@ public abstract class CardContainer {
 
 	public CardContainer(int piId, float px1, float py1, float px2, float py2) {
 		id = piId;
-		float x1 = Card.getX(Math.min(px1,px2));
-		float y1 = Card.getY(Math.min(py1,py2));
-		float x2 = Card.getX(Math.max(px2,px1));
-		float y2 = Card.getY(Math.max(py2,py1));
+		float x1 = Card.getX(Math.min(px1, px2));
+		float y1 = Card.getY(Math.min(py1, py2));
+		float x2 = Card.getX(Math.max(px2, px1));
+		float y2 = Card.getY(Math.max(py2, py1));
 		pos = new float[] { x1, y1, x2 - x1, y2 - y1, x2, y2 };
 		bLandScape = Math.abs(pos[2]) > Math.abs(pos[3]);
 	}
@@ -116,8 +116,8 @@ public abstract class CardContainer {
 					Text text;
 					int ia = 0;
 					float left = getX(-1f) - fTitleHeight / 4;
-					float center = getX(0f);
 					float right = getX(1f) + fTitleHeight / 4;
+					float center = (left + right) / 2;
 
 					// float top = pos[1] + pos[3] + Card.getCardHeight() / 2;
 					// float middle = pos[1] + pos[3] / 2 - fTitleHeight / 2;
@@ -125,8 +125,8 @@ public abstract class CardContainer {
 					// - fTitleHeight;
 
 					float top = getY(1);
-					float middle = getY(0) - fTitleHeight / 2;
 					float bottom = getY(-1) - fTitleHeight;
+					float middle = (top + bottom) / 2;
 
 					if (_textAlign.equals(TextAlign.TOP)) {
 						text = Text.createText(psText, center, top,

@@ -126,11 +126,11 @@ public class Frame extends Container {
 	}
 
 	public float getWidth() {
-		return _height;
+		return _width;
 	}
 
 	public float getHeight() {
-		return _width;
+		return _height;
 	}
 
 	public void setValue(int i) {
