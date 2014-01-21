@@ -10,10 +10,33 @@ public class ClockView extends MyView
 
 	private int r=0,g=0,b=192;
 
+	private int w;
+
+	private int w2;
+
+	private int h;
+
+	private int maxx;
+
+	private int maxy;
+
+	private int len;
+
+	private int minx;
+
+	private int miny;
+
+	private int x,dx;
+
+	private int y,dy;
+
+	private int down=-1;
+
 	@Override
 	void mouseUp(float x, float y)
 	{
-		// TODO: Implement this method
+		down=-1;
+		repaint();
 	}
 
 	@Override
@@ -26,24 +49,54 @@ public class ClockView extends MyView
 	void mouseDown(float x, float y)
 	{
 		float col=x / wd * 255;
+		
+		b=blue(y,col);
+		g=green(y,col);
+		r=red(y,col);
+		
+		down=(int)(x);
+		repaint();
+		
+	}
+
+	private int red(float y, float col)
+	{
 		float dy=y*3f/hg+0.5f;
-		if (dy<1)
-			b=(int)(col*Math.max(0,dy));
-		else
-			b=(int)(col*Math.max(0,2-dy));
+		int r;
 		if (dy<2)
 			r=(int)(col*Math.max(0,dy-1));
 		else
 			r=(int)(col*Math.max(0,3-dy));
+	
+		return r;
+	}
+
+	private int green(float y, float col)
+	{
+		float dy=y*3f/hg+0.5f;
+		int g;
 		if (dy<3)
 			g=(int)(col*Math.max(0,dy-2));
 		else
 			g=(int)(col*Math.max(0,4-dy));
-		
-		//	r=0;
-		//	b=0;
-		repaint();
-		
+
+		if (dy<1)
+			g=(int)(col*Math.max(0,1-dy));
+		return g;
+	}
+
+	private int blue(float y,float col)
+	{
+		float dy=y*3f/hg+0.5f;
+		int b;
+		if (dy<1)
+			b=(int)(col*Math.max(0,dy));
+		else
+			b=(int)(col*Math.max(0,2-dy));
+
+		if (dy>3)
+			b=(int)(col*Math.max(0,dy-3));
+		return b;
 	}
 
 
@@ -54,8 +107,8 @@ public class ClockView extends MyView
 	{
 		try
 		{
-			long l=	1001-System.currentTimeMillis() % 1000;
-			Thread.sleep(l);
+			long l=	999-System.currentTimeMillis() % 1000;
+			Thread.sleep(l+10);
 			
 		}
 		catch (InterruptedException e)
@@ -78,18 +131,53 @@ public class ClockView extends MyView
 
 		// canvas.drawLine(0, 0, wd, hg, paint);
 		String s=new SimpleDateFormat("HHmmss").format(new Date());
-		int w=wd/(s.length()+1);
-		Paint[] paint = new Paint[Math.max(2,w/8)];
+		// s="888888";
+		if(w==0){
+			w=wd/(s.length()+2);
+			w2=(int)(w*0.7);
+			h=Math.min(w2*2,hg*7/8);
+			maxx=(wd-w*6-w2);
+			maxy=hg-h;
+			len=Math.max(2,w/8);
+			maxy-=len;
+			maxx-=len;
+			minx=len;
+			miny=len;
+			x=minx+(int)((maxx-minx)*Math.random());
+			y=miny+(int)((maxy-miny)*Math.random());
+			dx=1;
+			dy=1;
+		}
+		if (x+dx>maxx)
+			dx=-1;
+		else if (x+dx<minx)
+			dx=1;
+		x+=dx;
+		if (y+dy>maxy)
+			dy=-1;
+		else if (y+dy<miny)
+			dy=1;
+		y+=dy;
+		
+		Paint[] paint = new Paint[len];
 		for(int i=0;i<paint.length;i++){
 			float size=(paint.length-i)*1f/paint.length;
 			paint[i]= new Paint();
 			paint[i].setColor(Color.argb(255,(int)(r*size),(int)(g*size),(int)(b*size)));
 		}
 		
-		int w2=(int)(w*0.7);
-		int h=Math.min(w2*2,hg);
+		if(down>0){
+			Paint p = new Paint();
+			float col=down *255/ wd ;
+			for (int i=0;i<hg;i++){
+				p.setColor(Color.argb(255,red(i,col),
+					green(i,col),blue(i,col)));
+				canvas.drawLine(down-len, i, down+len, i, p);
+			}
+		}
+		
 		for(int i=0;i<s.length();i++){
-			draw(canvas,w2,h,(int)((i+i/2*0.5f)*w),(hg-h)/2,s.charAt(i),paint);
+			draw(canvas,w2,h,(int)((i+(i/2)*0.5f)*w)+x,y,s.charAt(i),paint);
 		}
 		// canvas.drawText(s,0,hg/2,paint);
 	}
