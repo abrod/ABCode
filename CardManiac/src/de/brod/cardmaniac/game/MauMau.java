@@ -7,26 +7,31 @@ import de.brod.cardmaniac.table.Button;
 import de.brod.cardmaniac.table.Card;
 import de.brod.cardmaniac.table.Deck;
 import de.brod.cardmaniac.table.Hand;
+import de.brod.opengl.IAction;
+import de.brod.opengl.ISprite;
 import de.brod.opengl.OpenGLButton;
-import de.brod.opengl.Sprite;
 
 public class MauMau extends Game {
 
 	public static class MauMauState implements Serializable {
+		private static final long	serialVersionUID	= -696396603457811655L;
+		int							currentPlayer		= 0;
+		boolean						mayDraw				= true;
 
-		private static final long serialVersionUID = -696396603457811655L;
-
-		boolean mayDraw = true;
-		int currentPlayer = 0;
+		public void nextPlayer() {
+			currentPlayer = (currentPlayer + 1) % 4;
+		}
 	}
 
-	private Hand[] players;
-	private Hand stack;
-	private Hand tolon;
-	private MauMauState state = new MauMauState();
+	private OpenGLButton	buttonDraw;
+	private OpenGLButton	buttonSkip;
+	private Hand[]			players;
+	private Hand			stack;
+	private MauMauState		state	= new MauMauState();
+	private Hand			tolon;
 
 	@Override
-	public boolean actionDown(Card pCard, List<Sprite<Card>> plstMoveCards) {
+	public boolean actionDown(Card pCard, List<ISprite<Card>> plstMoveCards) {
 
 		Hand hand = pCard.getHand();
 		if (hand.equals(players[state.currentPlayer])) {
@@ -45,11 +50,11 @@ public class MauMau extends Game {
 	}
 
 	@Override
-	public boolean actionUp(List<Sprite<Card>> plstMoveCards, Hand handTo) {
+	public boolean actionUp(List<ISprite<Card>> plstMoveCards, Hand handTo) {
 		if (handTo.equals(stack)) {
-			state.currentPlayer = (state.currentPlayer + 1) % 4;
+			state.nextPlayer();
 			state.mayDraw = true;
-			for (Sprite<Card> sprite : plstMoveCards) {
+			for (ISprite<Card> sprite : plstMoveCards) {
 				handTo.addCard(sprite.getReference());
 			}
 			checkStack();
@@ -57,25 +62,13 @@ public class MauMau extends Game {
 		}
 		if (handTo.equals(players[state.currentPlayer])) {
 			state.mayDraw = false;
-			for (Sprite<Card> sprite : plstMoveCards) {
+			for (ISprite<Card> sprite : plstMoveCards) {
 				handTo.addCard(sprite.getReference());
 			}
 			checkStack();
 			return true;
 		}
 		return false;
-	}
-
-	private void checkStack() {
-		if (tolon.getCardsCount() == 0) {
-			Card[] arrCards = stack.getCards().toArray(new Card[0]);
-			for (int i = 0; i < arrCards.length - 1; i++) {
-				tolon.addCard(arrCards[i]);
-			}
-			tolon.shuffleCards();
-			tolon.organize();
-			stack.organize();
-		}
 	}
 
 	@Override
@@ -91,6 +84,32 @@ public class MauMau extends Game {
 		for (int i = iCount; i < lstCards.size(); i++) {
 			tolon.addCard(lstCards.get(i));
 		}
+	}
+
+	private void checkButtons() {
+		if (state != null && buttonDraw != null) {
+			boolean bDraw = state.mayDraw && tolon.getCardsCount() > 0;
+			buttonDraw.setEnabled(bDraw);
+			buttonSkip.setEnabled(!bDraw);
+
+			for (int i = 0; i < players.length; i++) {
+				Hand player = players[i];
+				player.getRect().setDown(state.currentPlayer != i);
+			}
+		}
+	}
+
+	private void checkStack() {
+		if (tolon.getCardsCount() == 0) {
+			Card[] arrCards = stack.getCards().toArray(new Card[0]);
+			for (int i = 0; i < arrCards.length - 1; i++) {
+				tolon.addCard(arrCards[i]);
+			}
+			tolon.shuffleCards();
+			tolon.organize();
+			stack.organize();
+		}
+		checkButtons();
 	}
 
 	@Override
@@ -116,13 +135,6 @@ public class MauMau extends Game {
 	}
 
 	@Override
-	public void initButtons(Deck pDeck, List<OpenGLButton> lstButtons) {
-		float y = 2f;
-		lstButtons.add(new Button(pDeck, 1.5f, y, 2.9f, y, "Draw", null).getButton());
-		lstButtons.add(new Button(pDeck, 4.1f, y, 5.5f, y, "Skip", null).getButton());
-	}
-
-	@Override
 	public INextMove getNextMove() {
 		// TODO Auto-generated method stub
 		return null;
@@ -134,8 +146,52 @@ public class MauMau extends Game {
 	}
 
 	@Override
+	public void initButtons(Deck pDeck, List<OpenGLButton> lstButtons) {
+		float y = 2f;
+		IAction drawAction = new IAction() {
+
+			@Override
+			public void doAction() {
+				state.mayDraw = false;
+				players[state.currentPlayer].addCard(tolon.getLastCard());
+
+				checkStack();
+			}
+
+			@Override
+			public String getTitle() {
+				return "Draw";
+			}
+		};
+		IAction skipAction = new IAction() {
+
+			@Override
+			public void doAction() {
+				state.mayDraw = true;
+				state.nextPlayer();
+				checkButtons();
+			}
+
+			@Override
+			public String getTitle() {
+				return "Skip";
+			}
+		};
+
+		buttonDraw = Button.createButton(pDeck, 1.5f, y, 2.9f, y, "Draw",
+				drawAction);
+		lstButtons.add(buttonDraw);
+		buttonSkip = Button.createButton(pDeck, 4.1f, y, 5.5f, y, "Skip",
+				skipAction);
+		lstButtons.add(buttonSkip);
+
+		checkButtons();
+	}
+
+	@Override
 	void initGame(Serializable specificValues) {
 		state = (MauMauState) specificValues;
+		checkButtons();
 	}
 
 }

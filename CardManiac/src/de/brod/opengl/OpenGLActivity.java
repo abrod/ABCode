@@ -60,7 +60,7 @@ public abstract class OpenGLActivity extends Activity {
 		mGLView.requestRender();
 	}
 
-	public abstract void initSprites(GL10 gl, List<Sprite<?>> lstSprites,
+	public abstract void initSprites(GL10 gl, List<ISprite<?>> lstSprites,
 			List<Rect> lstRectangles);
 
 	public Bitmap loadBitmap(int pDrawSource) {

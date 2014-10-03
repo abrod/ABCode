@@ -2,7 +2,7 @@ package de.brod.cardmaniac.table;
 
 import de.brod.cardmaniac.CardColor;
 import de.brod.cardmaniac.CardValue;
-import de.brod.opengl.Sprite;
+import de.brod.opengl.ISprite;
 
 public class Card {
 
@@ -10,7 +10,7 @@ public class Card {
 	private CardColor col;
 
 	private Hand hand = null;
-	private Sprite<Card> sprite;
+	private ISprite<Card> sprite;
 	private float wd2, hg2;
 	private boolean selected = false;
 	private boolean visible = true;
@@ -82,7 +82,7 @@ public class Card {
 		}
 	}
 
-	public Sprite<Card> getSprite() {
+	public ISprite<Card> getSprite() {
 		return sprite;
 	}
 

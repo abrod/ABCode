@@ -7,7 +7,7 @@ import java.util.List;
 import de.brod.cardmaniac.table.Card;
 import de.brod.cardmaniac.table.Deck;
 import de.brod.cardmaniac.table.Hand;
-import de.brod.opengl.Sprite;
+import de.brod.opengl.ISprite;
 
 public class FreeCell extends Patience {
 
@@ -47,7 +47,7 @@ public class FreeCell extends Patience {
 	}
 
 	@Override
-	public boolean actionUp(List<Sprite<Card>> plstCards, Hand handTo) {
+	public boolean actionUp(List<ISprite<Card>> plstCards, Hand handTo) {
 		if (lstUpperLeft.contains(handTo)) {
 			// add only one card
 			if (plstCards.size() != 1 || handTo.getCardsCount() > 0) {
@@ -72,14 +72,14 @@ public class FreeCell extends Patience {
 			}
 		}
 
-		for (Sprite<Card> sprite : plstCards) {
+		for (ISprite<Card> sprite : plstCards) {
 			handTo.addCard(sprite.getReference());
 		}
 		return true;
 	}
 
 	@Override
-	public boolean actionDown(Card pCard, List<Sprite<Card>> plstSelectedCards) {
+	public boolean actionDown(Card pCard, List<ISprite<Card>> plstSelectedCards) {
 
 		// get amount of cards
 		int iFree = 1;

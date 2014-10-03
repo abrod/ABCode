@@ -10,13 +10,13 @@ import de.brod.cardmaniac.CardColor;
 import de.brod.cardmaniac.CardValue;
 import de.brod.cardmaniac.MainActivity;
 import de.brod.opengl.Grid;
-import de.brod.opengl.Sprite;
+import de.brod.opengl.ISprite;
 
 public class Deck {
 
 	private Grid<Card> grid;
 	private float _iCardsCount, _cardWidth, _cardHeight;
-	private List<Sprite<Card>> _lstSprites = new ArrayList<Sprite<Card>>();
+	private List<ISprite<Card>> _lstSprites = new ArrayList<ISprite<Card>>();
 
 	public Deck(MainActivity mainActivity, GL10 gl, int piCardsCount) {
 		_iCardsCount = piCardsCount;
@@ -34,14 +34,14 @@ public class Deck {
 				pbBackFlag);
 	}
 
-	Sprite<Card> createSprite(int i, float x, float y, float wd, float hg) {
-		Sprite<Card> createSprite = grid.createSprite(i % 13, i / 13, x, y, wd,
+	ISprite<Card> createSprite(int i, float x, float y, float wd, float hg) {
+		ISprite<Card> createSprite = grid.createSprite(i % 13, i / 13, x, y, wd,
 				hg);
 		_lstSprites.add(createSprite);
 		return createSprite;
 	}
 
-	public List<Sprite<Card>> getAllSprites() {
+	public List<ISprite<Card>> getAllSprites() {
 		return _lstSprites;
 	}
 

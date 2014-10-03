@@ -9,7 +9,7 @@ import de.brod.cardmaniac.CardValue;
 import de.brod.cardmaniac.table.Card;
 import de.brod.cardmaniac.table.Deck;
 import de.brod.cardmaniac.table.Hand;
-import de.brod.opengl.Sprite;
+import de.brod.opengl.ISprite;
 
 public class Solitaire extends Patience {
 
@@ -92,7 +92,7 @@ public class Solitaire extends Patience {
 	}
 
 	@Override
-	public boolean actionUp(List<Sprite<Card>> plstCards, Hand handTo) {
+	public boolean actionUp(List<ISprite<Card>> plstCards, Hand handTo) {
 		// don't move to stack or tolon
 		if (handStack.equals(handTo) || handTolon.equals(handTo)) {
 			return false;
@@ -115,14 +115,14 @@ public class Solitaire extends Patience {
 			}
 
 		}
-		for (Sprite<Card> sprite : plstCards) {
+		for (ISprite<Card> sprite : plstCards) {
 			handTo.addCard(sprite.getReference());
 		}
 		return true;
 	}
 
 	@Override
-	public boolean actionDown(Card pCard, List<Sprite<Card>> plstMoveCards) {
+	public boolean actionDown(Card pCard, List<ISprite<Card>> plstMoveCards) {
 		Hand hand = pCard.getHand();
 		if (handTolon.equals(hand)) {
 			if (pCard.equals(handTolon.getLastCard())) {

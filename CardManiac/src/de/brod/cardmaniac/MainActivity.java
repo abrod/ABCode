@@ -17,99 +17,30 @@ import de.brod.cardmaniac.table.Card;
 import de.brod.cardmaniac.table.Deck;
 import de.brod.cardmaniac.table.Hand;
 import de.brod.opengl.IAction;
+import de.brod.opengl.ISprite;
 import de.brod.opengl.ISubAction;
 import de.brod.opengl.OpenGLActivity;
 import de.brod.opengl.OpenGLButton;
 import de.brod.opengl.Rect;
-import de.brod.opengl.Sprite;
 
 public class MainActivity extends OpenGLActivity {
 
-	class UpdateThread extends Thread {
-		private INextMove r;
+	public static class MainConfig implements Serializable {
 
-		UpdateThread(INextMove r) {
-			this.r = r;
-		}
-
-		@Override
-		public void run() {
-			if (r.hasNext()) {
-				r.startMove();
-				mover.waitFor();
-				mover.start();
-				// organize hands
-				for (Hand hand : game.getHands()) {
-					hand.organize();
-				}
-				mover.end(true);
-				saveGame();
-				// sort
-				requestRender();
-			}
-		}
+		private static final long	serialVersionUID	= 3401991076230505645L;
+		public String				gameClassName;
 	}
-
-	private List<Sprite<Card>> _lstSelectedCards = new ArrayList<Sprite<Card>>();
-
-	private List<Sprite<?>> _lstOriginalSprites;
-	private Game game;
-	private int _color;
-	private UpdateThread updateThread;
-
-	private Mover mover = new Mover();
-
-	private List<Rect> _lstRectangles;
-
-	private Deck _deck;
-
-	private StateReader<MainConfig> _stateReader;
-
-	private StateReader<GameState> _gameReader;
-
-	private MainConfig _mainConfig;
 
 	class Mover {
 
-		List<Sprite<Card>> lstMoverSprite = new ArrayList<Sprite<Card>>();
-		private long start;
-
-		public void finish() {
-			log("finish");
-			for (Sprite<Card> sprite : lstMoverSprite) {
-				sprite.setMovePosition(1f);
-			}
-			lstMoverSprite.clear();
-			sortCards();
-		}
-
-		public void waitFor() {
-			log("waitFor");
-			try {
-				while (lstMoverSprite.size() > 0) {
-					Thread.sleep(50);
-				}
-			} catch (InterruptedException e) {
-				// Interrupted
-			}
-		}
-
-		public void start() {
-			log("start");
-			for (Sprite<Card> sprite : game.getSprites()) {
-				sprite.savePosition();
-			}
-		}
-
-		private void log(String msg) {
-			// Log.d("Mover", msg);
-		}
+		List<ISprite<Card>>	lstMoverSprite	= new ArrayList<ISprite<Card>>();
+		private long		start;
 
 		public void end(boolean bNext) {
 			lstMoverSprite.clear();
 			start = System.currentTimeMillis();
-			List<Sprite<Card>> sprites = game.getSprites();
-			for (Sprite<Card> sprite : sprites) {
+			List<ISprite<Card>> sprites = _game.getSprites();
+			for (ISprite<Card> sprite : sprites) {
 				if (sprite.isPositionChanged()) {
 					sprite.setMovePosition(0f);
 					lstMoverSprite.add(sprite);
@@ -119,13 +50,22 @@ public class MainActivity extends OpenGLActivity {
 					+ " changed).");
 			sortCards();
 			if (bNext) {
-				INextMove r = game.getNextMove();
+				INextMove r = _game.getNextMove();
 				if (r != null) {
-					updateThread = new UpdateThread(r);
-					updateThread.start();
+					_updateThread = new UpdateThread(r);
+					_updateThread.start();
 				}
 				clearSelectedCards();
 			}
+		}
+
+		public void finish() {
+			log("finish");
+			for (ISprite<Card> sprite : lstMoverSprite) {
+				sprite.setMovePosition(1f);
+			}
+			lstMoverSprite.clear();
+			sortCards();
 		}
 
 		public boolean isRunning() {
@@ -153,7 +93,68 @@ public class MainActivity extends OpenGLActivity {
 			return false;
 		}
 
+		private void log(String msg) {
+			// Log.d("Mover", msg);
+		}
+
+		public void start() {
+			log("start");
+			for (ISprite<Card> sprite : _game.getSprites()) {
+				sprite.savePosition();
+			}
+		}
+
+		public void waitFor() {
+			log("waitFor");
+			try {
+				while (lstMoverSprite.size() > 0) {
+					Thread.sleep(50);
+				}
+			} catch (InterruptedException e) {
+				// Interrupted
+			}
+		}
+
 	}
+
+	class UpdateThread extends Thread {
+		private INextMove	r;
+
+		UpdateThread(INextMove r) {
+			this.r = r;
+		}
+
+		@Override
+		public void run() {
+			if (r.hasNext()) {
+				r.startMove();
+				_mover.waitFor();
+				_mover.start();
+				// organize hands
+				for (Hand hand : _game.getHands()) {
+					hand.organize();
+				}
+				_mover.end(true);
+				saveGame();
+				// sort
+				requestRender();
+			}
+		}
+	}
+
+	private int						_color;
+	private Deck					_deck;
+	private Game					_game;
+	private StateReader<GameState>	_gameReader;
+	private ArrayList<OpenGLButton>	_lstButtons			= new ArrayList<OpenGLButton>();
+	private List<ISprite<?>>		_lstOriginalSprites;
+	private List<Rect>				_lstRectangles;
+	private List<ISprite<Card>>		_lstSelectedCards	= new ArrayList<ISprite<Card>>();
+	private MainConfig				_mainConfig;
+	private Mover					_mover				= new Mover();
+	private StateReader<MainConfig>	_stateReader;
+	private UpdateThread			_updateThread;
+	private OpenGLButton			selButton;
 
 	@Override
 	public boolean actionDown(float eventX, float eventY) {
@@ -168,53 +169,62 @@ public class MainActivity extends OpenGLActivity {
 				return true;
 			}
 		}
-		List<Sprite<Card>> lstSprites = getTouchingCards(eventX, eventY);
+		List<ISprite<Card>> lstSprites = getTouchingCards(eventX, eventY);
 		int size = lstSprites.size();
 		Card card0 = null;
 		if (size > 0) {
-			Sprite<Card> sprite0 = lstSprites.get(size - 1);
+			ISprite<Card> sprite0 = lstSprites.get(size - 1);
 			card0 = sprite0.getReference();
 		}
-		mover.finish();
-		for (Sprite<Card> sprite : game.getSprites()) {
+		_mover.finish();
+		for (ISprite<Card> sprite : _game.getSprites()) {
 			Card card = sprite.getReference();
 			if (!card.equals(card0)) {
 				card.setSelected(false);
 			}
 		}
+		selButton = null;
 		if (card0 == null) {
 			clearSelectedCards();
+			// check if button is pressed
+			for (OpenGLButton button : _lstButtons) {
+				if (button.touches(eventX, eventY)) {
+					if (button.isEnabled()) {
+						selButton = button;
+						button.setDown(true);
+					}
+					break;
+				}
+			}
 		} else {
-			mover.start();
+			_mover.start();
 			boolean bSelected = !card0.isSelected();
 			clearSelectedCards();
 			card0.setSelected(bSelected);
 			if (bSelected) {
 				// get all selected cards
-				boolean selectCards = game.actionDown(card0, _lstSelectedCards);
+				boolean selectCards = _game
+						.actionDown(card0, _lstSelectedCards);
 
-				for (Sprite<Card> sprite : _lstSelectedCards) {
+				for (ISprite<Card> sprite : _lstSelectedCards) {
 					sprite.setOffset(eventX, eventY);
 				}
 				if (selectCards) {
-					mover.end(true);
+					_mover.end(true);
 				}
 			}
 		}
 		return true;
 	}
 
-	private void clearSelectedCards() {
-		for (Sprite<Card> sprite : _lstSelectedCards) {
-			sprite.getReference().setSelected(false);
-		}
-		_lstSelectedCards.clear();
-	}
-
 	@Override
 	public boolean actionMove(float eventX, float eventY) {
-		if (_lstSelectedCards.size() > 0) {
-			for (Sprite<Card> sprite : _lstSelectedCards) {
+		if (selButton != null) {
+			selButton.setDown(selButton.touches(eventX, eventY));
+			return true;
+
+		} else if (_lstSelectedCards.size() > 0) {
+			for (ISprite<Card> sprite : _lstSelectedCards) {
 				sprite.moveTo(eventX, eventY);
 			}
 			sortCards();
@@ -225,18 +235,36 @@ public class MainActivity extends OpenGLActivity {
 
 	@Override
 	public boolean actionUp(float eventX, float eventY) {
+		if (selButton != null) {
+			if (selButton.touches(eventX, eventY)) {
+				IAction action = selButton.getAction();
+				if (action != null) {
+					_mover.start();
+					action.doAction();
+					for (Hand hand : _game.getHands()) {
+						hand.organize();
+					}
+					saveGame();
+					_mover.end(true);
+					sortCards();
+				}
+			}
+			selButton.setDown(false);
+			selButton = null;
+			return true;
+		}
 		if (_lstSelectedCards.size() > 0) {
 			HashSet<Hand> hsHands = new HashSet<Hand>();
-			for (Sprite<Card> sprite : _lstSelectedCards) {
+			for (ISprite<Card> sprite : _lstSelectedCards) {
 				Hand hand = sprite.getReference().getHand();
 				if (hand != null) {
 					hsHands.add(hand);
 				}
 			}
-			Hand h = game.getHandAt(eventX, eventY);
+			Hand h = _game.getHandAt(eventX, eventY);
 			boolean bNext = false;
 			if (h != null && !hsHands.contains(h)) {
-				bNext = game.actionUp(_lstSelectedCards, h);
+				bNext = _game.actionUp(_lstSelectedCards, h);
 				hsHands.add(h);
 			}
 			for (Hand hand : hsHands) {
@@ -244,32 +272,110 @@ public class MainActivity extends OpenGLActivity {
 			}
 			saveGame();
 
-			mover.end(bNext);
+			_mover.end(bNext);
 			sortCards();
 			return true;
 		}
 		return false;
 	}
 
-	protected void saveGame() {
-		GameState state = game.getState();
-		// Log.i("State", state.toString());
-		_gameReader.saveState(game.getName(), state);
+	private void clearSelectedCards() {
+		for (ISprite<Card> sprite : _lstSelectedCards) {
+			sprite.getReference().setSelected(false);
+		}
+		_lstSelectedCards.clear();
 	}
 
-	void sortCards() {
-		Collections.sort(_lstOriginalSprites);
-	}
+	@Override
+	public void fillMenuActions(List<IAction> plstMenuActions) {
 
-	private synchronized boolean isThreadRunning() {
-		if (updateThread == null) {
-			return false;
-		}
-		if (updateThread.isAlive()) {
-			return true;
-		}
-		updateThread = null;
-		return false;
+		plstMenuActions.add(new ISubAction() {
+
+			@Override
+			public IAction[] getSubItems() {
+
+				List<Class<? extends Game>> lstClasses = Game.getGameClasses();
+
+				IAction[] iActions = new IAction[lstClasses.size()];
+				for (int i = 0; i < iActions.length; i++) {
+					iActions[i] = newGameAction(lstClasses.get(i));
+				}
+				return iActions;
+			}
+
+			@Override
+			public String getTitle() {
+				return "Select Game ...";
+			}
+
+			private IAction newGameAction(final Class<? extends Game> pGameClass) {
+				IAction iAction = new IAction() {
+
+					@Override
+					public void doAction() {
+						initGame(pGameClass, true);
+					}
+
+					@Override
+					public String getTitle() {
+						String name = pGameClass.getSimpleName();
+						// name = name.substring(name.lastIndexOf(".")+1);
+						return name;
+					}
+
+				};
+				return iAction;
+			}
+
+		});
+		plstMenuActions.add(new IAction() {
+
+			@Override
+			public void doAction() {
+				confirm("Do you really want to start a new game ?",
+						new Runnable() {
+							@Override
+							public void run() {
+								initGame(_game.getClass(), false);
+							}
+						});
+
+			}
+
+			@Override
+			public String getTitle() {
+				return "New";
+			}
+		});
+
+		plstMenuActions.add(new IAction() {
+
+			@Override
+			public void doAction() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public String getTitle() {
+				return "Options";
+			}
+
+		});
+		plstMenuActions.add(new IAction() {
+
+			@Override
+			public void doAction() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public String getTitle() {
+				return "Exit";
+			}
+
+		});
 	}
 
 	@Override
@@ -277,9 +383,9 @@ public class MainActivity extends OpenGLActivity {
 		return _color;
 	}
 
-	private List<Sprite<Card>> getTouchingCards(float eventX, float eventY) {
-		List<Sprite<Card>> lst = new ArrayList<Sprite<Card>>();
-		for (Sprite<Card> sprite : game.getSprites()) {
+	private List<ISprite<Card>> getTouchingCards(float eventX, float eventY) {
+		List<ISprite<Card>> lst = new ArrayList<ISprite<Card>>();
+		for (ISprite<Card> sprite : _game.getSprites()) {
 			if (sprite.touches(eventX, eventY)) {
 				lst.add(sprite);
 			}
@@ -289,18 +395,47 @@ public class MainActivity extends OpenGLActivity {
 		return lst;
 	}
 
-	public static class MainConfig implements Serializable {
+	void initGame(Class<? extends Game> pClass, boolean pbLoadState) {
 
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 3401991076230505645L;
+		_mainConfig.gameClassName = pClass.getName();
+		_stateReader.saveState("lastGame", _mainConfig);
 
-		public String gameClassName;
+		_lstOriginalSprites.clear();
+		_lstRectangles.clear();
+
+		try {
+			_game = pClass.newInstance();
+		} catch (Exception e) {
+			// fallback
+			_game = new FreeCell();
+		}
+		_deck.clear();
+
+		GameState state = pbLoadState ? _gameReader.readState(_game.getName())
+				: null;
+		// game = new Solitaire();
+		_game.initGame(_deck, state);
+
+		_lstOriginalSprites.addAll(_game.getSprites());
+		List<Rect> rectangles = _game.getRectangles();
+		_lstRectangles.addAll(rectangles);
+		int color = getColor();
+		int red = Color.red(color);
+		int green = Color.green(color);
+		int blue = Color.blue(color);
+		for (Rect rect : rectangles) {
+			rect.setColor(red / 2, green / 2, blue / 2, 128);
+		}
+		// init the buttons
+		_lstButtons.clear();
+		_game.initButtons(_deck, _lstButtons);
+		_lstRectangles.addAll(_lstButtons);
+		sortCards();
+
 	}
 
 	@Override
-	public void initSprites(GL10 gl, List<Sprite<?>> lstSprites,
+	public void initSprites(GL10 gl, List<ISprite<?>> lstSprites,
 			List<Rect> lstRectangles) {
 
 		_color = Color.argb(255, 0, 102, 0);
@@ -328,142 +463,30 @@ public class MainActivity extends OpenGLActivity {
 		initGame(lastGame, true);
 	}
 
-	void initGame(Class<? extends Game> pClass, boolean pbLoadState) {
-
-		_mainConfig.gameClassName = pClass.getName();
-		_stateReader.saveState("lastGame", _mainConfig);
-
-		_lstOriginalSprites.clear();
-		_lstRectangles.clear();
-
-		try {
-			game = pClass.newInstance();
-		} catch (Exception e) {
-			// fallback
-			game = new FreeCell();
+	private synchronized boolean isThreadRunning() {
+		if (_updateThread == null) {
+			return false;
 		}
-		_deck.clear();
-
-		GameState state = pbLoadState ? _gameReader.readState(game.getName())
-				: null;
-		// game = new Solitaire();
-		game.initGame(_deck, state);
-
-		_lstOriginalSprites.addAll(game.getSprites());
-		List<Rect> rectangles = game.getRectangles();
-		_lstRectangles.addAll(rectangles);
-		int color = getColor();
-		int red = Color.red(color);
-		int green = Color.green(color);
-		int blue = Color.blue(color);
-		for (Rect rect : rectangles) {
-			rect.setColor(red / 2, green / 2, blue / 2, 128);
+		if (_updateThread.isAlive()) {
+			return true;
 		}
-		List<OpenGLButton> lstButtons = new ArrayList<OpenGLButton>();
-		game.initButtons(_deck, lstButtons);
-		_lstRectangles.addAll(lstButtons);
-		for (Rect rect : lstButtons) {
-			rect.setColor(192, 192, 192, 192);
-		}
-		sortCards();
-
+		_updateThread = null;
+		return false;
 	}
 
 	@Override
 	public boolean onDrawFrame() {
-		boolean running = mover.isRunning();
+		boolean running = _mover.isRunning();
 		return running;
 	}
 
-	@Override
-	public void fillMenuActions(List<IAction> plstMenuActions) {
+	protected void saveGame() {
+		GameState state = _game.getState();
+		// Log.i("State", state.toString());
+		_gameReader.saveState(_game.getName(), state);
+	}
 
-		plstMenuActions.add(new ISubAction() {
-
-			@Override
-			public String getTitle() {
-				return "Select Game ...";
-			}
-
-			@Override
-			public IAction[] getSubItems() {
-
-				List<Class<? extends Game>> lstClasses = Game.getGameClasses();
-
-				IAction[] iActions = new IAction[lstClasses.size()];
-				for (int i = 0; i < iActions.length; i++) {
-					iActions[i] = newGameAction(lstClasses.get(i));
-				}
-				return iActions;
-			}
-
-			private IAction newGameAction(final Class<? extends Game> pGameClass) {
-				IAction iAction = new IAction() {
-
-					@Override
-					public String getTitle() {
-						String name = pGameClass.getSimpleName();
-						// name = name.substring(name.lastIndexOf(".")+1);
-						return name;
-					}
-
-					@Override
-					public void doAction() {
-						initGame(pGameClass, true);
-					}
-
-				};
-				return iAction;
-			}
-
-		});
-		plstMenuActions.add(new IAction() {
-
-			@Override
-			public String getTitle() {
-				return "New";
-			}
-
-			@Override
-			public void doAction() {
-				confirm("Do you really want to start a new game ?",
-						new Runnable() {
-							@Override
-							public void run() {
-								initGame(game.getClass(), false);
-							}
-						});
-
-			}
-		});
-
-		plstMenuActions.add(new IAction() {
-
-			@Override
-			public String getTitle() {
-				return "Options";
-			}
-
-			@Override
-			public void doAction() {
-				// TODO Auto-generated method stub
-
-			}
-
-		});
-		plstMenuActions.add(new IAction() {
-
-			@Override
-			public String getTitle() {
-				return "Exit";
-			}
-
-			@Override
-			public void doAction() {
-				// TODO Auto-generated method stub
-
-			}
-
-		});
+	void sortCards() {
+		Collections.sort(_lstOriginalSprites);
 	}
 }

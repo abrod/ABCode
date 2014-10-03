@@ -15,7 +15,7 @@ import de.brod.cardmaniac.table.Deck;
 import de.brod.cardmaniac.table.Hand;
 import de.brod.opengl.OpenGLButton;
 import de.brod.opengl.Rect;
-import de.brod.opengl.Sprite;
+import de.brod.opengl.ISprite;
 
 public abstract class Game {
 
@@ -31,15 +31,15 @@ public abstract class Game {
 		return arrClasses;
 	}
 
-	private List<Sprite<Card>> _lstAllSpriteCards;
+	private List<ISprite<Card>> _lstAllSpriteCards;
 	private List<Hand> _lstHands;
 
 	private ArrayList<Card> _lstCards;
 
 	public abstract boolean actionDown(Card pCard,
-			List<Sprite<Card>> plstMoveCards);
+			List<ISprite<Card>> plstMoveCards);
 
-	public abstract boolean actionUp(List<Sprite<Card>> _lstMoveCards,
+	public abstract boolean actionUp(List<ISprite<Card>> _lstMoveCards,
 			Hand handTo);
 
 	abstract void assignCardsToHands(List<Hand> plstHands, List<Card> lstCards);
@@ -91,7 +91,7 @@ public abstract class Game {
 		createHands(pDeck, _lstHands);
 
 		_lstCards = new ArrayList<Card>();
-		for (Sprite<Card> card : _lstAllSpriteCards) {
+		for (ISprite<Card> card : _lstAllSpriteCards) {
 			_lstCards.add(card.getReference());
 		}
 		Collections.shuffle(_lstCards);
@@ -124,7 +124,7 @@ public abstract class Game {
 		return lst;
 	}
 
-	public List<Sprite<Card>> getSprites() {
+	public List<ISprite<Card>> getSprites() {
 		return _lstAllSpriteCards;
 	}
 
@@ -170,7 +170,7 @@ public abstract class Game {
 	private boolean loadState(Deck pDeck, GameState state) {
 		if (state != null && state.lstHands != null) {
 			Hashtable<String, Card> ht = new Hashtable<String, Card>();
-			for (Sprite<Card> sprite : _lstAllSpriteCards) {
+			for (ISprite<Card> sprite : _lstAllSpriteCards) {
 				Card card = sprite.getReference();
 				ht.put(card.toString(), card);
 			}
