@@ -23,42 +23,84 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.view.Window;
 import android.view.WindowManager;
 
 public abstract class OpenGLActivity extends Activity {
-	private OpenGLView mGLView;
+	public class StateReader<E extends Serializable> {
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		mGLView = new OpenGLView(this);
-		setContentView(mGLView);
+		private String	_sKey;
+
+		public StateReader(String psKey) {
+			_sKey = psKey;
+		}
+
+		private File getFile(String string) {
+			return new File(getFilesDir(), _sKey + "." + string + ".txt");
+		}
+
+		public E readState(String string) {
+			File file = getFile(string);
+			try {
+				ObjectInputStream is = new ObjectInputStream(
+						new FileInputStream(file));
+				Object readObject = is.readObject();
+				is.close();
+				return (E) readObject;
+			} catch (Exception e) {
+				// could not read
+				e.printStackTrace();
+				// Log.e("OpenGLActivity", e.getLocalizedMessage());
+				return null;
+			}
+
+		}
+
+		public void saveState(String string, E state) {
+			File file = getFile(string);
+			try {
+				// ObjectInputStream is = new ObjectInputStream(new
+				// FileInputStream(
+				// file));
+				ObjectOutputStream out = new ObjectOutputStream(
+						new FileOutputStream(file));
+				out.writeObject(state);
+				out.close();
+			} catch (Exception e) {
+				// could not write
+				e.printStackTrace();
+				// Log.e("OpenGLActivity", e.getLocalizedMessage());
+			}
+		}
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+	Hashtable<Integer, IAction>	htActions	= new Hashtable<Integer, IAction>();
+	private OpenGLView			mGLView;
+
+	public abstract boolean actionDown(float eventX, float eventY);
+
+	public abstract boolean actionMove(float eventX, float eventY);
+
+	public abstract boolean actionUp(float eventX, float eventY);
+
+	protected void confirm(String psText, final Runnable run) {
+		new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle("Confirm")
+				.setMessage(psText)
+				.setPositiveButton("Yes",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								run.run();
+								requestRender();
+							}
+						}).setNegativeButton("No", null).show();
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mGLView.onPause();
-	}
+	public abstract void fillMenuActions(List<IAction> plstMenuActions);
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		mGLView.onResume();
-	}
-
-	public void requestRender() {
-		mGLView.requestRender();
-	}
+	public abstract int getColor();
 
 	public abstract void initSprites(GL10 gl, List<ISprite<?>> lstSprites,
 			List<Rect> lstRectangles);
@@ -77,17 +119,15 @@ public abstract class OpenGLActivity extends Activity {
 		return bitmap;
 	}
 
-	public abstract boolean actionDown(float eventX, float eventY);
-
-	public abstract boolean actionMove(float eventX, float eventY);
-
-	public abstract boolean actionUp(float eventX, float eventY);
-
-	public abstract int getColor();
-
-	public abstract boolean onDrawFrame();
-
-	Hashtable<Integer, IAction> htActions = new Hashtable<Integer, IAction>();
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		// requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		mGLView = new OpenGLView(this);
+		setContentView(mGLView);
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -119,7 +159,7 @@ public abstract class OpenGLActivity extends Activity {
 		return true;
 	}
 
-	public abstract void fillMenuActions(List<IAction> plstMenuActions);
+	public abstract boolean onDrawFrame();
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -135,67 +175,25 @@ public abstract class OpenGLActivity extends Activity {
 
 	}
 
-	protected void confirm(String psText, final Runnable run) {
-		new AlertDialog.Builder(this)
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setTitle("Confirm")
-				.setMessage(psText)
-				.setPositiveButton("Yes",
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								run.run();
-								requestRender();
-							}
-						}).setNegativeButton("No", null).show();
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mGLView.onPause();
 	}
 
-	public class StateReader<E extends Serializable> {
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mGLView.onResume();
+	}
 
-		private String _sKey;
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+	}
 
-		public StateReader(String psKey) {
-			_sKey = psKey;
-		}
-
-		public void saveState(String string, E state) {
-			File file = getFile(string);
-			try {
-				// ObjectInputStream is = new ObjectInputStream(new
-				// FileInputStream(
-				// file));
-				ObjectOutputStream out = new ObjectOutputStream(
-						new FileOutputStream(file));
-				out.writeObject(state);
-				out.close();
-			} catch (Exception e) {
-				// could not write
-				e.printStackTrace();
-				// Log.e("OpenGLActivity", e.getLocalizedMessage());
-			}
-		}
-
-		public E readState(String string) {
-			File file = getFile(string);
-			try {
-				ObjectInputStream is = new ObjectInputStream(
-						new FileInputStream(file));
-				Object readObject = is.readObject();
-				is.close();
-				return (E) readObject;
-			} catch (Exception e) {
-				// could not read
-				e.printStackTrace();
-				// Log.e("OpenGLActivity", e.getLocalizedMessage());
-				return null;
-			}
-
-		}
-
-		private File getFile(String string) {
-			return new File(getFilesDir(), _sKey + "." + string + ".txt");
-		}
+	public void requestRender() {
+		mGLView.requestRender();
 	}
 
 }

@@ -12,12 +12,12 @@ import android.view.MotionEvent;
 
 public class OpenGLView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
-	private OpenGLActivity _activity;
-	private ArrayList<ISprite<?>> _lstSprites;
-	private float _wd, _hg, _dx, _dy;
-	private List<Rect> _lstRectangles;
-	private Rect rect0;
-	public static boolean LANDSCAPE;
+	public static boolean			LANDSCAPE;
+	private OpenGLActivity			_activity;
+	private List<Rect>				_lstRectangles;
+	private ArrayList<ISprite<?>>	_lstSprites;
+	private float					_wd, _hg, _dx, _dy;
+	private Rect					rect0;
 
 	private OpenGLView(Context context) {
 		super(context);
@@ -26,6 +26,7 @@ public class OpenGLView extends GLSurfaceView implements GLSurfaceView.Renderer 
 	public OpenGLView(OpenGLActivity context) {
 		super(context);
 		_activity = context;
+		setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 		setRenderer(this);
 		setRenderMode(RENDERMODE_WHEN_DIRTY);
 	}
@@ -122,7 +123,7 @@ public class OpenGLView extends GLSurfaceView implements GLSurfaceView.Renderer 
 		gl.glDisable(GL10.GL_DEPTH_TEST);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,
-				/* GL10.GL_REPLACE */GL10.GL_MODULATE);
+		/* GL10.GL_REPLACE */GL10.GL_MODULATE);
 	}
 
 	@Override
