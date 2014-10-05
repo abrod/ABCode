@@ -1,9 +1,11 @@
 package de.brod.cardmaniac.game;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.brod.cardmaniac.CardColor;
+import de.brod.cardmaniac.CardValue;
 import de.brod.cardmaniac.table.Button;
 import de.brod.cardmaniac.table.Card;
 import de.brod.cardmaniac.table.Deck;
@@ -22,6 +24,7 @@ public class MauMau extends Game {
 
 		public void nextPlayer() {
 			currentPlayer = (currentPlayer + 1) % 4;
+			mayDraw = true;
 		}
 	}
 
@@ -54,15 +57,18 @@ public class MauMau extends Game {
 	@Override
 	public boolean actionUp(List<ISprite<Card>> plstMoveCards, Hand handTo) {
 		if (handTo.equals(stack)) {
+			if (!matches(plstMoveCards.get(plstMoveCards.size() - 1)
+					.getReference(), stack.getLastCard())) {
+				return false;
+			}
 			state.nextPlayer();
-			state.mayDraw = true;
 			for (ISprite<Card> sprite : plstMoveCards) {
 				handTo.addCard(sprite.getReference());
 			}
 			checkStack();
 			return true;
 		}
-		if (handTo.equals(players[state.currentPlayer])) {
+		if (handTo.equals(players[state.currentPlayer]) && state.mayDraw) {
 			state.mayDraw = false;
 			for (ISprite<Card> sprite : plstMoveCards) {
 				handTo.addCard(sprite.getReference());
@@ -124,11 +130,12 @@ public class MauMau extends Game {
 	@Override
 	void createHands(Deck pDeck, List<Hand> plstHands) {
 		float border = 0.05f;
+		int v = 52;
 		players = new Hand[] {
 				new Hand(pDeck, 0.5f, 0, 6.5f, 0, border, 12, 52),
-				new Hand(pDeck, 0, 2, 0, 5, border, 12, 0),
-				new Hand(pDeck, 0.5f, 7, 6.5f, 7, border, 12, 0),
-				new Hand(pDeck, 7, 2, 7, 5, border, 12, 0) };
+				new Hand(pDeck, 0, 2, 0, 5, border, 12, v),
+				new Hand(pDeck, 0.5f, 7, 6.5f, 7, border, 12, v),
+				new Hand(pDeck, 7, 2, 7, 5, border, 12, v) };
 		tolon = new Hand(pDeck, 1.75f, 3.5f, 2.75f, 3.5f, border, 12, 0);
 		stack = new Hand(pDeck, 4.25f, 3.5f, 5.25f, 3.5f, border, 12, 52);
 		for (Hand hand : players) {
@@ -143,6 +150,45 @@ public class MauMau extends Game {
 	@Override
 	public INextMove getNextMove() {
 		// TODO Auto-generated method stub
+		if (state.currentPlayer != 0) {
+			return new INextMove() {
+
+				@Override
+				public boolean hasNext() {
+					return players[state.currentPlayer].getCardsCount() > 0
+							&& state.currentPlayer != 0;
+				}
+
+				@Override
+				public void startMove() {
+					List<Card> cards = players[state.currentPlayer].getCards();
+					List<Card> lstPossible = new ArrayList<Card>();
+					Card lastCard = stack.getLastCard();
+					for (Card card : cards) {
+						if (matches(card, lastCard)) {
+							lstPossible.add(card);
+						}
+					}
+					if (lstPossible.size() > 0) {
+						Card card = lstPossible
+								.get((int) (Math.random() * lstPossible.size()));
+						stack.addCard(card);
+						stack.organize();
+						players[state.currentPlayer].organize();
+						state.nextPlayer();
+					} else {
+						if (state.mayDraw) {
+							state.mayDraw = false;
+							players[state.currentPlayer].addCard(tolon
+									.getLastCard());
+						} else {
+							state.nextPlayer();
+						}
+					}
+					checkStack();
+				}
+			};
+		}
 		return null;
 	}
 
@@ -173,7 +219,6 @@ public class MauMau extends Game {
 
 			@Override
 			public void doAction() {
-				state.mayDraw = true;
 				state.nextPlayer();
 				checkButtons();
 			}
@@ -210,6 +255,24 @@ public class MauMau extends Game {
 	void initGame(Serializable specificValues) {
 		state = (MauMauState) specificValues;
 		checkButtons();
+	}
+
+	private boolean matches(Card card, Card lastCard) {
+
+		if (lastCard == null) {
+			return true;
+		}
+		if (lastCard.getCardColor().equals(card.getCardColor())) {
+			return true;
+		}
+		if (lastCard.getCardValue().equals(card.getCardValue())) {
+			return true;
+		}
+		if (card.getCardValue().equals(CardValue.bube)) {
+			return true;
+		}
+
+		return false;
 	}
 
 }
