@@ -8,16 +8,16 @@ import de.brod.opengl.Rect;
 
 public class Hand {
 
-	private float[] _pX, _pY;
-	private List<Card> _lstCard = new ArrayList<Card>();
-	private boolean _dirty;
-	private int _iCount;
-	private Rect _rect;
-	private int _iCountVisible;
-	private boolean _center = false;
+	private float[]		_pX, _pY;
+	private List<Card>	_lstCard	= new ArrayList<Card>();
+	private boolean		_dirty;
+	private int			_iCount;
+	private Rect		_rect;
+	private int			_iCountVisible;
+	private boolean		_center		= false;
 
 	public Hand(Deck pDeck, float x1, float y1, float x2, float y2,
-			int piCount, int iCountVisible) {
+			float border, int piCount, int iCountVisible) {
 		_iCount = piCount;
 		_iCountVisible = iCountVisible;
 		_pX = new float[] { x1, x2 - x1,
@@ -27,8 +27,16 @@ public class Hand {
 				pDeck.getY(Math.min(y1, y2)) - pDeck.getCardHeight() / 2,
 				pDeck.getY(Math.max(y1, y2)) + pDeck.getCardHeight() / 2 };
 		float f = 1f;
-		_rect = new Rect((_pX[2] + _pX[3]) / 2, (_pY[2] + _pY[3]) / 2,
-				(_pX[3] - _pX[2]) * f, (_pY[3] - _pY[2]) * f, true);
+		float px = (_pX[2] + _pX[3]) / 2;
+		float py = (_pY[2] + _pY[3]) / 2;
+		float pwidth = (_pX[3] - _pX[2] + border) * f;
+		float pheight = (_pY[3] - _pY[2] + border) * f;
+		_rect = new Rect(px, py, pwidth, pheight, true);
+	}
+
+	public Hand(Deck pDeck, float x1, float y1, float x2, float y2,
+			int piCount, int iCountVisible) {
+		this(pDeck, x1, y1, x2, y2, 0, piCount, iCountVisible);
 	}
 
 	public void addCard(Card card) {
@@ -42,30 +50,32 @@ public class Hand {
 		_dirty = true;
 	}
 
-	protected void setVisible() {
-		int iC = getCountVisible() - _lstCard.size();
-		for (int i = 0; i < _lstCard.size(); i++) {
-			_lstCard.get(i).setVisible(iC >= 0);
-			iC++;
-		}
+	public List<Card> getCards() {
+		return _lstCard;
+	}
+
+	public int getCardsCount() {
+		return _lstCard.size();
 	}
 
 	public int getCountVisible() {
 		return _iCountVisible;
 	}
 
-	private void removeCard(Card card) {
-		_lstCard.remove(card);
-		setVisible();
-		_dirty = true;
+	public Card getLastCard() {
+		int size = _lstCard.size();
+		if (size > 0) {
+			return _lstCard.get(size - 1);
+		}
+		return null;
+	}
+
+	public Rect getRect() {
+		return _rect;
 	}
 
 	public boolean isDirty() {
 		return _dirty;
-	}
-
-	public void setDirty(boolean dirty) {
-		this._dirty = dirty;
 	}
 
 	public void organize() {
@@ -89,6 +99,36 @@ public class Hand {
 		_dirty = false;
 	}
 
+	private void removeCard(Card card) {
+		_lstCard.remove(card);
+		setVisible();
+		_dirty = true;
+	}
+
+	public void setCenter(boolean b) {
+		_center = b;
+	}
+
+	public void setCountVisible(int i) {
+		_iCountVisible = i;
+	}
+
+	public void setDirty(boolean dirty) {
+		_dirty = dirty;
+	}
+
+	protected void setVisible() {
+		int iC = getCountVisible() - _lstCard.size();
+		for (int i = 0; i < _lstCard.size(); i++) {
+			_lstCard.get(i).setVisible(iC >= 0);
+			iC++;
+		}
+	}
+
+	public void shuffleCards() {
+		Collections.shuffle(_lstCard);
+	}
+
 	public boolean touches(float eventX, float eventY) {
 		return _rect.touches(eventX, eventY);
 		// if (eventX < _pX[2] || eventX > _pX[3]) {
@@ -98,37 +138,5 @@ public class Hand {
 		// return false;
 		// }
 		// return true;
-	}
-
-	public Rect getRect() {
-		return _rect;
-	}
-
-	public List<Card> getCards() {
-		return _lstCard;
-	}
-
-	public int getCardsCount() {
-		return _lstCard.size();
-	}
-
-	public Card getLastCard() {
-		int size = _lstCard.size();
-		if (size > 0) {
-			return _lstCard.get(size - 1);
-		}
-		return null;
-	}
-
-	public void setCountVisible(int i) {
-		_iCountVisible = i;
-	}
-
-	public void shuffleCards() {
-		Collections.shuffle(_lstCard);
-	}
-
-	public void setCenter(boolean b) {
-		_center = b;
 	}
 }

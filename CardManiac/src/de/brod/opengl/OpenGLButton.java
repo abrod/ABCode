@@ -2,23 +2,28 @@ package de.brod.opengl;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import android.graphics.Color;
+
 public class OpenGLButton extends Rect {
 
 	private IAction			_action;
-	private boolean			_enabled;
 	private float			_height, _x, _y;
 	private Text<String>	_text;
+	private int				_textColorR, _textColorG, _textColorB;
 
 	public OpenGLButton(String psText, float x, float y, float width,
 			float height, IAction pAction) {
 		super(x, y, width, height, true);
 		_x = x;
-		_y = y - height * 0.22f;
+		_y = y - height * 0.25f;
 		_height = height * 0.7f;
-		_text = new Text<String>(psText, _x, _y, _height);
 		_action = pAction;
+		_textColorR = 255;
+		_textColorG = 255;
+		_textColorB = 255;
+		_text = new Text<String>(psText, _x, _y, _height);
+		setColor(128, 128, 128, 128);
 		setEnabled(true);
-
 	}
 
 	@Override
@@ -29,10 +34,6 @@ public class OpenGLButton extends Rect {
 
 	public IAction getAction() {
 		return _action;
-	}
-
-	public boolean isEnabled() {
-		return _enabled;
 	}
 
 	@Override
@@ -46,14 +47,20 @@ public class OpenGLButton extends Rect {
 		super.setDown(pbDown);
 	}
 
+	@Override
 	public void setEnabled(boolean b) {
 		if (b) {
-			setColor(128, 128, 128, 128);
-			_text.setColor(255, 255, 255, 255);
+			_text.setColor(_textColorR, _textColorG, _textColorB, 255);
 		} else {
-			setColor(128, 128, 128, 32);
-			_text.setColor(255, 255, 255, 64);
+			_text.setColor(_textColorR, _textColorG, _textColorB, 64);
 		}
-		_enabled = b;
+		super.setEnabled(b);
+	}
+
+	public void setTextColor(int color) {
+		_textColorR = Color.red(color);
+		_textColorG = Color.green(color);
+		_textColorB = Color.blue(color);
+		setEnabled(isEnabled());
 	}
 }

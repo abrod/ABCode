@@ -50,9 +50,11 @@ public class Rect {
 
 	private List<Sprite<Rect>>	_sprite	= new ArrayList<Sprite<Rect>>();
 	private Sprite<Rect>		_centerSprite;
-	private boolean				_down;
+	private boolean				_down, _enabled = true;
 	private float				_width, _height, _x, _y;
 	private boolean				_bRoundBorder;
+
+	private int					red, green, blue, alpha;
 
 	public Rect(float px, float py, float pwidth, float pheight,
 			boolean pbRoundBorder) {
@@ -100,6 +102,10 @@ public class Rect {
 		return _down;
 	}
 
+	public boolean isEnabled() {
+		return _enabled;
+	}
+
 	public void setColor(int color) {
 		int r = Color.red(color);
 		int g = Color.green(color);
@@ -109,9 +115,11 @@ public class Rect {
 	}
 
 	public void setColor(int pr, int pg, int pb, int pa) {
-		for (ISprite<Rect> sprite : _sprite) {
-			sprite.setColor(pr, pg, pb, pa);
-		}
+		red = pr;
+		green = pg;
+		blue = pb;
+		alpha = pa;
+		setEnabled(_enabled);
 	}
 
 	public void setDown(boolean pbDown) {
@@ -132,6 +140,14 @@ public class Rect {
 					iSprite.setXY(xp, yp);
 				}
 			}
+		}
+	}
+
+	public void setEnabled(boolean enabled) {
+		_enabled = enabled;
+		int a = enabled ? alpha : alpha / 4;
+		for (ISprite<Rect> sprite : _sprite) {
+			sprite.setColor(red, green, blue, a);
 		}
 	}
 
