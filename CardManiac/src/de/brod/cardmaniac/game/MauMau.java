@@ -3,6 +3,7 @@ package de.brod.cardmaniac.game;
 import java.io.Serializable;
 import java.util.List;
 
+import de.brod.cardmaniac.CardColor;
 import de.brod.cardmaniac.table.Button;
 import de.brod.cardmaniac.table.Card;
 import de.brod.cardmaniac.table.Deck;
@@ -10,6 +11,7 @@ import de.brod.cardmaniac.table.Hand;
 import de.brod.opengl.IAction;
 import de.brod.opengl.ISprite;
 import de.brod.opengl.OpenGLButton;
+import de.brod.opengl.Rect;
 
 public class MauMau extends Game {
 
@@ -90,11 +92,13 @@ public class MauMau extends Game {
 		if (state != null && buttonDraw != null) {
 			boolean bDraw = state.mayDraw && tolon.getCardsCount() > 0;
 			buttonDraw.setEnabled(bDraw);
+			tolon.getRect().setEnabled(bDraw);
 			buttonSkip.setEnabled(!bDraw);
 
 			for (int i = 0; i < players.length; i++) {
 				Hand player = players[i];
-				player.getRect().setDown(state.currentPlayer != i);
+				Rect rect = player.getRect();
+				rect.setEnabled(state.currentPlayer == i);
 			}
 		}
 	}
@@ -119,12 +123,14 @@ public class MauMau extends Game {
 
 	@Override
 	void createHands(Deck pDeck, List<Hand> plstHands) {
-		players = new Hand[] { new Hand(pDeck, 0, 0, 7, 0, 12, 52),
-				new Hand(pDeck, 0, 2, 0, 5, 12, 0),
-				new Hand(pDeck, 1, 7, 6, 7, 12, 0),
-				new Hand(pDeck, 7, 2, 7, 5, 12, 0) };
-		tolon = new Hand(pDeck, 2, 3.5f, 3, 3.5f, 12, 0);
-		stack = new Hand(pDeck, 4, 3.5f, 5, 3.5f, 12, 52);
+		float border = 0.05f;
+		players = new Hand[] {
+				new Hand(pDeck, 0.5f, 0, 6.5f, 0, border, 12, 52),
+				new Hand(pDeck, 0, 2, 0, 5, border, 12, 0),
+				new Hand(pDeck, 0.5f, 7, 6.5f, 7, border, 12, 0),
+				new Hand(pDeck, 7, 2, 7, 5, border, 12, 0) };
+		tolon = new Hand(pDeck, 1.75f, 3.5f, 2.75f, 3.5f, border, 12, 0);
+		stack = new Hand(pDeck, 4.25f, 3.5f, 5.25f, 3.5f, border, 12, 52);
 		for (Hand hand : players) {
 			hand.setCenter(true);
 			plstHands.add(hand);
@@ -184,6 +190,18 @@ public class MauMau extends Game {
 		buttonSkip = Button.createButton(pDeck, 4.1f, y, 5.5f, y, "Skip",
 				skipAction);
 		lstButtons.add(buttonSkip);
+
+		y = 5f;
+		CardColor[] colors = CardColor.values();
+		for (int i = 0; i < colors.length; i++) {
+			float x = 1.5f + i * 1.33f;
+			OpenGLButton buttonIcon = Button.createButton(pDeck, x, y, x, y,
+					colors[i].getChar(), null);
+			buttonIcon.setTextColor(colors[i].getColor());
+			buttonIcon.setEnabled(i % 2 == 1);
+			lstButtons.add(buttonIcon);
+
+		}
 
 		checkButtons();
 	}

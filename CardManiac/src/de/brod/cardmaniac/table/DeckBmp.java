@@ -8,13 +8,14 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import de.brod.cardmaniac.CardColor;
 
 public class DeckBmp {
 
-	private static int x, y, wd, hg;
-	private static int cWidth;
-	private static int cHeight;
-	private static int c13;
+	private static int	c13;
+	private static int	cHeight;
+	private static int	cWidth;
+	private static int	x, y, wd, hg;
 
 	public static Bitmap createBitmap() {
 		cWidth = 1024;
@@ -29,13 +30,11 @@ public class DeckBmp {
 		hg = cHeight / 5;
 		String[] values = { "A", "K", "D", "B", "10", "9", "8", "7", "6", "5",
 				"4", "3", "2" };
-		String[] colors = { String.valueOf((char) 9827),
-				String.valueOf((char) 9824), String.valueOf((char) 9829),
-				String.valueOf((char) 9830) };
+		CardColor[] colors = CardColor.values();
 		for (int i = 0; i < c13; i++) {
 			for (int j = 0; j < 4; j++) {
 				drawCard(c);
-				drawValue(c, values[i], colors[j], j);
+				drawValue(c, values[i], colors[j].getChar(), j);
 				next();
 			}
 		}
@@ -87,6 +86,22 @@ public class DeckBmp {
 
 	}
 
+	private static void drawCard(Canvas c) {
+		int px = x * cWidth / c13;
+		int py = y * cHeight / 5;
+
+		RectF rect = new RectF(px + 2, py + 2, px + wd - 2, py + hg - 2);
+		Paint paint = new Paint();
+		paint.setColor(Color.argb(128, 0, 0, 0));
+		paint.setStyle(Style.STROKE);
+		paint.setStrokeWidth(2);
+		c.drawRoundRect(rect, wd / 10f, wd / 10f, paint);
+		paint.setColor(Color.WHITE);
+		paint.setStyle(Style.FILL);
+		c.drawRoundRect(rect, wd / 10f, wd / 10f, paint);
+
+	}
+
 	private static void drawJoker(Canvas c, int piColor) {
 		Paint paint = new Paint();
 		paint.setColor(piColor);
@@ -118,6 +133,20 @@ public class DeckBmp {
 		}
 
 		drawText(c, s.substring(0, 1), px, py, paint, false, false);
+
+	}
+
+	private static void drawText(Canvas c, String psText, int px, int py,
+			Paint paint, boolean bTop, boolean bRight) {
+		paint.setTextSize(hg / 3.5f);
+		Rect bounds = new Rect();
+		paint.getTextBounds(psText, 0, psText.length(), bounds);
+		int x2 = px + (bRight ? wd / 20 : wd - wd / 20 - bounds.right);
+		int y2 = py + (bTop ? wd / 10 + bounds.height() : hg - wd / 10);
+		c.drawText(psText, x2, y2, paint);
+
+		// c.drawText(psColors, x2 - bounds2.right, y1 + bounds1.height(),
+		// paint);
 
 	}
 
@@ -158,42 +187,12 @@ public class DeckBmp {
 		drawText(c, psText, px, py, paint, false, false);
 	}
 
-	private static void drawText(Canvas c, String psText, int px, int py,
-			Paint paint, boolean bTop, boolean bRight) {
-		paint.setTextSize(hg / 3.5f);
-		Rect bounds = new Rect();
-		paint.getTextBounds(psText, 0, psText.length(), bounds);
-		int x2 = px + (bRight ? wd / 20 : wd - wd / 20 - bounds.right);
-		int y2 = py + (bTop ? wd / 10 + bounds.height() : hg - wd / 10);
-		c.drawText(psText, x2, y2, paint);
-
-		// c.drawText(psColors, x2 - bounds2.right, y1 + bounds1.height(),
-		// paint);
-
-	}
-
 	private static void next() {
 		x++;
 		if (x >= c13) {
 			x = 0;
 			y++;
 		}
-	}
-
-	private static void drawCard(Canvas c) {
-		int px = x * cWidth / c13;
-		int py = y * cHeight / 5;
-
-		RectF rect = new RectF(px + 2, py + 2, px + wd - 2, py + hg - 2);
-		Paint paint = new Paint();
-		paint.setColor(Color.argb(128, 0, 0, 0));
-		paint.setStyle(Style.STROKE);
-		paint.setStrokeWidth(2);
-		c.drawRoundRect(rect, wd / 10f, wd / 10f, paint);
-		paint.setColor(Color.WHITE);
-		paint.setStyle(Style.FILL);
-		c.drawRoundRect(rect, wd / 10f, wd / 10f, paint);
-
 	}
 
 }

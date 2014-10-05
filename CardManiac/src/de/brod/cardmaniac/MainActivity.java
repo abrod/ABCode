@@ -366,8 +366,7 @@ public class MainActivity extends OpenGLActivity {
 
 			@Override
 			public void doAction() {
-				// TODO Auto-generated method stub
-
+				finish();
 			}
 
 			@Override
