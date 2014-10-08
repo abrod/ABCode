@@ -2,7 +2,7 @@ package de.brod.cardmaniac.game;
 
 public interface INextMove {
 
-	void startMove();
+	// void startMove();
 
 	boolean hasNext();
 

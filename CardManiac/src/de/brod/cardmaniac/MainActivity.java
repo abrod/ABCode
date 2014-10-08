@@ -127,7 +127,6 @@ public class MainActivity extends OpenGLActivity {
 		@Override
 		public void run() {
 			if (r.hasNext()) {
-				r.startMove();
 				_mover.waitFor();
 				_mover.start();
 				// organize hands
@@ -137,8 +136,8 @@ public class MainActivity extends OpenGLActivity {
 				_mover.end(true);
 				saveGame();
 				// sort
-				requestRender();
 			}
+			requestRender();
 		}
 	}
 

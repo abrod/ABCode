@@ -16,9 +16,9 @@ public abstract class Patience extends Game {
 
 	class CleanUp implements INextMove {
 
-		private Hashtable<Card, Hand> cardMove = new Hashtable<Card, Hand>();
-		private List<? extends Hand> lstUpperRight;
-		private List<Hand> lstLowerHands;
+		private Hashtable<Card, Hand>	cardMove	= new Hashtable<Card, Hand>();
+		private List<? extends Hand>	lstUpperRight;
+		private List<Hand>				lstLowerHands;
 
 		CleanUp(List<? extends Hand>... plstLower) {
 			lstUpperRight = plstLower[0];
@@ -30,12 +30,24 @@ public abstract class Patience extends Game {
 			}
 		}
 
-		@Override
-		public void startMove() {
-			for (Entry<Card, Hand> set : cardMove.entrySet()) {
-				set.getValue().addCard(set.getKey());
+		private void checkHand(Hand handLower, int iMin, HashSet<Hand> hsHands,
+				Iterator<Hand> iterator) {
+			Card lastCard = handLower.getLastCard();
+			if (lastCard != null) {
+				if (iMin < 0) {
+					if (lastCard.getCardValue().equals(CardValue.ass)
+							&& iterator.hasNext()) {
+						cardMove.put(lastCard, iterator.next());
+					}
+				} else {
+					for (Hand handTop : hsHands) {
+						Card card = handTop.getLastCard();
+						if (isNext(card, lastCard, false)) {
+							cardMove.put(lastCard, handTop);
+						}
+					}
+				}
 			}
-			cardMove.clear();
 		}
 
 		@Override
@@ -65,29 +77,30 @@ public abstract class Patience extends Game {
 			for (Hand handLower : lstLowerHands) {
 				checkHand(handLower, iMin, hsHands, iterator);
 			}
-			return cardMove.size() > 0;
+			if (cardMove.size() > 0) {
+				for (Entry<Card, Hand> set : cardMove.entrySet()) {
+					set.getValue().addCard(set.getKey());
+				}
+				cardMove.clear();
+				return true;
+			}
+			return false;
 		}
 
-		private void checkHand(Hand handLower, int iMin, HashSet<Hand> hsHands,
-				Iterator<Hand> iterator) {
-			Card lastCard = handLower.getLastCard();
-			if (lastCard != null) {
-				if (iMin < 0) {
-					if (lastCard.getCardValue().equals(CardValue.ass)
-							&& iterator.hasNext()) {
-						cardMove.put(lastCard, iterator.next());
-					}
-				} else {
-					for (Hand handTop : hsHands) {
-						Card card = handTop.getLastCard();
-						if (isNext(card, lastCard, false)) {
-							cardMove.put(lastCard, handTop);
-						}
-					}
-				}
+	}
+
+	private CardValue[]	cvs	= { CardValue.ass, CardValue.c2, CardValue.c3,
+			CardValue.c4, CardValue.c5, CardValue.c6, CardValue.c7,
+			CardValue.c8, CardValue.c9, CardValue.c10, CardValue.bube,
+			CardValue.dame, CardValue.koenig };
+
+	int getValue(CardValue cardValue) {
+		for (int i = 0; i < cvs.length; i++) {
+			if (cvs[i].ordinal() == cardValue.ordinal()) {
+				return i;
 			}
 		}
-
+		return -1;
 	}
 
 	boolean isNext(Card card, Card nextCard, boolean pbColorChange) {
@@ -132,19 +145,5 @@ public abstract class Patience extends Game {
 			}
 		}
 		return true;
-	}
-
-	private CardValue[] cvs = { CardValue.ass, CardValue.c2, CardValue.c3,
-			CardValue.c4, CardValue.c5, CardValue.c6, CardValue.c7,
-			CardValue.c8, CardValue.c9, CardValue.c10, CardValue.bube,
-			CardValue.dame, CardValue.koenig };
-
-	int getValue(CardValue cardValue) {
-		for (int i = 0; i < cvs.length; i++) {
-			if (cvs[i].ordinal() == cardValue.ordinal()) {
-				return i;
-			}
-		}
-		return -1;
 	}
 }

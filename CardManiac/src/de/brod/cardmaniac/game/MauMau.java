@@ -20,10 +20,16 @@ public class MauMau extends Game {
 	public static class MauMauState implements Serializable {
 		private static final long	serialVersionUID	= -696396603457811655L;
 		int							currentPlayer		= 0;
-		boolean						mayDraw				= true;
+		boolean						mayDraw				= true,
+				nextPlayer = false;
 
-		public void nextPlayer() {
-			currentPlayer = (currentPlayer + 1) % 4;
+		public void nextPlayer(boolean pbSet) {
+			if (pbSet) {
+				currentPlayer = (currentPlayer + 1) % 4;
+				nextPlayer = false;
+			} else {
+				nextPlayer = true;
+			}
 			mayDraw = true;
 		}
 	}
@@ -61,11 +67,11 @@ public class MauMau extends Game {
 					.getReference(), stack.getLastCard())) {
 				return false;
 			}
-			state.nextPlayer();
+			state.nextPlayer(false);
 			for (ISprite<Card> sprite : plstMoveCards) {
 				handTo.addCard(sprite.getReference());
 			}
-			checkStack();
+			checkStack(true);
 			return true;
 		}
 		if (handTo.equals(players[state.currentPlayer]) && state.mayDraw) {
@@ -73,7 +79,7 @@ public class MauMau extends Game {
 			for (ISprite<Card> sprite : plstMoveCards) {
 				handTo.addCard(sprite.getReference());
 			}
-			checkStack();
+			checkStack(true);
 			return true;
 		}
 		return false;
@@ -109,28 +115,30 @@ public class MauMau extends Game {
 		}
 	}
 
-	private void checkStack() {
+	private void checkStack(boolean bOrganize) {
 		if (tolon.getCardsCount() == 0) {
 			Card[] arrCards = stack.getCards().toArray(new Card[0]);
 			for (int i = 0; i < arrCards.length - 1; i++) {
 				tolon.addCard(arrCards[i]);
 			}
 			tolon.shuffleCards();
-			tolon.organize();
-			stack.organize();
+			if (bOrganize) {
+				tolon.organize();
+				stack.organize();
+			}
 		}
 		checkButtons();
 	}
 
 	@Override
 	void createCards(Deck pDeck) {
-		create32Cards(pDeck, false);
+		create32Cards(pDeck, true);
 	}
 
 	@Override
 	void createHands(Deck pDeck, List<Hand> plstHands) {
 		float border = 0.05f;
-		int v = 52;
+		int v = 0;
 		players = new Hand[] {
 				new Hand(pDeck, 0.5f, 0, 6.5f, 0, border, 12, 52),
 				new Hand(pDeck, 0, 2, 0, 5, border, 12, v),
@@ -149,43 +157,49 @@ public class MauMau extends Game {
 
 	@Override
 	public INextMove getNextMove() {
-		// TODO Auto-generated method stub
-		if (state.currentPlayer != 0) {
+
+		if (state.currentPlayer != 0 || state.nextPlayer) {
 			return new INextMove() {
 
 				@Override
 				public boolean hasNext() {
-					return players[state.currentPlayer].getCardsCount() > 0
-							&& state.currentPlayer != 0;
-				}
+					if (state.nextPlayer) {
+						state.nextPlayer(true);
+					}
+					if (players[state.currentPlayer].getCardsCount() > 0
+							&& state.currentPlayer != 0) {
 
-				@Override
-				public void startMove() {
-					List<Card> cards = players[state.currentPlayer].getCards();
-					List<Card> lstPossible = new ArrayList<Card>();
-					Card lastCard = stack.getLastCard();
-					for (Card card : cards) {
-						if (matches(card, lastCard)) {
-							lstPossible.add(card);
+						List<Card> cards = players[state.currentPlayer]
+								.getCards();
+						List<Card> lstPossible = new ArrayList<Card>();
+						Card lastCard = stack.getLastCard();
+						for (Card card : cards) {
+							if (matches(card, lastCard)) {
+								lstPossible.add(card);
+							}
 						}
-					}
-					if (lstPossible.size() > 0) {
-						Card card = lstPossible
-								.get((int) (Math.random() * lstPossible.size()));
-						stack.addCard(card);
-						stack.organize();
-						players[state.currentPlayer].organize();
-						state.nextPlayer();
-					} else {
-						if (state.mayDraw) {
-							state.mayDraw = false;
-							players[state.currentPlayer].addCard(tolon
-									.getLastCard());
+						if (lstPossible.size() > 0) {
+							Card card = lstPossible
+									.get((int) (Math.random() * lstPossible
+											.size()));
+							stack.addCard(card);
+							// stack.organize();
+							// players[state.currentPlayer].organize();
+							state.nextPlayer(false);
 						} else {
-							state.nextPlayer();
+							if (state.mayDraw) {
+								state.mayDraw = false;
+								players[state.currentPlayer].addCard(tolon
+										.getLastCard());
+							} else {
+								state.nextPlayer(false);
+							}
 						}
+						checkStack(false);
+						return true;
 					}
-					checkStack();
+					checkStack(false);
+					return false;
 				}
 			};
 		}
@@ -207,7 +221,7 @@ public class MauMau extends Game {
 				state.mayDraw = false;
 				players[state.currentPlayer].addCard(tolon.getLastCard());
 
-				checkStack();
+				checkStack(true);
 			}
 
 			@Override
@@ -219,7 +233,7 @@ public class MauMau extends Game {
 
 			@Override
 			public void doAction() {
-				state.nextPlayer();
+				state.nextPlayer(true);
 				checkButtons();
 			}
 
