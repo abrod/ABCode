@@ -17,12 +17,15 @@ public class TextGrid {
 
 	static class CharType {
 
-		float x;
-		float y;
-		Rect bounds;
-		float measureText;
+		float	x;
+		float	y;
+		Rect	bounds;
+		float	measureText;
+		char	character;
 
-		public CharType(float px, float py, Rect pBounds, float pfMeasureText) {
+		public CharType(char pcCharacter, float px, float py, Rect pBounds,
+				float pfMeasureText) {
+			character = pcCharacter;
 			x = px;
 			y = py;
 			bounds = pBounds;
@@ -47,12 +50,12 @@ public class TextGrid {
 
 	}
 
-	static int wdBMP;
-	static float wdPctBMP;
-	static int txtHeightBMP;
-	static int txtBottomBMP;
-	private static Hashtable<String, CharType> htCharacters;
-	private static int textTexId = -1;
+	static int									wdBMP;
+	static float								wdPctBMP;
+	static int									txtHeightBMP;
+	static int									txtBottomBMP;
+	private static Hashtable<String, CharType>	htCharacters;
+	private static int							textTexId	= -1;
 
 	private static CharType drawText(Canvas canvas, char character,
 			Paint paint, Point cursor) {
@@ -77,8 +80,8 @@ public class TextGrid {
 		float offsetY = txtHeightBMP - txtBottomBMP;
 		canvas.drawText(text, x + offsetX + 2, y + offsetY, paint);
 		cursor.set(x + size, y);
-		CharType charType = new CharType(x + offsetX + 2, y + offsetY, bounds,
-				measureText);
+		CharType charType = new CharType(character, x + offsetX + 2, y
+				+ offsetY, bounds, measureText);
 		return charType;
 	}
 

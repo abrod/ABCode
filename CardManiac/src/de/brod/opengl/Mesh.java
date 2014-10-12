@@ -34,6 +34,8 @@ public abstract class Mesh<E> {
 			-1.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f };
 
 	private boolean				visible		= true;
+	private int					iTextureCounter;
+	private float				_rotX;
 
 	public Mesh() {
 		ByteBuffer bb1 = ByteBuffer.allocateDirect(vertices.length * 4);
@@ -107,9 +109,9 @@ public abstract class Mesh<E> {
 		_id = piId;
 	}
 
-	public void setPosition(float px, float py) {
-		if (_x != px || _y != py) {
-			setXY(px, py);
+	public void setPosition(float px, float py, float rotX) {
+		if (_x != px || _y != py || rotX != _rotX) {
+			setXY(px, py, rotX);
 		}
 	}
 
@@ -124,26 +126,33 @@ public abstract class Mesh<E> {
 	 * @param textureCoords
 	 * @param piTextureId
 	 */
-	protected void setTextureCoordinates(int piTextureId, float[] textureCoords) { // New
-		// function.
-		// float is 4 bytes, therefore we multiply the number if
-		// vertices with 4.
-		ByteBuffer byteBuf = ByteBuffer
-				.allocateDirect(textureCoords.length * 4);
-		byteBuf.order(ByteOrder.nativeOrder());
-		mTextureBuffer = byteBuf.asFloatBuffer();
-		mTextureBuffer.put(textureCoords);
-		mTextureBuffer.position(0);
-		mTextureId = piTextureId;
+	protected void setTextureCoordinates(int piCounter, int piTextureId,
+			float[] textureCoords) {
+		if (mTextureBuffer == null || mTextureId != piTextureId
+				|| iTextureCounter != piCounter) {
+			// New
+			// function.
+			// float is 4 bytes, therefore we multiply the number if
+			// vertices with 4.
+			ByteBuffer byteBuf = ByteBuffer
+					.allocateDirect(textureCoords.length * 4);
+			byteBuf.order(ByteOrder.nativeOrder());
+			mTextureBuffer = byteBuf.asFloatBuffer();
+			mTextureBuffer.put(textureCoords);
+			mTextureBuffer.position(0);
+			mTextureId = piTextureId;
+			iTextureCounter = piCounter;
+		}
 	}
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
 
-	protected void setXY(float px, float py) {
+	protected void setXY(float px, float py, float rotX) {
 		_x = px;
 		_y = py;
+		_rotX = rotX;
 		_xy = (int) (px * 1000f - py * 4000f);
 		int iPos = 0;
 		for (int i = -1; i <= 1; i += 2) {

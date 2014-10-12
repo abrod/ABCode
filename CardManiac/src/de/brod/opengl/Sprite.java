@@ -2,19 +2,29 @@ package de.brod.opengl;
 
 public class Sprite<E> extends Mesh<E> implements ISprite<E> {
 
-	private E reference;
+	class Coords {
+		float			x, y;
+		private int		iGridFrame;
+		private float[]	gridTextureCoords;
+	}
 
-	private float ox, oy;
-	private float _sx, _sy, _ex, _ey, _dx, _dy, _d;
+	private E		reference;
 
-	private boolean _bMoving;
-
-	private Grid<E> grid;
+	private Coords	offset	= new Coords();
+	private Coords	start	= new Coords();
+	private Coords	end		= new Coords();
+	private Coords	delta	= new Coords();
+	private double	_fMoveLength;
+	private boolean	_bMoving, _bChangeSide;
+	private Grid<E>	grid;
+	private int		iGridTexttureId;
+	private int		iGridFrame;
+	private float[]	gridTextureCoords;
 
 	public Sprite(Grid<E> pGrid, float x, float y, float width, float height) {
 		grid = pGrid;
 		setSize(width / 2, height / 2);
-		setXY(x, y);
+		setXY(x, y, 0);
 	}
 
 	@Override
@@ -43,12 +53,29 @@ public class Sprite<E> extends Mesh<E> implements ISprite<E> {
 
 	@Override
 	public boolean isPositionChanged() {
-		_ex = _x;
-		_ey = _y;
-		_dx = _ex - _sx;
-		_dy = _ey - _sy;
-		_d = Math.min(1, _dx * _dx + _dy * _dy);
-		_bMoving = _d > 0.01f;
+		end.x = _x;
+		end.y = _y;
+		end.iGridFrame = iGridFrame;
+
+		delta.x = end.x - start.x;
+		delta.y = end.y - start.y;
+
+		_fMoveLength = Math.min(1, delta.x * delta.x + delta.y * delta.y);
+
+		_bChangeSide = start.iGridFrame != end.iGridFrame;
+		if (_bChangeSide) {
+			end.gridTextureCoords = gridTextureCoords;
+			_bMoving = true;
+		} else {
+			_bMoving = _fMoveLength > 0.01f;
+			if (_bMoving) {
+				_fMoveLength = Math.sqrt(_fMoveLength);
+			}
+		}
+
+		if (_bMoving && _fMoveLength < 0.5f) {
+			_fMoveLength = 0.5f;
+		}
 		return _bMoving;
 	}
 
@@ -57,34 +84,51 @@ public class Sprite<E> extends Mesh<E> implements ISprite<E> {
 		float x = eventX;
 		float y = getY(eventY, false);
 		x = getX(x, y, false);
-		setPosition(x + ox, y + oy);
+		setPosition(x + offset.x, y + offset.y, 0);
 		savePosition();
 	}
 
 	@Override
 	public void savePosition() {
-		_sx = _x;
-		_sy = _y;
+		start.x = _x;
+		start.y = _y;
+		start.iGridFrame = iGridFrame;
+		start.gridTextureCoords = gridTextureCoords;
 	}
 
 	@Override
 	public Sprite<E> setGrid(int piPosX, int piPosY) {
-		int mFrame = grid.getFrame(piPosX, piPosY);
-		setTextureCoordinates(grid.getTexttureId(),
-				grid.getTextureCoords(mFrame));
+		iGridFrame = grid.getFrame(piPosX, piPosY);
+		iGridTexttureId = grid.getTexttureId();
+		gridTextureCoords = grid.getTextureCoords(iGridFrame);
+		setTextureCoordinates(iGridFrame, iGridTexttureId, gridTextureCoords);
 		return this;
 	}
 
 	@Override
-	public boolean setMovePosition(float f) {
-		f = f / _d;
+	public boolean setMovePosition(float pf) {
+		float f = (float) (pf / _fMoveLength);
+		float rotX;
+		if (_bChangeSide) {
+			if (f < 0.5f) {
+				rotX = f;
+				setTextureCoordinates(start.iGridFrame, iGridTexttureId,
+						start.gridTextureCoords);
+			} else {
+				rotX = 1 - f;
+				setTextureCoordinates(end.iGridFrame, iGridTexttureId,
+						end.gridTextureCoords);
+			}
+		} else {
+			rotX = 0;
+		}
 		if (f < 1) {
-			setPosition(_sx + _dx * f, _sy + _dy * f);
+			setPosition(start.x + delta.x * f, start.y + delta.y * f, rotX);
 			return true;
 		}
-		_d = 0;
+		_fMoveLength = 0;
 		_bMoving = false;
-		setPosition(_ex, _ey);
+		setPosition(end.x, end.y, 0);
 		return false;
 	}
 
@@ -93,8 +137,8 @@ public class Sprite<E> extends Mesh<E> implements ISprite<E> {
 		float x = eventX;
 		float y = getY(eventY, false);
 		x = getX(x, y, false);
-		ox = _x - x;
-		oy = _y - y;
+		offset.x = _x - x;
+		offset.y = _y - y;
 	}
 
 	@Override

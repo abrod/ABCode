@@ -38,7 +38,7 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 
 		if (pbInitText) {
 			TextGrid.initText(this);
-			setPosition(x, y);
+			setPosition(x, y, 0);
 		}
 	}
 
@@ -86,7 +86,7 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 
 	public void init() {
 		TextGrid.initText(this);
-		setPosition(_xCenter, _yCenter);
+		setPosition(_xCenter, _yCenter, 0);
 	}
 
 	public void init(CharType charType) {
@@ -100,8 +100,7 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 		float h = bounds.height() * fact / 2;
 		w = bounds.width() * fact / 2 * fCorrect;
 		setSize(w, h);
-
-		setTextureCoordinates(TextGrid.getTextureId(),
+		setTextureCoordinates(charType.character, TextGrid.getTextureId(),
 				charType.getTextureCoordinates());
 	}
 
@@ -150,7 +149,7 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 	}
 
 	@Override
-	public void setPosition(float pX, float py) {
+	public void setPosition(float pX, float py, float rotX) {
 		_xCenter = pX;
 		_yCenter = py;
 
@@ -166,7 +165,7 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 	}
 
 	private void setPositionLeft(float px, float py) {
-		setXY(px + fLeft + w, py + offsetY);
+		setXY(px + fLeft + w, py + offsetY, 0);
 	}
 
 	@Override
@@ -184,7 +183,7 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 				next = next._next;
 			}
 			TextGrid.initText(this);
-			setPosition(_xCenter, _yCenter);
+			setPosition(_xCenter, _yCenter, 0);
 		}
 	}
 

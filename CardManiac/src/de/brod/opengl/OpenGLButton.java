@@ -39,10 +39,10 @@ public class OpenGLButton extends Rect {
 	@Override
 	public void setDown(boolean pbDown) {
 		if (pbDown) {
-			_text.setPosition(_x, _y);
+			_text.setPosition(_x, _y, 0);
 		} else {
 			float fAddHeight = _height / 20;
-			_text.setPosition(_x - fAddHeight, _y + fAddHeight);
+			_text.setPosition(_x - fAddHeight, _y + fAddHeight, 0);
 		}
 		super.setDown(pbDown);
 	}

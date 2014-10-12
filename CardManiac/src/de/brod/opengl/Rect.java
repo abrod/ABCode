@@ -137,7 +137,7 @@ public class Rect {
 					float widthp = i == 1 ? (_width - min * 2) : min;
 					float heightp = j == 1 ? (_height - min * 2) : min;
 					iSprite.setSize(widthp * a / 2, heightp * a / 2);
-					iSprite.setXY(xp, yp);
+					iSprite.setXY(xp, yp, 0);
 				}
 			}
 		}

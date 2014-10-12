@@ -24,7 +24,7 @@ public interface ISprite<E> extends Comparable<ISprite<E>> {
 
 	void setOffset(float eventX, float eventY);
 
-	void setPosition(float x, float y);
+	void setPosition(float x, float y, float rotX);
 
 	void setReference(E rect);
 
