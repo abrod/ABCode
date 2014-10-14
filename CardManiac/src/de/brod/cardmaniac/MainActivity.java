@@ -126,9 +126,9 @@ public class MainActivity extends OpenGLActivity {
 
 		@Override
 		public void run() {
+			_mover.waitFor();
+			_mover.start();
 			if (r.hasNext()) {
-				_mover.waitFor();
-				_mover.start();
 				// organize hands
 				for (Hand hand : _game.getHands()) {
 					hand.organize();
@@ -333,11 +333,11 @@ public class MainActivity extends OpenGLActivity {
 			public void doAction() {
 				confirm("Do you really want to start a new game ?",
 						new Runnable() {
-							@Override
-							public void run() {
-								initGame(_game.getClass(), false);
-							}
-						});
+					@Override
+					public void run() {
+						initGame(_game.getClass(), false);
+					}
+				});
 
 			}
 

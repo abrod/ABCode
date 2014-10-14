@@ -55,15 +55,15 @@ public class Sprite<E> extends Mesh<E> implements ISprite<E> {
 	public boolean isPositionChanged() {
 		end.x = _x;
 		end.y = _y;
-		end.iGridFrame = iGridFrame;
 
 		delta.x = end.x - start.x;
 		delta.y = end.y - start.y;
 
 		_fMoveLength = Math.min(1, delta.x * delta.x + delta.y * delta.y);
 
-		_bChangeSide = start.iGridFrame != end.iGridFrame;
+		_bChangeSide = start.iGridFrame != iGridFrame;
 		if (_bChangeSide) {
+			end.iGridFrame = iGridFrame;
 			end.gridTextureCoords = gridTextureCoords;
 			_bMoving = true;
 		} else {

@@ -122,7 +122,7 @@ public abstract class Mesh<E> {
 
 	/**
 	 * Set the texture coordinates.
-	 * 
+	 *
 	 * @param textureCoords
 	 * @param piTextureId
 	 */
@@ -149,6 +149,27 @@ public abstract class Mesh<E> {
 		this.visible = visible;
 	}
 
+	class Line {
+		float	x, y, dx, dy;
+
+		void set(float x1, float y1, float x2, float y2) {
+			x = x1;
+			y = y1;
+			dx = x2 - x1;
+			dy = y2 - y1;
+		}
+
+		float getX(float d) {
+			return x + dx * d;
+		}
+
+		float getY(float d) {
+			return y + dy * d;
+		}
+	}
+
+	private Line	line	= new Line();
+
 	protected void setXY(float px, float py, float rotX) {
 		_x = px;
 		_y = py;
@@ -166,6 +187,20 @@ public abstract class Mesh<E> {
 				iPos += 2;
 			}
 		}
+		if (_rotX > 0) {
+			float r2 = 1 - _rotX;
+			for (int i = 0; i <= 3; i += 3) {
+				int i1 = i + 1;
+				int i2 = i + 6;
+				int i3 = i2 + 1;
+				line.set(vertices[i], vertices[i1], vertices[i2], vertices[i3]);
+				vertices[i] = line.getX(_rotX);
+				vertices[i1] = line.getY(_rotX);
+				vertices[i2] = line.getX(r2);
+				vertices[i3] = line.getY(r2);
+			}
+		}
+
 		vertexBuffer.position(0);
 		vertexBuffer.put(vertices);
 		vertexBuffer.position(0);
