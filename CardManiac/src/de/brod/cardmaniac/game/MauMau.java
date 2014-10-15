@@ -18,10 +18,13 @@ import de.brod.opengl.Rect;
 public class MauMau extends Game {
 
 	public static class MauMauState implements Serializable {
+
 		private static final long	serialVersionUID	= -696396603457811655L;
+
 		int							currentPlayer		= 0;
-		boolean						mayDraw				= true,
-				nextPlayer = false;
+		int							forceColor			= -1;
+		boolean						mayDraw				= true;
+		boolean						nextPlayer			= false;
 
 		public void nextPlayer(boolean pbSet) {
 			if (pbSet) {
@@ -40,6 +43,7 @@ public class MauMau extends Game {
 	private Hand			stack;
 	private MauMauState		state	= new MauMauState();
 	private Hand			tolon;
+	private OpenGLButton[]	buttonIcon;
 
 	@Override
 	public boolean actionDown(Card pCard, List<ISprite<Card>> plstMoveCards) {
@@ -69,7 +73,7 @@ public class MauMau extends Game {
 			}
 			state.nextPlayer(false);
 			for (ISprite<Card> sprite : plstMoveCards) {
-				handTo.addCard(sprite.getReference());
+				stackAdd(sprite.getReference(), false);
 			}
 			checkStack(true);
 			return true;
@@ -94,7 +98,7 @@ public class MauMau extends Game {
 				player.addCard(lstCards.get(iCount++));
 			}
 		}
-		stack.addCard(lstCards.get(iCount++));
+		stackAdd(lstCards.get(iCount++), true);
 		for (int i = iCount; i < lstCards.size(); i++) {
 			tolon.addCard(lstCards.get(i));
 		}
@@ -111,6 +115,16 @@ public class MauMau extends Game {
 				Hand player = players[i];
 				Rect rect = player.getRect();
 				rect.setEnabled(state.currentPlayer == i);
+			}
+
+			if (state.forceColor <= 0) {
+				for (OpenGLButton element : buttonIcon) {
+					element.setEnabled(state.forceColor == 0);
+				}
+			} else {
+				for (int i = 0; i < buttonIcon.length; i++) {
+					buttonIcon[i].setEnabled(i + 1 == state.forceColor);
+				}
 			}
 		}
 	}
@@ -158,7 +172,8 @@ public class MauMau extends Game {
 	@Override
 	public INextMove getNextMove() {
 
-		if (state.currentPlayer != 0 || state.nextPlayer) {
+		if ((state.currentPlayer != 0 || state.nextPlayer)
+				&& state.forceColor != 0) {
 			return new INextMove() {
 
 				@Override
@@ -182,7 +197,7 @@ public class MauMau extends Game {
 							Card card = lstPossible
 									.get((int) (Math.random() * lstPossible
 											.size()));
-							stack.addCard(card);
+							stackAdd(card, true);
 							// stack.organize();
 							// players[state.currentPlayer].organize();
 							state.nextPlayer(false);
@@ -204,6 +219,19 @@ public class MauMau extends Game {
 			};
 		}
 		return null;
+	}
+
+	protected void stackAdd(Card card, boolean pbRandomValue) {
+		stack.addCard(card);
+		if (card.getCardValue().equals(CardValue.bube)) {
+			if (pbRandomValue) {
+				state.forceColor = (int) (Math.random() * 4 + 1);
+			} else {
+				state.forceColor = 0;
+			}
+		} else {
+			state.forceColor = -1;
+		}
 	}
 
 	@Override
@@ -251,14 +279,27 @@ public class MauMau extends Game {
 		lstButtons.add(buttonSkip);
 
 		y = 5f;
-		CardColor[] colors = CardColor.values();
+		final CardColor[] colors = CardColor.values();
+		buttonIcon = new OpenGLButton[colors.length];
 		for (int i = 0; i < colors.length; i++) {
 			float x = 1.5f + i * 1.33f;
-			OpenGLButton buttonIcon = Button.createButton(pDeck, x, y, x, y,
-					colors[i].getChar(), null);
-			buttonIcon.setTextColor(colors[i].getColor());
-			buttonIcon.setEnabled(i % 2 == 1);
-			lstButtons.add(buttonIcon);
+			final CardColor cardColor = colors[i];
+			buttonIcon[i] = Button.createButton(pDeck, x, y, x, y,
+					cardColor.getChar(), new IAction() {
+
+				@Override
+				public String getTitle() {
+					return "";
+				}
+
+				@Override
+				public void doAction() {
+					state.forceColor = cardColor.ordinal() + 1;
+				}
+			});
+			buttonIcon[i].setTextColor(cardColor.getColor());
+			buttonIcon[i].setEnabled(false);
+			lstButtons.add(buttonIcon[i]);
 
 		}
 
@@ -276,17 +317,24 @@ public class MauMau extends Game {
 		if (lastCard == null) {
 			return true;
 		}
-		if (lastCard.getCardColor().equals(card.getCardColor())) {
-			return true;
+		CardValue cardValue = card.getCardValue();
+		CardColor cardColor = card.getCardColor();
+		if (state.forceColor > 0) {
+			if (cardColor.ordinal() + 1 == state.forceColor) {
+				return true;
+			}
+		} else {
+			if (lastCard.getCardColor().equals(cardColor)) {
+				return true;
+			}
+			if (lastCard.getCardValue().equals(cardValue)) {
+				return true;
+			}
 		}
-		if (lastCard.getCardValue().equals(card.getCardValue())) {
-			return true;
-		}
-		if (card.getCardValue().equals(CardValue.bube)) {
+		if (cardValue.equals(CardValue.bube)) {
 			return true;
 		}
 
 		return false;
 	}
-
 }
