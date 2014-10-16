@@ -63,4 +63,9 @@ public class OpenGLButton extends Rect {
 		_textColorB = Color.blue(color);
 		setEnabled(isEnabled());
 	}
+
+	public void setText(String psText) {
+		_text = new Text<String>(psText, _x, _y, _height);
+
+	}
 }
