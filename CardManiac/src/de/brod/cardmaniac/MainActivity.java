@@ -12,7 +12,6 @@ import android.graphics.Color;
 import de.brod.cardmaniac.game.FreeCell;
 import de.brod.cardmaniac.game.Game;
 import de.brod.cardmaniac.game.GameState;
-import de.brod.cardmaniac.game.INextMove;
 import de.brod.cardmaniac.table.Card;
 import de.brod.cardmaniac.table.Deck;
 import de.brod.cardmaniac.table.Hand;
@@ -31,128 +30,127 @@ public class MainActivity extends OpenGLActivity {
 		public String				gameClassName;
 	}
 
-	class Mover {
-
-		List<ISprite<Card>>	lstMoverSprite	= new ArrayList<ISprite<Card>>();
-		private long		start;
-
-		public void end(boolean bNext) {
-			lstMoverSprite.clear();
-			start = System.currentTimeMillis();
-			List<ISprite<Card>> sprites = _game.getSprites();
-			for (ISprite<Card> sprite : sprites) {
-				if (sprite.isPositionChanged()) {
-					sprite.setMovePosition(0f);
-					lstMoverSprite.add(sprite);
-				}
-			}
-			log("end (" + lstMoverSprite.size() + "/" + sprites.size()
-					+ " changed).");
-			sortCards();
-			if (bNext) {
-				INextMove r = _game.getNextMove();
-				if (r != null) {
-					_updateThread = new UpdateThread(r);
-					_updateThread.start();
-				}
-				clearSelectedCards();
-			}
-		}
-
-		public void finish() {
-			log("finish");
-			for (ISprite<Card> sprite : lstMoverSprite) {
-				sprite.setMovePosition(1f);
-			}
-			lstMoverSprite.clear();
-			sortCards();
-		}
-
-		public boolean isRunning() {
-			if (lstMoverSprite.size() > 0) {
-				float d = 1000f;
-				float f = (System.currentTimeMillis() - start) / d;
-				if (f < 1) {
-					for (int i = 0; i < lstMoverSprite.size();) {
-						if (lstMoverSprite.get(i).setMovePosition(f)) {
-							i++;
-						} else {
-							lstMoverSprite.remove(i);
-						}
-					}
-					if (lstMoverSprite.size() == 0) {
-						sortCards();
-					}
-					log("running (" + lstMoverSprite.size() + "/"
-							+ Math.round(f * 1000f) / 10.0 + " %)");
-				} else {
-					finish();
-				}
-				return true;
-			}
-			return false;
-		}
-
-		private void log(String msg) {
-			// Log.d("Mover", msg);
-		}
-
-		public void start() {
-			log("start");
-			for (ISprite<Card> sprite : _game.getSprites()) {
-				sprite.savePosition();
-			}
-		}
-
-		public void waitFor() {
-			log("waitFor");
-			try {
-				while (lstMoverSprite.size() > 0) {
-					Thread.sleep(50);
-				}
-			} catch (InterruptedException e) {
-				// Interrupted
-			}
-		}
-
-	}
-
-	class UpdateThread extends Thread {
-		private INextMove	r;
-
-		UpdateThread(INextMove r) {
-			this.r = r;
-		}
-
-		@Override
-		public void run() {
-			_mover.waitFor();
-			_mover.start();
-			if (r.hasNext()) {
-				// organize hands
-				for (Hand hand : _game.getHands()) {
-					hand.organize();
-				}
-				_mover.end(true);
-				saveGame();
-				// sort
-			}
-			requestRender();
-		}
-	}
+	//	class Mover {
+	//
+	//		List<ISprite<Card>>	lstMoverSprite	= new ArrayList<ISprite<Card>>();
+	//		private long		start;
+	//
+	//		public void end(boolean bNext) {
+	//			lstMoverSprite.clear();
+	//			start = System.currentTimeMillis();
+	//			List<ISprite<Card>> sprites = _game.getSprites();
+	//			for (ISprite<Card> sprite : sprites) {
+	//				if (sprite.isPositionChanged()) {
+	//					sprite.setMovePosition(0f);
+	//					lstMoverSprite.add(sprite);
+	//				}
+	//			}
+	//			log("end (" + lstMoverSprite.size() + "/" + sprites.size()
+	//					+ " changed).");
+	//			sortCards();
+	//			if (bNext) {
+	//				INextMove r = _game.getNextMove();
+	//				if (r != null) {
+	//					_updateThread = new UpdateThread(r);
+	//					_updateThread.start();
+	//				}
+	//				clearSelectedCards();
+	//			}
+	//		}
+	//
+	//		public void finish() {
+	//			log("finish");
+	//			for (ISprite<Card> sprite : lstMoverSprite) {
+	//				sprite.setMovePosition(1f);
+	//			}
+	//			lstMoverSprite.clear();
+	//			sortCards();
+	//		}
+	//
+	//		public boolean isRunning() {
+	//			if (lstMoverSprite.size() > 0) {
+	//				float d = 1000f;
+	//				float f = (System.currentTimeMillis() - start) / d;
+	//				if (f < 1) {
+	//					for (int i = 0; i < lstMoverSprite.size();) {
+	//						if (lstMoverSprite.get(i).setMovePosition(f)) {
+	//							i++;
+	//						} else {
+	//							lstMoverSprite.remove(i);
+	//						}
+	//					}
+	//					if (lstMoverSprite.size() == 0) {
+	//						sortCards();
+	//					}
+	//					log("running (" + lstMoverSprite.size() + "/"
+	//							+ Math.round(f * 1000f) / 10.0 + " %)");
+	//				} else {
+	//					finish();
+	//				}
+	//				return true;
+	//			}
+	//			return false;
+	//		}
+	//
+	//		private void log(String msg) {
+	//			// Log.d("Mover", msg);
+	//		}
+	//
+	//		public void start() {
+	//			log("start");
+	//			for (ISprite<Card> sprite : _game.getSprites()) {
+	//				sprite.savePosition();
+	//			}
+	//		}
+	//
+	//		public void waitFor() {
+	//			log("waitFor");
+	//			try {
+	//				while (lstMoverSprite.size() > 0) {
+	//					Thread.sleep(50);
+	//				}
+	//			} catch (InterruptedException e) {
+	//				// Interrupted
+	//			}
+	//		}
+	//
+	//	}
+	//
+	//	class UpdateThread extends Thread {
+	//		private INextMove	r;
+	//
+	//		UpdateThread(INextMove r) {
+	//			this.r = r;
+	//		}
+	//
+	//		@Override
+	//		public void run() {
+	//			_mover.waitFor();
+	//			_mover.start();
+	//			if (r.hasNext()) {
+	//				// organize hands
+	//				for (Hand hand : _game.getHands()) {
+	//					hand.organize();
+	//				}
+	//				_mover.end(true);
+	//				saveGame();
+	//				// sort
+	//			}
+	//			requestRender();
+	//		}
+	//	}
 
 	private int						_color;
 	private Deck					_deck;
-	private Game					_game;
+	Game							_game;
 	private StateReader<GameState>	_gameReader;
 	private ArrayList<OpenGLButton>	_lstButtons			= new ArrayList<OpenGLButton>();
 	private List<ISprite<?>>		_lstOriginalSprites;
 	private List<Rect>				_lstRectangles;
 	private List<ISprite<Card>>		_lstSelectedCards	= new ArrayList<ISprite<Card>>();
 	private MainConfig				_mainConfig;
-	private Mover					_mover				= new Mover();
+	private Mover					_mover				= new Mover(this);
 	private StateReader<MainConfig>	_stateReader;
-	private UpdateThread			_updateThread;
 	private OpenGLButton			selButton;
 
 	@Override
@@ -278,7 +276,7 @@ public class MainActivity extends OpenGLActivity {
 		return false;
 	}
 
-	private void clearSelectedCards() {
+	void clearSelectedCards() {
 		for (ISprite<Card> sprite : _lstSelectedCards) {
 			sprite.getReference().setSelected(false);
 		}
@@ -462,14 +460,7 @@ public class MainActivity extends OpenGLActivity {
 	}
 
 	private synchronized boolean isThreadRunning() {
-		if (_updateThread == null) {
-			return false;
-		}
-		if (_updateThread.isAlive()) {
-			return true;
-		}
-		_updateThread = null;
-		return false;
+		return _mover.isThreadRunning();
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.Log;
 import de.brod.cardmaniac.CardColor;
 import de.brod.cardmaniac.CardValue;
 import de.brod.cardmaniac.table.Button;
@@ -17,39 +18,129 @@ import de.brod.opengl.Rect;
 
 public class MauMau extends Game {
 
-	public static class MauMauState implements Serializable {
+	static class MMState implements Serializable {
 
-		private static final long	serialVersionUID	= -696396603457811655L;
+		private static final long	serialVersionUID	= 9112483104576267722L;
 
-		int							currentPlayer		= 0;
-		int							forceColor			= -1;
-		boolean						mayDraw				= true;
-		boolean						nextPlayer			= false;
-		int							forceValue			= -1;
-		int							additionalDraw		= 0;
+		protected boolean			mayDraw				= true;
+		protected boolean			nextPlayer			= false;
+		protected int				currentPlayer		= 0;
+		protected int				forceValue			= -1;
+		protected int				forceColor			= -1;
+		public int					additionalDraw		= 0;
 
-		public void nextPlayer(boolean pbSet) {
-			if (pbSet) {
+		protected boolean checkNextPlayer() {
+			if (nextPlayer) {
 				currentPlayer = (currentPlayer + 1) % 4;
 				nextPlayer = false;
-			} else {
-				nextPlayer = true;
+				return true;
 			}
+			return false;
 		}
 
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("[Player");
+			sb.append(currentPlayer);
+			if (mayDraw) {
+				sb.append(" mayDraw");
+			}
+			if (nextPlayer) {
+				sb.append(" nextPlayer");
+			}
+			if (forceColor >= 0) {
+				sb.append(" forceColor=").append(forceColor);
+			}
+			if (forceValue >= 0) {
+				sb.append(" forceValue=").append(forceValue);
+			}
+			if (additionalDraw > 0) {
+				sb.append(" additionalDraw=").append(additionalDraw);
+			}
+			sb.append("]");
+
+			return sb.toString();
+		}
 	}
 
+	public void drawCard() {
+		checkTolon();
+		if (tolon.getCardsCount() > 0) {
+			for (int i = 0; i < Math.max(1, state.additionalDraw); i++) {
+				players[state.currentPlayer].addCard(tolon.getLastCard());
+				checkTolon();
+			}
+		}
+		state.mayDraw = false;
+		state.additionalDraw = 0;
+		state.forceValue = -1;
+		checkButtons();
+	}
+
+	public boolean mayDraw() {
+		return state.mayDraw && tolon.getCardsCount() > 0;
+	}
+
+	public void playCard(Card card, boolean pbRandomValue) {
+		stack.addCard(card);
+		// set forceColor
+		if (card.getCardValue().equals(CardValue.bube)) {
+			if (pbRandomValue) {
+				state.forceColor = (int) (Math.random() * 4 + 1);
+			} else {
+				state.forceColor = 0;
+			}
+		} else {
+			state.forceColor = -1;
+		}
+		// set other values
+		if (card.getCardValue().equals(CardValue.c8)) {
+			state.mayDraw = false;
+			state.forceValue = CardValue.c8.ordinal();
+			state.additionalDraw = 0;
+		} else if (card.getCardValue().equals(CardValue.c7)) {
+			state.mayDraw = true;
+			state.forceValue = CardValue.c7.ordinal();
+			state.additionalDraw += 2;
+		} else {
+			state.mayDraw = true;
+			state.forceValue = -1;
+			state.additionalDraw = 0;
+		}
+		// next player
+		state.nextPlayer = true;
+	}
+
+	public void skip() {
+		state.nextPlayer = true;
+		state.mayDraw = true;
+		state.forceValue = -1;
+		state.additionalDraw = 0;
+		checkButtons();
+	}
+
+	private Hand[]			players;
+	private Hand			tolon;
+	private Hand			stack;
+	private MMState			state;
 	private OpenGLButton	buttonDraw;
 	private OpenGLButton	buttonSkip;
-	private Hand[]			players;
-	private Hand			stack;
-	private MauMauState		state	= new MauMauState();
-	private Hand			tolon;
 	private OpenGLButton[]	buttonIcon;
-	private int				lastAddDraw;
+
+	private int				lastAddDraw	= 0;
 
 	@Override
 	public boolean actionDown(Card pCard, List<ISprite<Card>> plstMoveCards) {
+
+		if (state.forceColor == 0) {
+			// user has to select the color via button
+			return false;
+		}
+		state.checkNextPlayer();
+		if (state.currentPlayer != 0) {
+			return false;
+		}
 
 		Hand hand = pCard.getHand();
 		if (hand.equals(players[state.currentPlayer])) {
@@ -74,33 +165,24 @@ public class MauMau extends Game {
 				return false;
 			}
 			playCard(lastCard, false);
-			checkStack(true);
+			checkButtons();
+			checkTolon();
+			Log.d("Player", state.toString() + " play card " + lastCard);
 			return true;
 		}
-		if (handTo.equals(players[state.currentPlayer]) && state.mayDraw) {
-			drawCards(players[state.currentPlayer]);
-			checkStack(true);
+		if (handTo.equals(players[state.currentPlayer]) && mayDraw()) {
+			drawCard();
+			checkButtons();
+			checkTolon();
+			Log.d("Player", state.toString() + " draw cards");
 			return true;
 		}
 		return false;
 	}
 
-	private void drawCards(Hand handTo) {
-		state.mayDraw = false;
-
-		for (int i = 0; i < Math.max(1, state.additionalDraw); i++) {
-			Card lastCard = tolon.getLastCard();
-			if (lastCard != null) {
-				handTo.addCard(lastCard);
-			}
-			checkTolon(true);
-		}
-		state.additionalDraw = 0;
-	}
-
 	@Override
 	void assignCardsToHands(List<Hand> plstHands, List<Card> lstCards) {
-		state = new MauMauState();
+		state = new MMState();
 		int iCount = 0;
 		for (int i = 0; i < 6; i++) {
 			for (Hand player : players) {
@@ -115,7 +197,7 @@ public class MauMau extends Game {
 
 	private void checkButtons() {
 		if (state != null && buttonDraw != null) {
-			boolean bDraw = state.mayDraw && tolon.getCardsCount() > 0;
+			boolean bDraw = mayDraw();
 			buttonDraw.setEnabled(bDraw);
 			if (lastAddDraw != state.additionalDraw) {
 				lastAddDraw = state.additionalDraw;
@@ -146,22 +228,15 @@ public class MauMau extends Game {
 		}
 	}
 
-	private void checkStack(boolean bOrganize) {
-		checkTolon(bOrganize);
-		checkButtons();
-	}
-
-	private void checkTolon(boolean bOrganize) {
+	private void checkTolon() {
 		if (tolon.getCardsCount() == 0) {
 			Card[] arrCards = stack.getCards().toArray(new Card[0]);
 			for (int i = 0; i < arrCards.length - 1; i++) {
 				tolon.addCard(arrCards[i]);
 			}
 			tolon.shuffleCards();
-			if (bOrganize) {
-				tolon.organize();
-				stack.organize();
-			}
+			tolon.organize();
+			stack.organize();
 		}
 	}
 
@@ -187,24 +262,29 @@ public class MauMau extends Game {
 		}
 		plstHands.add(stack);
 		plstHands.add(tolon);
-
 	}
 
 	@Override
 	public INextMove getNextMove() {
+		if (state.forceColor == 0) {
+			// user has to select the color
+			return null;
+		}
+		return new INextMove() {
 
-		if ((state.currentPlayer != 0 || state.nextPlayer)
-				&& state.forceColor != 0) {
-			return new INextMove() {
+			@Override
+			public boolean hasNext() {
 
-				@Override
-				public boolean hasNext() {
-					if (state.nextPlayer) {
-						state.nextPlayer(true);
-					}
-					if (players[state.currentPlayer].getCardsCount() > 0
-							&& state.currentPlayer != 0) {
-
+				StringBuilder sb = new StringBuilder();
+				state.checkNextPlayer();
+				Log.d("Player", sb.toString());
+				if (state.currentPlayer != 0) {
+					// get next move for player
+					sb.append("Player ").append(state.currentPlayer);
+					if (players[state.currentPlayer].getCardsCount() == 0) {
+						state.nextPlayer = true;
+						sb.append(" -> no cards");
+					} else {
 						List<Card> cards = players[state.currentPlayer]
 								.getCards();
 						List<Card> lstPossible = new ArrayList<Card>();
@@ -212,6 +292,10 @@ public class MauMau extends Game {
 						for (Card card : cards) {
 							if (matches(card, lastCard)) {
 								lstPossible.add(card);
+								sb.append(" (").append(card.toString())
+								.append(")");
+							} else {
+								sb.append(" ").append(card.toString());
 							}
 						}
 						if (lstPossible.size() > 0) {
@@ -221,54 +305,28 @@ public class MauMau extends Game {
 							// stack.organize();
 							// players[state.currentPlayer].organize();
 							playCard(card, true);
+							sb.append(" -> play ").append(card.toString());
 						} else {
 							if (state.mayDraw) {
-								state.mayDraw = false;
-								drawCards(players[state.currentPlayer]);
+								drawCard();
+								sb.append(" -> draw ");
 							} else {
-								// skip
-								state.nextPlayer(false);
-								state.mayDraw = true;
+								skip();
+								sb.append(" -> skip ");
 							}
-							state.forceValue = -1;
-							state.additionalDraw = 0;
 						}
-						checkStack(false);
-						return true;
 					}
-					checkStack(false);
-					return false;
+					checkButtons();
+					checkTolon();
+					sb.append(" ").append(state.toString());
+					Log.d("Player", sb.toString());
+					return true;
 				}
-			};
-		}
-		return null;
-	}
-
-	protected void playCard(Card card, boolean pbRandomValue) {
-		state.nextPlayer(false);
-		stack.addCard(card);
-		if (card.getCardValue().equals(CardValue.bube)) {
-			if (pbRandomValue) {
-				state.forceColor = (int) (Math.random() * 4 + 1);
-			} else {
-				state.forceColor = 0;
+				sb.append(" -> has no next");
+				Log.d("Player", sb.toString());
+				return false;
 			}
-		} else {
-			state.forceColor = -1;
-		}
-		if (card.getCardValue().equals(CardValue.c8)) {
-			state.mayDraw = false;
-			state.forceValue = CardValue.c8.ordinal();
-			state.additionalDraw = 0;
-		} else if (card.getCardValue().equals(CardValue.c7)) {
-			state.mayDraw = true;
-			state.forceValue = CardValue.c7.ordinal();
-			state.additionalDraw += 2;
-		} else {
-			state.mayDraw = true;
-			state.forceValue = -1;
-			state.additionalDraw = 0;
-		}
+		};
 	}
 
 	@Override
@@ -283,10 +341,7 @@ public class MauMau extends Game {
 
 			@Override
 			public void doAction() {
-				state.mayDraw = false;
-				players[state.currentPlayer].addCard(tolon.getLastCard());
-
-				checkStack(true);
+				drawCard();
 			}
 
 			@Override
@@ -298,10 +353,7 @@ public class MauMau extends Game {
 
 			@Override
 			public void doAction() {
-				state.nextPlayer(true);
-				state.mayDraw = true;
-				state.forceValue = -1;
-				checkButtons();
+				skip();
 			}
 
 			@Override
@@ -327,13 +379,13 @@ public class MauMau extends Game {
 					cardColor.getChar(), new IAction() {
 
 				@Override
-				public String getTitle() {
-					return "";
+				public void doAction() {
+					state.forceColor = cardColor.ordinal() + 1;
 				}
 
 				@Override
-				public void doAction() {
-					state.forceColor = cardColor.ordinal() + 1;
+				public String getTitle() {
+					return "";
 				}
 			});
 			buttonIcon[i].setTextColor(cardColor.getColor());
@@ -347,12 +399,11 @@ public class MauMau extends Game {
 
 	@Override
 	void initGame(Serializable specificValues) {
-		state = (MauMauState) specificValues;
+		state = (MMState) specificValues;
 		checkButtons();
 	}
 
 	private boolean matches(Card card, Card lastCard) {
-
 		if (lastCard == null) {
 			return true;
 		}
