@@ -20,9 +20,11 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.Window;
 import android.view.WindowManager;
 
 public abstract class OpenGLActivity extends Activity {
@@ -83,19 +85,26 @@ public abstract class OpenGLActivity extends Activity {
 	public abstract boolean actionUp(float eventX, float eventY);
 
 	protected void confirm(String psText, final Runnable run) {
-		new AlertDialog.Builder(this)
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setTitle("Confirm")
-				.setMessage(psText)
-				.setPositiveButton("Yes",
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								run.run();
-								requestRender();
-							}
-						}).setNegativeButton("No", null).show();
+		DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				run.run();
+				requestRender();
+			}
+		};
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setIcon(android.R.drawable.ic_dialog_alert).setTitle("Confirm")
+		.setMessage(psText).setPositiveButton("Yes", onClickListener)
+		.setNegativeButton("No", null);
+
+		Handler h = new Handler();
+		h.post(new Runnable() {
+
+			@Override
+			public void run() {
+				builder.show();
+			}
+		});
 	}
 
 	public abstract void fillMenuActions(List<IAction> plstMenuActions);
@@ -122,7 +131,7 @@ public abstract class OpenGLActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// requestWindowFeature(Window.FEATURE_NO_TITLE);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		mGLView = new OpenGLView(this);

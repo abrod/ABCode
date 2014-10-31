@@ -73,43 +73,45 @@ public class OpenGLView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		// prevent 0 divise
-		if (height == 0) {
-			height = 1;
+		synchronized (this) {
+			// prevent 0 divise
+			if (height == 0) {
+				height = 1;
+			}
+			// screenWidth = width;
+			// screenHeight = height;
+			float ratio = ((float) width) / height;
+			gl.glMatrixMode(GL10.GL_PROJECTION);
+			gl.glLoadIdentity();
+			if (ratio > 1) { // Landscape
+				LANDSCAPE = true;
+				_wd = Math.min(4f / 3f, ratio);
+				_hg = 1;
+			} else {
+				LANDSCAPE = false;
+				_wd = 1;
+				_hg = Math.min(4 / 3f, 1 / ratio);
+			}
+
+			// _wd = 1;
+			// _hg = 1;
+
+			_dx = 2f * _wd / width;
+			_dy = 2f * _hg / height;
+
+			gl.glOrthof(-_wd, _wd, -_hg, _hg, 1f, -1f);
+			gl.glViewport(0, 0, width, height);
+
+			Rect.onSurfaceChanged(_activity, gl, width, height);
+			TextGrid.init(gl, width, height, _activity);
+
+			_lstSprites = new ArrayList<ISprite<?>>();
+			_lstRectangles = new ArrayList<Rect>();
+			_activity.initSprites(gl, _lstSprites, _lstRectangles);
+
+			rect0 = new Rect(0, 0, _wd * 4, _hg * 2, false);
+			rect0.setColor(_activity.getColor());
 		}
-		// screenWidth = width;
-		// screenHeight = height;
-		float ratio = ((float) width) / height;
-		gl.glMatrixMode(GL10.GL_PROJECTION);
-		gl.glLoadIdentity();
-		if (ratio > 1) { // Landscape
-			LANDSCAPE = true;
-			_wd = Math.min(4f / 3f, ratio);
-			_hg = 1;
-		} else {
-			LANDSCAPE = false;
-			_wd = 1;
-			_hg = Math.min(4 / 3f, 1 / ratio);
-		}
-
-		// _wd = 1;
-		// _hg = 1;
-
-		_dx = 2f * _wd / width;
-		_dy = 2f * _hg / height;
-
-		gl.glOrthof(-_wd, _wd, -_hg, _hg, 1f, -1f);
-		gl.glViewport(0, 0, width, height);
-
-		Rect.onSurfaceChanged(_activity, gl, width, height);
-		TextGrid.init(gl, width, height, _activity);
-
-		_lstSprites = new ArrayList<ISprite<?>>();
-		_lstRectangles = new ArrayList<Rect>();
-		_activity.initSprites(gl, _lstSprites, _lstRectangles);
-
-		rect0 = new Rect(0, 0, _wd * 4, _hg * 2, false);
-		rect0.setColor(_activity.getColor());
 	}
 
 	@Override
@@ -123,7 +125,7 @@ public class OpenGLView extends GLSurfaceView implements GLSurfaceView.Renderer 
 		gl.glDisable(GL10.GL_DEPTH_TEST);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,
-		/* GL10.GL_REPLACE */GL10.GL_MODULATE);
+				/* GL10.GL_REPLACE */GL10.GL_MODULATE);
 	}
 
 	@Override

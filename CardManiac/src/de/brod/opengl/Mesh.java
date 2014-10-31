@@ -128,8 +128,8 @@ public abstract class Mesh<E> {
 	 */
 	protected void setTextureCoordinates(int piCounter, int piTextureId,
 			float[] textureCoords) {
-		if (mTextureBuffer == null || mTextureId != piTextureId
-				|| iTextureCounter != piCounter) {
+		if (textureCoords != null && mTextureBuffer == null
+				|| mTextureId != piTextureId || iTextureCounter != piCounter) {
 			// New
 			// function.
 			// float is 4 bytes, therefore we multiply the number if
