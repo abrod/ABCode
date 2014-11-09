@@ -111,4 +111,10 @@ public class MauMau extends Game {
 		}
 		return buttons;
 	}
+
+	@Override
+	public ITurn getNextTurn() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

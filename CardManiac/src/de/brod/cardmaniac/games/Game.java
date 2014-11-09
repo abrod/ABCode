@@ -110,4 +110,6 @@ public abstract class Game {
 		return new ArrayList<Button>();
 	}
 
+	public abstract ITurn getNextTurn();
+
 }

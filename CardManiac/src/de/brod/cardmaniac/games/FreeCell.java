@@ -60,4 +60,10 @@ public class FreeCell extends Game {
 		}
 		return true;
 	}
+
+	@Override
+	public ITurn getNextTurn() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

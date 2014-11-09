@@ -11,6 +11,7 @@ import de.brod.cardmaniac.cards.Button;
 import de.brod.cardmaniac.cards.Card;
 import de.brod.cardmaniac.cards.Hand;
 import de.brod.cardmaniac.games.Game;
+import de.brod.cardmaniac.games.ITurn;
 import de.brod.cardmaniac.games.MauMau;
 import de.brod.opengl.IAction;
 import de.brod.opengl.ISprite;
@@ -19,21 +20,64 @@ import de.brod.opengl.Rect;
 
 public class MainActivity extends OpenGLActivity {
 
+	class MoverThread extends Thread {
+
+		private ITurn	_turn;
+
+		public MoverThread(ITurn turn) {
+			_turn = turn;
+		}
+
+		@Override
+		public void run() {
+			_turn.calculateNextMove();
+		}
+
+		public void finish() {
+			_turn.executeNextMove();
+		}
+
+	}
+
 	class Mover {
 
 		private List<ISprite<?>>	_lstMoves	= new ArrayList<ISprite<?>>();
 		private long				_startTime;
+		private MoverThread			moverThread	= null;
 
-		public void end() {
+		public void stopMoving() {
 			for (ISprite<?> s : _lstMoves) {
 				s.setMovePosition(1);
 			}
 			_lstMoves.clear();
 		}
 
-		public void savePositions() {
+		public void start() {
+			// save the positions
 			for (ISprite<?> sprite : _lstSprites) {
 				sprite.savePosition();
+			}
+			// organize the hands (will set the new positions)
+			_game.organize();
+
+			// clear the move positions
+			stopMoving();
+			// set the new positions
+			_startTime = System.currentTimeMillis();
+			for (ISprite<?> sprite : _lstSprites) {
+				if (sprite.isPositionChanged()) {
+					_lstMoves.add(sprite);
+				}
+			}
+			// set the correct order
+			sortCards();
+			// create the next turn
+			ITurn turn = _game.getNextTurn();
+			if (turn != null) {
+				moverThread = new MoverThread(turn);
+				moverThread.start();
+			} else {
+				moverThread = null;
 			}
 		}
 
@@ -50,17 +94,20 @@ public class MainActivity extends OpenGLActivity {
 				}
 				return true;
 			}
-			return false;
+
+			return isRunning();
 		}
 
-		public void start() {
-			end();
-			_startTime = System.currentTimeMillis();
-			for (ISprite<?> sprite : _lstSprites) {
-				if (sprite.isPositionChanged()) {
-					_lstMoves.add(sprite);
+		public synchronized boolean isRunning() {
+			if (moverThread != null) {
+				if (!moverThread.isAlive()) {
+					moverThread.finish();
+					// restart (will change moverThread)
+					start();
 				}
+				return true;
 			}
+			return false;
 		}
 
 	}
@@ -77,8 +124,14 @@ public class MainActivity extends OpenGLActivity {
 	@Override
 	public boolean actionDown(float eventX, float eventY) {
 
-		_mover.end();
+		_mover.stopMoving();
+
 		_selButton = null;
+		clearSelected();
+
+		if (_mover.isRunning()) {
+			return true;
+		}
 		for (Button button : _buttons) {
 			if (button.touches(eventX, eventY)) {
 				_selButton = button;
@@ -97,8 +150,6 @@ public class MainActivity extends OpenGLActivity {
 				// cards played
 				return true;
 			}
-
-			clearSelected();
 
 			_game.mouseClick(card, _lstSelected);
 
@@ -126,7 +177,7 @@ public class MainActivity extends OpenGLActivity {
 			if (!_lstSelected.get(0).getHand().equals(handTo)) {
 				if (_game.playCard(_lstSelected, cardTo, handTo)) {
 					clearSelected();
-					organize();
+					_mover.start();
 					return true;
 				}
 			}
@@ -194,7 +245,7 @@ public class MainActivity extends OpenGLActivity {
 		if (_selButton != null) {
 			if (_selButton.touches(eventX, eventY)) {
 				_selButton.performAction();
-				organize();
+				_mover.start();
 			}
 			_selButton.setDown(false);
 			return true;
@@ -204,7 +255,7 @@ public class MainActivity extends OpenGLActivity {
 			Hand hand = getHandAt(eventX, eventY, card);
 			if (!playCards(card, hand)) {
 				// reset
-				organize();
+				_mover.start();
 			}
 			return true;
 		}
@@ -253,16 +304,9 @@ public class MainActivity extends OpenGLActivity {
 			lstRectangles.add(button.getRect());
 		}
 
-		organize();
-		_mover.end();
-
-	}
-
-	private void organize() {
-		_mover.savePositions();
-		_game.organize();
 		_mover.start();
-		sortCards();
+		// mover will be started within organize
+		_mover.stopMoving();
 	}
 
 	@Override
