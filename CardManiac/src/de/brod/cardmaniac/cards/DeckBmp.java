@@ -1,5 +1,6 @@
-package de.brod.cardmaniac.table;
+package de.brod.cardmaniac.cards;
 
+import de.brod.cardmaniac.cards.PlayingCard.CardValue;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -8,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import de.brod.cardmaniac.CardColor;
 
 public class DeckBmp {
 
@@ -28,11 +28,10 @@ public class DeckBmp {
 		y = 0;
 		wd = cWidth / c13;
 		hg = cHeight / 5;
-		String[] values = { "A", "K", "D", "B", "10", "9", "8", "7", "6", "5",
-				"4", "3", "2" };
-		CardColor[] colors = CardColor.values();
-		for (int i = 0; i < c13; i++) {
-			for (int j = 0; j < 4; j++) {
+		PlayingCard.CardValue[] values = PlayingCard.CardValue.values();
+		PlayingCard.CardColor[] colors = PlayingCard.CardColor.values();
+		for (int j = 0; j < 4; j++) {
+			for (int i = 0; i < c13; i++) {
 				drawCard(c);
 				drawValue(c, values[i], colors[j].getChar(), j);
 				next();
@@ -136,21 +135,21 @@ public class DeckBmp {
 
 	}
 
-	private static void drawText(Canvas c, String psText, int px, int py,
+	private static void drawText(Canvas c, String string, int px, int py,
 			Paint paint, boolean bTop, boolean bRight) {
 		paint.setTextSize(hg / 3.5f);
 		Rect bounds = new Rect();
-		paint.getTextBounds(psText, 0, psText.length(), bounds);
+		paint.getTextBounds(string, 0, string.length(), bounds);
 		int x2 = px + (bRight ? wd / 20 : wd - wd / 20 - bounds.right);
 		int y2 = py + (bTop ? wd / 10 + bounds.height() : hg - wd / 10);
-		c.drawText(psText, x2, y2, paint);
+		c.drawText(string, x2, y2, paint);
 
 		// c.drawText(psColors, x2 - bounds2.right, y1 + bounds1.height(),
 		// paint);
 
 	}
 
-	private static void drawValue(Canvas c, String psText, String psColors,
+	private static void drawValue(Canvas c, CardValue values, String psColors,
 			int piColor) {
 		Paint paint = new Paint();
 		if (piColor < 2) {
@@ -181,10 +180,10 @@ public class DeckBmp {
 		// c.drawText(psColors, x1, y1 + bounds2.height() + thg, paint);
 
 		drawText(c, psColors, px, py, paint, false, true);
-		drawText(c, psText, px, py, paint, true, true);
+		drawText(c, values.getText(), px, py, paint, true, true);
 
 		drawText(c, psColors, px, py, paint, true, false);
-		drawText(c, psText, px, py, paint, false, false);
+		drawText(c, values.getText(), px, py, paint, false, false);
 	}
 
 	private static void next() {
