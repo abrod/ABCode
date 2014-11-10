@@ -10,9 +10,9 @@ import android.graphics.Color;
 import de.brod.cardmaniac.cards.Button;
 import de.brod.cardmaniac.cards.Card;
 import de.brod.cardmaniac.cards.Hand;
+import de.brod.cardmaniac.games.FreeCell;
 import de.brod.cardmaniac.games.Game;
 import de.brod.cardmaniac.games.ITurn;
-import de.brod.cardmaniac.games.MauMau;
 import de.brod.opengl.IAction;
 import de.brod.opengl.ISprite;
 import de.brod.opengl.OpenGLActivity;
@@ -46,10 +46,13 @@ public class MainActivity extends OpenGLActivity {
 		private MoverThread			moverThread	= null;
 
 		public void stopMoving() {
-			for (ISprite<?> s : _lstMoves) {
-				s.setMovePosition(1);
+			if (_lstMoves.size() > 0) {
+				for (ISprite<?> s : _lstMoves) {
+					s.setMovePosition(1);
+				}
+				_lstMoves.clear();
+				sortCards();
 			}
-			_lstMoves.clear();
 		}
 
 		public void start() {
@@ -83,7 +86,8 @@ public class MainActivity extends OpenGLActivity {
 
 		public boolean checkMoves() {
 			if (_lstMoves.size() > 0) {
-				float f = (System.currentTimeMillis() - _startTime) / 1000f;
+				float f = (float) Math
+						.sqrt((System.currentTimeMillis() - _startTime) / 1000f);
 				for (int i = 0; i < _lstMoves.size();) {
 					ISprite<?> sprite = _lstMoves.get(i);
 					if (sprite.setMovePosition(f)) {
@@ -91,6 +95,10 @@ public class MainActivity extends OpenGLActivity {
 					} else {
 						_lstMoves.remove(i);
 					}
+				}
+				if (_lstMoves.size() == 0) {
+					// last card moved
+					sortCards();
 				}
 				return true;
 			}
@@ -279,8 +287,8 @@ public class MainActivity extends OpenGLActivity {
 		_color = Color.argb(255, 0, 102, 0);
 		_lstSprites = lstSprites;
 		// init the game
-		_game = new MauMau();
-		//_game = new FreeCell();
+		// _game = new MauMau();
+		_game = new FreeCell();
 
 		_game.init(gl, this);
 
