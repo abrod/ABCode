@@ -4,6 +4,6 @@ public interface ITurn {
 
 	void calculateNextMove();
 
-	void executeNextMove();
+	boolean hasMoreMoves();
 
 }

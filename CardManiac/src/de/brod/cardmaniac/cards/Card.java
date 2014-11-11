@@ -80,4 +80,8 @@ public class Card {
 		}
 	}
 
+	public void setId(int i) {
+		sprite.setId(i);
+	}
+
 }

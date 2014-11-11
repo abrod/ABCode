@@ -23,6 +23,7 @@ public class MainActivity extends OpenGLActivity {
 	class MoverThread extends Thread {
 
 		private ITurn	_turn;
+		private boolean	_bMoreMoves;
 
 		public MoverThread(ITurn turn) {
 			_turn = turn;
@@ -31,12 +32,12 @@ public class MainActivity extends OpenGLActivity {
 		@Override
 		public void run() {
 			_turn.calculateNextMove();
+			_bMoreMoves = _turn.hasMoreMoves();
 		}
 
-		public void finish() {
-			_turn.executeNextMove();
+		public boolean hasMoreMoves() {
+			return _bMoreMoves;
 		}
-
 	}
 
 	class Mover {
@@ -55,7 +56,7 @@ public class MainActivity extends OpenGLActivity {
 			}
 		}
 
-		public void start() {
+		public void start(boolean pbNextTurn) {
 			// save the positions
 			for (ISprite<?> sprite : _lstSprites) {
 				sprite.savePosition();
@@ -76,7 +77,7 @@ public class MainActivity extends OpenGLActivity {
 			sortCards();
 			// create the next turn
 			ITurn turn = _game.getNextTurn();
-			if (turn != null) {
+			if (pbNextTurn && turn != null) {
 				moverThread = new MoverThread(turn);
 				moverThread.start();
 			} else {
@@ -109,9 +110,8 @@ public class MainActivity extends OpenGLActivity {
 		public synchronized boolean isRunning() {
 			if (moverThread != null) {
 				if (!moverThread.isAlive()) {
-					moverThread.finish();
 					// restart (will change moverThread)
-					start();
+					start(moverThread.hasMoreMoves());
 				}
 				return true;
 			}
@@ -185,7 +185,7 @@ public class MainActivity extends OpenGLActivity {
 			if (!_lstSelected.get(0).getHand().equals(handTo)) {
 				if (_game.playCard(_lstSelected, cardTo, handTo)) {
 					clearSelected();
-					_mover.start();
+					_mover.start(true);
 					return true;
 				}
 			}
@@ -253,7 +253,7 @@ public class MainActivity extends OpenGLActivity {
 		if (_selButton != null) {
 			if (_selButton.touches(eventX, eventY)) {
 				_selButton.performAction();
-				_mover.start();
+				_mover.start(true);
 			}
 			_selButton.setDown(false);
 			return true;
@@ -263,7 +263,7 @@ public class MainActivity extends OpenGLActivity {
 			Hand hand = getHandAt(eventX, eventY, card);
 			if (!playCards(card, hand)) {
 				// reset
-				_mover.start();
+				_mover.start(true);
 			}
 			return true;
 		}
@@ -312,7 +312,7 @@ public class MainActivity extends OpenGLActivity {
 			lstRectangles.add(button.getRect());
 		}
 
-		_mover.start();
+		_mover.start(true);
 		// mover will be started within organize
 		_mover.stopMoving();
 	}

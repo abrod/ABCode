@@ -90,7 +90,8 @@ public class OpenGLView extends GLSurfaceView implements GLSurfaceView.Renderer 
 			} else {
 				LANDSCAPE = false;
 				_wd = 1;
-				_hg = Math.min(4 / 3f, 1 / ratio);
+				ratio = 1 / ratio;
+				_hg = Math.min((4f / 3f + ratio) / 2, ratio);
 			}
 
 			// _wd = 1;

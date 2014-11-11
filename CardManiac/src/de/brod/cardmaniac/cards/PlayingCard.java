@@ -4,13 +4,13 @@ import android.graphics.Color;
 
 public class PlayingCard extends Card {
 
-	private CardValue	val;
-	private CardColor	col;
+	private CardValue	value;
+	private CardColor	color;
 
 	protected PlayingCard(CardSet cardSet, CardValue x, CardColor y) {
 		super(cardSet, x.ordinal(), y.ordinal(), 3, 4);
-		val = x;
-		col = y;
+		setValue(x);
+		setColor(y);
 	}
 
 	public enum CardColor {
@@ -52,7 +52,24 @@ public class PlayingCard extends Card {
 
 	@Override
 	public String toString() {
-		return val._s + col._s + "(" + (Math.round(posX * 100) / 100f) + "x"
+		return getValue()._s + getColor()._s + "("
+				+ (Math.round(posX * 100) / 100f) + "x"
 				+ (Math.round(posY * 100) / 100f) + ")";
+	}
+
+	public CardValue getValue() {
+		return value;
+	}
+
+	public void setValue(CardValue value) {
+		this.value = value;
+	}
+
+	public CardColor getColor() {
+		return color;
+	}
+
+	public void setColor(CardColor color) {
+		this.color = color;
 	}
 }

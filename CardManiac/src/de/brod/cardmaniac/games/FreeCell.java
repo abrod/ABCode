@@ -64,6 +64,27 @@ public class FreeCell extends Game {
 	@Override
 	public ITurn getNextTurn() {
 		// TODO Auto-generated method stub
-		return null;
+		return new ITurn() {
+
+			@Override
+			public void calculateNextMove() {
+				// check the stack (get min value)
+				System.out.println("calculateNextMove");
+				for (int i = 4; i < 8; i++) {
+					Card lastCard = hands[i][0].getLastCard();
+					if (lastCard == null) {
+
+					}
+				}
+			}
+
+			@Override
+			public boolean hasMoreMoves() {
+				// TODO Auto-generated method stub
+				System.out.println("MoreMoves=" + false);
+				return false;
+			}
+
+		};
 	}
 }

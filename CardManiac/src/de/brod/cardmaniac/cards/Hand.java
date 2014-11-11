@@ -79,6 +79,7 @@ public class Hand {
 			float d = i / Math.max(1, Math.max(_iMaxCardSize, lst.size() - 1f));
 			card.setVisible(i < _iCountVisible);
 			card.setPosition(_x + _width * d, _y + _height * d);
+			card.setId(i);
 		}
 		_dirty = false;
 	}
