@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.brod.cardmaniac.cards.Card;
 import de.brod.cardmaniac.cards.Hand;
+import de.brod.cardmaniac.cards.PlayingCard;
 
 public class FreeCell extends Game {
 
@@ -11,7 +12,7 @@ public class FreeCell extends Game {
 
 	@Override
 	void fillCards(List<Card> plstCards) {
-		fill52Cards(plstCards);
+		PlayingCard.fill52Cards(cardSet, plstCards);
 	}
 
 	@Override

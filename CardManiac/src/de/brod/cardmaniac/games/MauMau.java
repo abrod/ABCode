@@ -19,7 +19,7 @@ public class MauMau extends Game {
 
 	@Override
 	void fillCards(List<Card> plstCards) {
-		fill32Cards(plstCards);
+		PlayingCard.fill32Cards(cardSet, plstCards);
 	}
 
 	@Override

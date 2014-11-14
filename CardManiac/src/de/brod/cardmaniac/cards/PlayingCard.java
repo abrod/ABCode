@@ -1,5 +1,8 @@
 package de.brod.cardmaniac.cards;
 
+import java.util.Collections;
+import java.util.List;
+
 import android.graphics.Color;
 
 public class PlayingCard extends Card {
@@ -71,5 +74,46 @@ public class PlayingCard extends Card {
 
 	public void setColor(CardColor color) {
 		this.color = color;
+	}
+
+	public static void fill32Cards(CardSet cardSet, List<Card> plstCards) {
+		fillCards(
+				cardSet,
+				plstCards,
+				PlayingCard.CardColor.values(),
+				new PlayingCard.CardValue[] { PlayingCard.CardValue.ass,
+					PlayingCard.CardValue.c7, PlayingCard.CardValue.c8,
+					PlayingCard.CardValue.c9, PlayingCard.CardValue.c10,
+					PlayingCard.CardValue.jack,
+					PlayingCard.CardValue.queen, PlayingCard.CardValue.king });
+
+	}
+
+	public static void fill52Cards(CardSet cardSet, List<Card> plstCards) {
+		fillCards(
+				cardSet,
+				plstCards,
+				PlayingCard.CardColor.values(),
+				new PlayingCard.CardValue[] { PlayingCard.CardValue.ass,
+					PlayingCard.CardValue.c2, PlayingCard.CardValue.c3,
+					PlayingCard.CardValue.c4, PlayingCard.CardValue.c5,
+					PlayingCard.CardValue.c6, PlayingCard.CardValue.c7,
+					PlayingCard.CardValue.c8, PlayingCard.CardValue.c9,
+					PlayingCard.CardValue.c10, PlayingCard.CardValue.jack,
+					PlayingCard.CardValue.queen, PlayingCard.CardValue.king });
+	}
+
+	private static void fillCards(CardSet cardSet, List<Card> plstCards,
+			CardColor[] cardColor, CardValue[] cardValues) {
+		Hand tempHand = new Hand(cardSet, 0, 0, 0, 0, 0, false, 999);
+		for (CardColor color : cardColor) {
+			for (CardValue value : cardValues) {
+				PlayingCard createCard = tempHand.createCard(value, color);
+				createCard.moveTo(null);
+				plstCards.add(createCard);
+			}
+		}
+		Collections.shuffle(plstCards);
+
 	}
 }
