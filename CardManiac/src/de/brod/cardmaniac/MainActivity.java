@@ -1,5 +1,6 @@
 package de.brod.cardmaniac;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.graphics.Color;
+import android.util.Log;
 import de.brod.cardmaniac.cards.Button;
 import de.brod.cardmaniac.cards.Card;
 import de.brod.cardmaniac.cards.CardSet;
@@ -14,6 +16,7 @@ import de.brod.cardmaniac.cards.Hand;
 import de.brod.cardmaniac.games.FreeCell;
 import de.brod.cardmaniac.games.Game;
 import de.brod.cardmaniac.games.ITurn;
+import de.brod.cardmaniac.games.state.GameState;
 import de.brod.opengl.IAction;
 import de.brod.opengl.ISprite;
 import de.brod.opengl.ISubAction;
@@ -21,6 +24,12 @@ import de.brod.opengl.OpenGLActivity;
 import de.brod.opengl.Rect;
 
 public class MainActivity extends OpenGLActivity {
+
+	public static class MainConfig implements Serializable {
+
+		private static final long	serialVersionUID	= 3401991076230505645L;
+		public String				gameClassName;
+	}
 
 	class MoverThread extends Thread {
 
@@ -84,6 +93,7 @@ public class MainActivity extends OpenGLActivity {
 				moverThread.start();
 			} else {
 				moverThread = null;
+				_gameReader.saveState(_game.getName(), _game.getState());
 			}
 		}
 
@@ -122,16 +132,19 @@ public class MainActivity extends OpenGLActivity {
 
 	}
 
-	private int					_color;
-	private List<ISprite<?>>	_lstSprites;
-	private List<Card>			_lstSelected	= new ArrayList<Card>();
-	private Game				_game;
-	private List<Hand>			_hands;
-	private Mover				_mover			= new Mover();
-	private List<Button>		_buttons;
-	private Button				_selButton;
-	private List<Rect>			_lstRectangles;
-	private CardSet				_cardSet;
+	private int						_color;
+	private List<ISprite<?>>		_lstSprites;
+	private List<Card>				_lstSelected	= new ArrayList<Card>();
+	private Game					_game;
+	private List<Hand>				_hands;
+	private Mover					_mover			= new Mover();
+	private List<Button>			_buttons;
+	private Button					_selButton;
+	private List<Rect>				_lstRectangles;
+	private CardSet					_cardSet;
+	private StateReader<GameState>	_gameReader;
+	private StateReader<MainConfig>	_mainConfig;
+	private MainConfig				_lastGame;
 
 	@Override
 	public boolean actionDown(float eventX, float eventY) {
@@ -371,7 +384,7 @@ public class MainActivity extends OpenGLActivity {
 		});
 	}
 
-	void initGame(Class<? extends Game> pGameClass, boolean b) {
+	void initGame(Class<? extends Game> pGameClass, boolean pbLoadState) {
 		// init the game
 		// _game = new MauMau();
 		_lstSprites.clear();
@@ -383,13 +396,25 @@ public class MainActivity extends OpenGLActivity {
 			_game = new FreeCell();
 		}
 
+		_lastGame.gameClassName = _game.getClass().getName();
+		_mainConfig.saveState("lastGame", _lastGame);
+
 		_game.init(_cardSet, this);
+
+		GameState state = pbLoadState ? _gameReader.readState(_game.getName())
+				: null;
 
 		_hands = _game.initHands();
 		List<Card> cards = _game.initCards();
 
-		_game.newGame(cards);
-
+		if (state != null) {
+			boolean setState = _game.setState(state, cards);
+			if (!setState) {
+				_game.newGame(cards);
+			}
+		} else {
+			_game.newGame(cards);
+		}
 		for (Card card : cards) {
 			_lstSprites.add(card.getSprite());
 		}
@@ -423,9 +448,25 @@ public class MainActivity extends OpenGLActivity {
 		_lstRectangles = lstRectangles;
 		_cardSet = new CardSet(gl);
 
+		_gameReader = new StateReader<GameState>("game");
+		_mainConfig = new StateReader<MainConfig>("init");
+
+		_lastGame = _mainConfig.readState("lastGame");
+		Class<? extends Game> lastGame = FreeCell.class;
+		if (_lastGame != null) {
+			try {
+				lastGame = Class.forName(_lastGame.gameClassName).asSubclass(
+						Game.class);
+			} catch (Exception e) {
+				Log.e("initSprites", "LastGame=" + _lastGame.gameClassName
+						+ ": " + e.getLocalizedMessage());
+			}
+		} else {
+			_lastGame = new MainConfig();
+		}
 		// init the game
 		// _game = new MauMau();
-		initGame(FreeCell.class, true);
+		initGame(lastGame, true);
 
 	}
 

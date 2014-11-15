@@ -24,6 +24,11 @@ public class Card {
 		sprite = cardSet.createSprite(this, x, y, posX, posY);
 	}
 
+	@Override
+	public String toString() {
+		return front[0] + "," + front[1] + "x" + back[0] + "," + back[1];
+	}
+
 	public void setPosition(float x, float y) {
 		posX = _cardSet.transformX(x);
 		posY = _cardSet.transformY(y);

@@ -19,11 +19,14 @@ public class Hand {
 	private int			_iMaxCardSize;
 	private Rect		rect;
 	private int			_iCountVisible;
+	private int			_iUniqueId;
 
-	public Hand(CardSet cardSet, float x, float y, float width, float height,
-			int piMaxCardSize, boolean pbSmallBorder, int piCountVisible) {
+	public Hand(int piUniqueId, CardSet cardSet, float x, float y, float width,
+			float height, int piMaxCardSize, boolean pbSmallBorder,
+			int piCountVisible) {
 		this._cardSet = cardSet;
-		_iCountVisible = piCountVisible;
+		setUniqueId(piUniqueId);
+		setCountVisible(piCountVisible);
 		float w = cardSet.getCardWidth() / 2;
 		float h = cardSet.getCardHeight() / 2;
 		float[] coord = { _cardSet.transformX(x) - w,
@@ -77,7 +80,7 @@ public class Hand {
 		for (int i = 0; i < lst.size(); i++) {
 			Card card = lst.get(i);
 			float d = i / Math.max(1, Math.max(_iMaxCardSize, lst.size() - 1f));
-			card.setVisible(i < _iCountVisible);
+			card.setVisible(i < getCountVisible());
 			card.setPosition(_x + _width * d, _y + _height * d);
 			card.setId(i);
 		}
@@ -102,5 +105,21 @@ public class Hand {
 
 	public List<Card> getCards() {
 		return lst;
+	}
+
+	public int getCountVisible() {
+		return _iCountVisible;
+	}
+
+	public void setCountVisible(int countVisible) {
+		_iCountVisible = countVisible;
+	}
+
+	public int getUniqueId() {
+		return _iUniqueId;
+	}
+
+	public void setUniqueId(int uniqueId) {
+		_iUniqueId = uniqueId;
 	}
 }

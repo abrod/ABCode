@@ -55,9 +55,7 @@ public class PlayingCard extends Card {
 
 	@Override
 	public String toString() {
-		return getValue()._s + getColor()._s + "("
-				+ (Math.round(posX * 100) / 100f) + "x"
-				+ (Math.round(posY * 100) / 100f) + ")";
+		return getValue()._s + getColor()._s + super.toString();
 	}
 
 	public CardValue getValue() {
@@ -105,7 +103,7 @@ public class PlayingCard extends Card {
 
 	private static void fillCards(CardSet cardSet, List<Card> plstCards,
 			CardColor[] cardColor, CardValue[] cardValues) {
-		Hand tempHand = new Hand(cardSet, 0, 0, 0, 0, 0, false, 999);
+		Hand tempHand = new Hand(-1, cardSet, 0, 0, 0, 0, 0, false, 999);
 		for (CardColor color : cardColor) {
 			for (CardValue value : cardValues) {
 				PlayingCard createCard = tempHand.createCard(value, color);
