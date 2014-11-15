@@ -9,12 +9,14 @@ import javax.microedition.khronos.opengles.GL10;
 import android.graphics.Color;
 import de.brod.cardmaniac.cards.Button;
 import de.brod.cardmaniac.cards.Card;
+import de.brod.cardmaniac.cards.CardSet;
 import de.brod.cardmaniac.cards.Hand;
 import de.brod.cardmaniac.games.FreeCell;
 import de.brod.cardmaniac.games.Game;
 import de.brod.cardmaniac.games.ITurn;
 import de.brod.opengl.IAction;
 import de.brod.opengl.ISprite;
+import de.brod.opengl.ISubAction;
 import de.brod.opengl.OpenGLActivity;
 import de.brod.opengl.Rect;
 
@@ -128,6 +130,8 @@ public class MainActivity extends OpenGLActivity {
 	private Mover				_mover			= new Mover();
 	private List<Button>		_buttons;
 	private Button				_selButton;
+	private List<Rect>			_lstRectangles;
+	private CardSet				_cardSet;
 
 	@Override
 	public boolean actionDown(float eventX, float eventY) {
@@ -272,8 +276,138 @@ public class MainActivity extends OpenGLActivity {
 
 	@Override
 	public void fillMenuActions(List<IAction> plstMenuActions) {
-		// TODO Auto-generated method stub
+		plstMenuActions.add(new ISubAction() {
 
+			@Override
+			public IAction[] getSubItems() {
+
+				List<Class<? extends Game>> lstClasses = Game.getGameClasses();
+
+				IAction[] iActions = new IAction[lstClasses.size()];
+				for (int i = 0; i < iActions.length; i++) {
+					iActions[i] = newGameAction(lstClasses.get(i));
+				}
+				return iActions;
+			}
+
+			@Override
+			public String getTitle() {
+				return "Select Game ...";
+			}
+
+			private IAction newGameAction(final Class<? extends Game> pGameClass) {
+				IAction iAction = new IAction() {
+
+					@Override
+					public void doAction() {
+						initGame(pGameClass, true);
+					}
+
+					@Override
+					public String getTitle() {
+						String name = pGameClass.getSimpleName();
+						// name = name.substring(name.lastIndexOf(".")+1);
+						return name;
+					}
+
+				};
+				return iAction;
+			}
+
+		});
+		plstMenuActions.add(new IAction() {
+
+			@Override
+			public void doAction() {
+				confirmNewGame("");
+			}
+
+			@Override
+			public String getTitle() {
+				return "New";
+			}
+		});
+
+		plstMenuActions.add(new IAction() {
+
+			@Override
+			public void doAction() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public String getTitle() {
+				return "Options";
+			}
+
+		});
+		plstMenuActions.add(new IAction() {
+
+			@Override
+			public void doAction() {
+				finish();
+			}
+
+			@Override
+			public String getTitle() {
+				return "Exit";
+			}
+
+		});
+
+	}
+
+	protected void confirmNewGame(String psText) {
+		if (psText.length() > 0) {
+			psText += "\n";
+		}
+		confirm(psText + "Do you really want to start a new game ?",
+				new Runnable() {
+			@Override
+			public void run() {
+				initGame(_game.getClass(), false);
+			}
+		});
+	}
+
+	void initGame(Class<? extends Game> pGameClass, boolean b) {
+		// init the game
+		// _game = new MauMau();
+		_lstSprites.clear();
+		_lstRectangles.clear();
+		try {
+			_game = pGameClass.newInstance();
+		} catch (Exception e) {
+			// default
+			_game = new FreeCell();
+		}
+
+		_game.init(_cardSet, this);
+
+		_hands = _game.initHands();
+		List<Card> cards = _game.initCards();
+
+		_game.newGame(cards);
+
+		for (Card card : cards) {
+			_lstSprites.add(card.getSprite());
+		}
+		for (Hand hand : _hands) {
+			Rect rectangle = hand.getRectangle();
+			if (rectangle != null) {
+				_lstRectangles.add(rectangle);
+			}
+		}
+
+		_buttons = _game.initButtons();
+		for (Button button : _buttons) {
+			_lstRectangles.add(button.getRect());
+		}
+
+		_mover.start(true);
+		// mover will be started within organize
+		_mover.stopMoving();
 	}
 
 	@Override
@@ -286,35 +420,13 @@ public class MainActivity extends OpenGLActivity {
 			List<Rect> lstRectangles) {
 		_color = Color.argb(255, 0, 102, 0);
 		_lstSprites = lstSprites;
+		_lstRectangles = lstRectangles;
+		_cardSet = new CardSet(gl);
+
 		// init the game
 		// _game = new MauMau();
-		_game = new FreeCell();
+		initGame(FreeCell.class, true);
 
-		_game.init(gl, this);
-
-		_hands = _game.initHands();
-		List<Card> cards = _game.initCards();
-
-		_game.newGame(cards);
-
-		for (Card card : cards) {
-			lstSprites.add(card.getSprite());
-		}
-		for (Hand hand : _hands) {
-			Rect rectangle = hand.getRectangle();
-			if (rectangle != null) {
-				lstRectangles.add(rectangle);
-			}
-		}
-
-		_buttons = _game.initButtons();
-		for (Button button : _buttons) {
-			lstRectangles.add(button.getRect());
-		}
-
-		_mover.start(true);
-		// mover will be started within organize
-		_mover.stopMoving();
 	}
 
 	@Override

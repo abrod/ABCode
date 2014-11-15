@@ -3,8 +3,6 @@ package de.brod.cardmaniac.games;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import de.brod.cardmaniac.MainActivity;
 import de.brod.cardmaniac.cards.Button;
 import de.brod.cardmaniac.cards.Card;
@@ -17,8 +15,8 @@ public abstract class Game {
 	private List<Card>	lstCards;
 	private List<Hand>	lstHands	= new ArrayList<Hand>();
 
-	public void init(GL10 gl, MainActivity mainActivity) {
-		cardSet = new CardSet(gl);
+	public void init(CardSet pCardSet, MainActivity mainActivity) {
+		cardSet = pCardSet;
 	}
 
 	public List<Card> initCards() {
@@ -68,5 +66,12 @@ public abstract class Game {
 	}
 
 	public abstract ITurn getNextTurn();
+
+	public static List<Class<? extends Game>> getGameClasses() {
+		List<Class<? extends Game>> lst = new ArrayList<Class<? extends Game>>();
+		lst.add(FreeCell.class);
+		lst.add(MauMau.class);
+		return lst;
+	}
 
 }
