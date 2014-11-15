@@ -152,7 +152,6 @@ public class MainActivity extends OpenGLActivity {
 		_mover.stopMoving();
 
 		_selButton = null;
-		clearSelected();
 
 		if (_mover.isRunning()) {
 			return true;
@@ -175,6 +174,7 @@ public class MainActivity extends OpenGLActivity {
 				// cards played
 				return true;
 			}
+			clearSelected();
 
 			_game.mouseClick(card, _lstSelected);
 
@@ -298,7 +298,7 @@ public class MainActivity extends OpenGLActivity {
 
 				IAction[] iActions = new IAction[lstClasses.size()];
 				for (int i = 0; i < iActions.length; i++) {
-					iActions[i] = newGameAction(lstClasses.get(i));
+					iActions[i] = selectGameAction(lstClasses.get(i));
 				}
 				return iActions;
 			}
@@ -308,7 +308,8 @@ public class MainActivity extends OpenGLActivity {
 				return "Select Game ...";
 			}
 
-			private IAction newGameAction(final Class<? extends Game> pGameClass) {
+			private IAction selectGameAction(
+					final Class<? extends Game> pGameClass) {
 				IAction iAction = new IAction() {
 
 					@Override
@@ -414,6 +415,8 @@ public class MainActivity extends OpenGLActivity {
 			}
 		} else {
 			_game.newGame(cards);
+			state = _game.getState();
+			_gameReader.saveState(_game.getName(), state);
 		}
 		for (Card card : cards) {
 			_lstSprites.add(card.getSprite());
