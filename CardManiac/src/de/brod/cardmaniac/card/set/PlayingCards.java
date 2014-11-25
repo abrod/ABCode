@@ -1,23 +1,63 @@
-package de.brod.cardmaniac.cards;
+package de.brod.cardmaniac.card.set;
 
-import de.brod.cardmaniac.cards.PlayingCard.CardValue;
+import java.util.ArrayList;
+import java.util.List;
+
+import de.brod.cardmaniac.card.Card;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Bitmap.Config;
+import android.graphics.Paint.Style;
 
-public class DeckBmp {
+public class PlayingCards extends CardType {
 
-	private static int	c13;
-	private static int	cHeight;
-	private static int	cWidth;
-	private static int	x, y, wd, hg;
+	public enum CardColor {
 
-	public static Bitmap createBitmap() {
+		kreuz(9827, Color.BLACK), pik(9824, Color.BLACK), herz(9829, Color.RED), karo(
+				9830, Color.RED);
+
+		private String	_s;
+		private int		_col;
+
+		CardColor(int piValue, int piColor) {
+			_s = String.valueOf((char) piValue);
+			_col = piColor;
+		}
+
+		public String getChar() {
+			return _s;
+		}
+
+		public int getColor() {
+			return _col;
+		}
+	}
+
+	private int	c13;
+	private int	cHeight;
+	private int	cWidth;
+	private int	x, y, wd, hg;
+
+	public PlayingCards(int piCardsCount) {
+		super(piCardsCount);
+	}
+
+	@Override
+	public int countX() {
+		return 13;
+	}
+
+	@Override
+	public int countY() {
+		return 5;
+	}
+
+	@Override
+	public Bitmap createBitmap() {
 		cWidth = 1024;
 		cHeight = 512;
 		c13 = 13;
@@ -28,10 +68,11 @@ public class DeckBmp {
 		y = 0;
 		wd = cWidth / c13;
 		hg = cHeight / 5;
-		PlayingCard.CardValue[] values = PlayingCard.CardValue.values();
-		PlayingCard.CardColor[] colors = PlayingCard.CardColor.values();
-		for (int j = 0; j < 4; j++) {
-			for (int i = 0; i < c13; i++) {
+		String[] values = { "A", "K", "D", "B", "10", "9", "8", "7", "6", "5",
+				"4", "3", "2" };
+		PlayingCards.CardColor[] colors = PlayingCards.CardColor.values();
+		for (int i = 0; i < c13; i++) {
+			for (int j = 0; j < 4; j++) {
 				drawCard(c);
 				drawValue(c, values[i], colors[j].getChar(), j);
 				next();
@@ -60,7 +101,7 @@ public class DeckBmp {
 		return bmp;
 	}
 
-	private static void drawBack(Canvas c, int piColor) {
+	private void drawBack(Canvas c, int piColor) {
 
 		int px = x * cWidth / c13;
 		int py = y * cHeight / 5;
@@ -85,7 +126,7 @@ public class DeckBmp {
 
 	}
 
-	private static void drawCard(Canvas c) {
+	private void drawCard(Canvas c) {
 		int px = x * cWidth / c13;
 		int py = y * cHeight / 5;
 
@@ -101,7 +142,7 @@ public class DeckBmp {
 
 	}
 
-	private static void drawJoker(Canvas c, int piColor) {
+	private void drawJoker(Canvas c, int piColor) {
 		Paint paint = new Paint();
 		paint.setColor(piColor);
 
@@ -135,22 +176,21 @@ public class DeckBmp {
 
 	}
 
-	private static void drawText(Canvas c, String string, int px, int py,
-			Paint paint, boolean bTop, boolean bRight) {
+	private void drawText(Canvas c, String psText, int px, int py, Paint paint,
+			boolean bTop, boolean bRight) {
 		paint.setTextSize(hg / 3.5f);
 		Rect bounds = new Rect();
-		paint.getTextBounds(string, 0, string.length(), bounds);
+		paint.getTextBounds(psText, 0, psText.length(), bounds);
 		int x2 = px + (bRight ? wd / 20 : wd - wd / 20 - bounds.right);
 		int y2 = py + (bTop ? wd / 10 + bounds.height() : hg - wd / 10);
-		c.drawText(string, x2, y2, paint);
+		c.drawText(psText, x2, y2, paint);
 
 		// c.drawText(psColors, x2 - bounds2.right, y1 + bounds1.height(),
 		// paint);
 
 	}
 
-	private static void drawValue(Canvas c, CardValue values, String psColors,
-			int piColor) {
+	private void drawValue(Canvas c, String psText, String psColors, int piColor) {
 		Paint paint = new Paint();
 		if (piColor < 2) {
 			paint.setColor(Color.BLACK);
@@ -180,18 +220,23 @@ public class DeckBmp {
 		// c.drawText(psColors, x1, y1 + bounds2.height() + thg, paint);
 
 		drawText(c, psColors, px, py, paint, false, true);
-		drawText(c, values.getText(), px, py, paint, true, true);
+		drawText(c, psText, px, py, paint, true, true);
 
 		drawText(c, psColors, px, py, paint, true, false);
-		drawText(c, values.getText(), px, py, paint, false, false);
+		drawText(c, psText, px, py, paint, false, false);
 	}
 
-	private static void next() {
+	private void next() {
 		x++;
 		if (x >= c13) {
 			x = 0;
 			y++;
 		}
+	}
+
+	public List<Card<PlayingCards>> get52Cards() {
+		List<Card<PlayingCards>> lst = new ArrayList<Card<PlayingCards>>();
+		return lst;
 	}
 
 }
