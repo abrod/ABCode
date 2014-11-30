@@ -62,6 +62,7 @@ public class MainActivity extends OpenGLActivity {
 
 		List<Hand<?>> lstHand = _game.getHands();
 		for (Hand<?> hand : lstHand) {
+			hand.fillSprites(lstSprites);
 			lstRectangles.add(hand.getRect());
 		}
 

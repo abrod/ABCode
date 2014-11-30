@@ -1,15 +1,22 @@
 package de.brod.cardmaniac.card;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.graphics.Color;
 import de.brod.cardmaniac.card.set.CardType;
+import de.brod.opengl.ISprite;
 import de.brod.opengl.Rect;
 
 public class Hand<CARDTYPE extends CardType> {
 
-	private Rect	_rect;
-	private int		_iCount;
-	private int		_iCountVisible;
-	private float[]	_pX, _pY;
+	private Rect					_rect;
+	private int						_iCount;
+	private int						_iCountVisible;
+	private float[]					_pX, _pY;
+	private List<Card<CARDTYPE>>	_lstCards	= new ArrayList<Card<CARDTYPE>>();
+	private boolean					_center;
+	private boolean					_dirty;
 
 	public Hand(CardType pCardType, float x1, float y1, float x2, float y2,
 			float border, int piCount, int iCountVisible) {
@@ -42,8 +49,44 @@ public class Hand<CARDTYPE extends CardType> {
 	}
 
 	public void clearCards() {
-		// TODO Auto-generated method stub
-
+		_lstCards.clear();
 	}
 
+	public void removeCard(Card<CARDTYPE> pCard) {
+		_lstCards.remove(pCard);
+	}
+
+	public void addCard(Card<CARDTYPE> pCard) {
+		_lstCards.add(pCard);
+	}
+
+	public void fillSprites(List<ISprite<?>> lstSprites) {
+		organize();
+		for (Card<CARDTYPE> card : _lstCards) {
+			lstSprites.add(card.getSprite());
+		}
+	}
+
+	public void organize() {
+		int count = _lstCards.size();
+		if (count > 0) {
+			float max = Math.max(Math.max(_iCount, count) - 1, 1);
+			float iOffs = 0;
+			if (_center) {
+				if (count < _iCount) {
+					iOffs = (_iCount - count) / 2f;
+				}
+			}
+			int iVisible = _lstCards.size() - _iCountVisible;
+			for (int i = 0; i < _lstCards.size(); i++) {
+				float x = _pX[0] + _pX[1] * iOffs / max;
+				float y = _pY[0] + _pY[1] * iOffs / max;
+				Card<CARDTYPE> card = _lstCards.get(i);
+				card.setVisible(i >= iVisible);
+				card.moveTo(x, y, i);
+				iOffs++;
+			}
+		}
+		_dirty = false;
+	}
 }

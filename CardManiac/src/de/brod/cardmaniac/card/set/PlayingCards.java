@@ -234,8 +234,14 @@ public class PlayingCards extends CardType {
 		}
 	}
 
-	public List<Card<PlayingCards>> get52Cards() {
+	public List<Card<PlayingCards>> get52Cards(CardSet<PlayingCards> pCardSet) {
 		List<Card<PlayingCards>> lst = new ArrayList<Card<PlayingCards>>();
+		for (CardColor color : CardColor.values()) {
+			for (int iX = 0; iX < 13; iX++) {
+				lst.add(new Card<PlayingCards>(this, pCardSet, iX, color
+						.ordinal(), 3, 4));
+			}
+		}
 		return lst;
 	}
 

@@ -34,13 +34,18 @@ public class FreeCell extends Game<PlayingCards> {
 			} else {
 				topRight[i - 4] = createHand(i + f, 7, i + f, 7, 0, 1, 99);
 			}
-			bottom[i] = createHand(i, 7f - 4f / 3 - f * 2, i, 0, 0, 8, 99);
+			bottom[i] = createHand(i, 7f - 4f / 3 - f * 2, i, 0, 0, 8, i + 1);
 		}
 	}
 
 	@Override
 	public void newGame() {
-		List<Card<PlayingCards>> lstCards = playingCards.get52Cards();
+		List<Card<PlayingCards>> lstCards = playingCards
+				.get52Cards(getCardSet());
+		for (int i = 0; i < lstCards.size(); i++) {
+			Card<PlayingCards> card = lstCards.get(i);
+			card.moveTo(bottom[i % 8]);
+		}
 	}
 
 }

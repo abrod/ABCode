@@ -16,7 +16,7 @@ public abstract class Game<CARDTYPE extends CardType> {
 
 	public void initCardSet(GL10 gl) {
 		// init the CardSet
-		_cardSet = new CardSet<CARDTYPE>(getCardType(), gl);
+		_cardSet = (new CardSet<CARDTYPE>(getCardType(), gl));
 	}
 
 	protected abstract CARDTYPE getCardType();
@@ -48,4 +48,9 @@ public abstract class Game<CARDTYPE extends CardType> {
 	}
 
 	public abstract void newGame();
+
+	public CardSet<CARDTYPE> getCardSet() {
+		return _cardSet;
+	}
+
 }

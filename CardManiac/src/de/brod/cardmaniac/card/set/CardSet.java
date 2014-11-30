@@ -7,7 +7,7 @@ import de.brod.cardmaniac.card.Card;
 import de.brod.opengl.Grid;
 import de.brod.opengl.Sprite;
 
-public class CardSet<CARDTYPE> {
+public class CardSet<CARDTYPE extends CardType> {
 
 	private Grid<Card<CARDTYPE>>	_grid;
 	private CardType				_cardType;
@@ -21,8 +21,8 @@ public class CardSet<CARDTYPE> {
 	}
 
 	public Sprite<Card<CARDTYPE>> createSprite(int piPosX, int piPosY) {
-
-		return _grid.createSprite(piPosX, piPosY, 0, 0,
-				_cardType.getCardWidth(), _cardType.getCardHeight());
+		Sprite<Card<CARDTYPE>> sprite = _grid.createSprite(piPosX, piPosY, 0,
+				0, _cardType.getCardWidth(), _cardType.getCardHeight());
+		return sprite;
 	}
 }
