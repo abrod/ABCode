@@ -15,7 +15,7 @@ import android.graphics.RectF;
 
 public class Rect {
 
-	private static Grid<Rect>	_grid;
+	private static Grid	_grid;
 
 	public static void onSurfaceChanged(OpenGLActivity pActivity, GL10 gl,
 			int width, int height) {
@@ -44,17 +44,17 @@ public class Rect {
 		paint.setStyle(Style.FILL_AND_STROKE);
 		c.drawRoundRect(rect, r, r, paint);
 
-		_grid = new Grid<Rect>(3, 3, gl, bmp);
+		_grid = new Grid(3, 3, gl, bmp);
 		bmp.recycle();
 	}
 
-	private List<Sprite<Rect>>	_sprite	= new ArrayList<Sprite<Rect>>();
-	private Sprite<Rect>		_centerSprite;
-	private boolean				_down, _enabled = true;
-	private float				_width, _height, _x, _y;
-	private boolean				_bRoundBorder;
+	private List<Sprite>	_sprite	= new ArrayList<Sprite>();
+	private Sprite			_centerSprite;
+	private boolean			_down, _enabled = true;
+	private float			_width, _height, _x, _y;
+	private boolean			_bRoundBorder;
 
-	private int					red, green, blue, alpha;
+	private int				red, green, blue, alpha;
 
 	public Rect(float px, float py, float pwidth, float pheight,
 			boolean pbRoundBorder) {
@@ -75,7 +75,7 @@ public class Rect {
 					float yp = _y - y1 * (j - 1);
 					float widthp = i == 1 ? (_width - min * 2) : min;
 					float heightp = j == 1 ? (_height - min * 2) : min;
-					Sprite<Rect> spriteItem = _grid.createSprite(i, j, xp, yp,
+					Sprite spriteItem = _grid.createSprite(i, j, xp, yp,
 							widthp, heightp);
 					addSprite(spriteItem);
 				}
@@ -87,13 +87,12 @@ public class Rect {
 		}
 	}
 
-	private void addSprite(Sprite<Rect> sprite) {
-		sprite.setReference(this);
+	private void addSprite(Sprite sprite) {
 		_sprite.add(sprite);
 	}
 
 	public void draw(GL10 gl) {
-		for (ISprite<Rect> sprite : _sprite) {
+		for (ISprite sprite : _sprite) {
 			sprite.draw(gl);
 		}
 	}
@@ -131,7 +130,7 @@ public class Rect {
 			float a = pbDown ? 1 : -1;
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
-					Sprite<Rect> iSprite = _sprite.get(i * 3 + j);
+					Sprite iSprite = _sprite.get(i * 3 + j);
 					float xp = _x + a * x1 * (i - 1);
 					float yp = _y - a * y1 * (j - 1);
 					float widthp = i == 1 ? (_width - min * 2) : min;
@@ -146,7 +145,7 @@ public class Rect {
 	public void setEnabled(boolean enabled) {
 		_enabled = enabled;
 		int a = enabled ? alpha : alpha / 4;
-		for (ISprite<Rect> sprite : _sprite) {
+		for (ISprite sprite : _sprite) {
 			sprite.setColor(red, green, blue, a);
 		}
 	}

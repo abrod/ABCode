@@ -12,12 +12,12 @@ import android.view.MotionEvent;
 
 public class OpenGLView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
-	public static boolean			LANDSCAPE;
-	private OpenGLActivity			_activity;
-	private List<Rect>				_lstRectangles;
-	private ArrayList<ISprite<?>>	_lstSprites;
-	private float					_wd, _hg, _dx, _dy;
-	private Rect					rect0;
+	public static boolean		LANDSCAPE;
+	private OpenGLActivity		_activity;
+	private List<Rect>			_lstRectangles;
+	private ArrayList<ISprite>	_lstSprites;
+	private float				_wd, _hg, _dx, _dy;
+	private Rect				rect0;
 
 	private OpenGLView(Context context) {
 		super(context);
@@ -59,7 +59,7 @@ public class OpenGLView extends GLSurfaceView implements GLSurfaceView.Renderer 
 				rect.draw(gl);
 			}
 
-			for (ISprite<?> sprite : _lstSprites) {
+			for (ISprite sprite : _lstSprites) {
 				sprite.draw(gl);
 			}
 
@@ -106,7 +106,7 @@ public class OpenGLView extends GLSurfaceView implements GLSurfaceView.Renderer 
 			Rect.onSurfaceChanged(_activity, gl, width, height);
 			TextGrid.init(gl, width, height, _activity);
 
-			_lstSprites = new ArrayList<ISprite<?>>();
+			_lstSprites = new ArrayList<ISprite>();
 			_lstRectangles = new ArrayList<Rect>();
 			_activity.initSprites(gl, _lstSprites, _lstRectangles);
 

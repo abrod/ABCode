@@ -111,7 +111,7 @@ public abstract class OpenGLActivity extends Activity {
 
 	public abstract int getColor();
 
-	public abstract void initSprites(GL10 gl, List<ISprite<?>> lstSprites,
+	public abstract void initSprites(GL10 gl, List<ISprite> lstSprites,
 			List<Rect> lstRectangles);
 
 	public Bitmap loadBitmap(int pDrawSource) {

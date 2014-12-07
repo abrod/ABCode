@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-public class Grid<E> {
+public class Grid {
 
 	public static int loadBitmap(Bitmap bitmap, GL10 gl) {
 		int[] _texture = new int[1];
@@ -62,9 +62,9 @@ public class Grid<E> {
 		textId = loadBitmap(bitmap, gl);
 	}
 
-	public Sprite<E> createSprite(int piPosX, int piPosY, float x, float y,
+	public Sprite createSprite(int piPosX, int piPosY, float x, float y,
 			float width, float height) {
-		Sprite<E> sprite = new Sprite<E>(this, x, y, width, height);
+		Sprite sprite = new Sprite(this, x, y, width, height);
 		sprite.setGrid(piPosX, piPosY);
 		return sprite;
 	}

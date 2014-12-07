@@ -5,18 +5,17 @@ import javax.microedition.khronos.opengles.GL10;
 import android.graphics.Rect;
 import de.brod.opengl.TextGrid.CharType;
 
-public class Text<E> extends Mesh<E> implements ISprite<E> {
+public class Text extends Mesh implements ISprite {
 
 	private char	_cText;
 	private float	_height;
-	private Text<E>	_next;
+	private Text	_next;
 	private float	_xCenter;
 	private float	_yCenter;
 	private float	fLeft;
 	private float	fMeasureText;
 	private float	offsetY;
 
-	private E		reference;
 	private float	w;
 
 	public Text(String psText, float x, float y, float height) {
@@ -32,7 +31,7 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 		} else {
 			_cText = psText.charAt(0);
 			if (psText.length() > 1) {
-				_next = new Text<E>(psText.substring(1), x, y, _height, false);
+				_next = new Text(psText.substring(1), x, y, _height, false);
 			}
 		}
 
@@ -43,11 +42,11 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 	}
 
 	@Override
-	public int compareTo(ISprite<E> pAnother) {
+	public int compareTo(ISprite pAnother) {
 		if (!(pAnother instanceof Text)) {
 			return -1;
 		}
-		Text<E> another = (Text<E>) pAnother;
+		Text another = (Text) pAnother;
 		int iComp = _xy - another._xy;
 		if (iComp == 0) {
 			iComp = _id - another._id;
@@ -67,14 +66,8 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 		return String.valueOf(_cText);
 	}
 
-	public Text<E> getNext() {
+	public Text getNext() {
 		return _next;
-	}
-
-	@Override
-	public E getReference() {
-		// TODO Auto-generated method stub
-		return reference;
 	}
 
 	public float getTextWidth() {
@@ -105,19 +98,7 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 	}
 
 	@Override
-	public boolean isPositionChanged() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public void moveTo(float eventX, float eventY) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void savePosition() {
 		// TODO Auto-generated method stub
 
 	}
@@ -131,19 +112,13 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 	}
 
 	@Override
-	public ISprite<E> setGrid(int piPosX, int piPosY) {
+	public ISprite setGrid(int piPosX, int piPosY) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean setMovePosition(float f) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void setOffset(float eventX, float eventY) {
+	public void mouseDown(float eventX, float eventY) {
 		// TODO Auto-generated method stub
 
 	}
@@ -155,7 +130,7 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 
 		float px = pX - getTextWidth() / 2;
 		setPositionLeft(px, py);
-		Text<E> n = _next;
+		Text n = _next;
 		float ix = px + fMeasureText;
 		while (n != null) {
 			n.setPositionLeft(ix, py);
@@ -168,16 +143,11 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 		setXY(px + fLeft + w, py + offsetY, 0);
 	}
 
-	@Override
-	public void setReference(E rect) {
-		reference = rect;
-	}
-
 	public void setSize2(float width, float height) {
 		float wd = getTextWidth() / width;
 		if (wd > 0) {
 			_height = height / wd;
-			Text<E> next = _next;
+			Text next = _next;
 			while (next != null) {
 				next._height = _height;
 				next = next._next;
@@ -185,6 +155,12 @@ public class Text<E> extends Mesh<E> implements ISprite<E> {
 			TextGrid.initText(this);
 			setPosition(_xCenter, _yCenter, 0);
 		}
+	}
+
+	@Override
+	public void mouseUp() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

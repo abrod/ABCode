@@ -1,5 +1,6 @@
 package de.brod.cardmaniac.card;
 
+import android.graphics.Color;
 import de.brod.cardmaniac.card.set.CardSet;
 import de.brod.cardmaniac.card.set.CardType;
 import de.brod.opengl.ISprite;
@@ -7,11 +8,13 @@ import de.brod.opengl.Sprite;
 
 public class Card<CARDTYPE extends CardType> {
 
-	private Hand<CARDTYPE>			_hand;
-	private Sprite<Card<CARDTYPE>>	_sprite;
-	private CARDTYPE				_cardType;
-	private boolean					_visible	= true;
-	private int[]					_gridCoords;
+	private Hand<CARDTYPE>	_hand;
+	private Sprite			_sprite;
+	private CARDTYPE		_cardType;
+	private boolean			_visible	= true;
+	private boolean			_selected	= false;
+	private int[]			_gridCoords;
+	private float			rotation;
 
 	public Card(CARDTYPE pCardType, CardSet<CARDTYPE> pCardSet, int iX, int iY,
 			int iX2, int iY2) {
@@ -29,11 +32,11 @@ public class Card<CARDTYPE extends CardType> {
 		_hand.addCard(this);
 	}
 
-	public void moveTo(float x, float y, int i) {
-		_sprite.setPosition(_cardType.getX(x), _cardType.getY(y), 0);
+	public void cardMoveTo(float x, float y) {
+		_sprite.moveTo(_cardType.getX(x), _cardType.getY(y));
 	}
 
-	public ISprite<?> getSprite() {
+	public ISprite getSprite() {
 		return _sprite;
 	}
 
@@ -52,4 +55,29 @@ public class Card<CARDTYPE extends CardType> {
 		}
 	}
 
+	public void mouseDown(float eventX, float eventY) {
+		_sprite.mouseDown(eventX, eventY);
+		if (_hand != null) {
+			_hand.setDirty(true);
+		}
+	}
+
+	public Hand<CARDTYPE> getHand() {
+		return _hand;
+	}
+
+	public boolean isSelected() {
+		return _selected;
+	}
+
+	public void setSelected(boolean selected) {
+		if (_selected != selected) {
+			_selected = selected;
+			if (selected) {
+				_sprite.setColor(Color.argb(255, 128, 128, 128));
+			} else {
+				_sprite.setColor(Color.argb(255, 255, 255, 255));
+			}
+		}
+	}
 }

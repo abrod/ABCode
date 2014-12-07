@@ -146,7 +146,7 @@ public class TextGrid {
 		bitmap.recycle();
 	}
 
-	public static void initText(Text<?> text) {
+	public static void initText(Text text) {
 		if (htCharacters == null) {
 			return;
 		}
@@ -158,7 +158,7 @@ public class TextGrid {
 
 		text.init(charType);
 
-		Text<?> next = text.getNext();
+		Text next = text.getNext();
 		if (next != null) {
 			initText(next);
 		}

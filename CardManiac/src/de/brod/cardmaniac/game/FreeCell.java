@@ -24,9 +24,9 @@ public class FreeCell extends Game<PlayingCards> {
 
 	@Override
 	protected void createHands() {
-		topLeft = new Hand[4];
-		topRight = new Hand[4];
-		bottom = new Hand[8];
+		topLeft = newHands(4);
+		topRight = newHands(4);
+		bottom = newHands(8);
 		float f = 0.05f;
 		for (int i = 0; i < 8; i++) {
 			if (i < 4) {

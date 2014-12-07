@@ -8,7 +8,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.graphics.Color;
 
-public abstract class Mesh<E> {
+public abstract class Mesh {
 
 	private static final float	countY;
 	private static final float	maxY;

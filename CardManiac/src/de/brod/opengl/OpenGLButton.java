@@ -6,10 +6,10 @@ import android.graphics.Color;
 
 public class OpenGLButton extends Rect {
 
-	private IAction			_action;
-	private float			_height, _x, _y;
-	private Text<String>	_text;
-	private int				_textColorR, _textColorG, _textColorB;
+	private IAction	_action;
+	private float	_height, _x, _y;
+	private Text	_text;
+	private int		_textColorR, _textColorG, _textColorB;
 
 	public OpenGLButton(String psText, float x, float y, float width,
 			float height, IAction pAction) {
@@ -21,7 +21,7 @@ public class OpenGLButton extends Rect {
 		_textColorR = 255;
 		_textColorG = 255;
 		_textColorB = 255;
-		_text = new Text<String>(psText, _x, _y, _height);
+		_text = new Text(psText, _x, _y, _height);
 		setColor(128, 128, 128, 128);
 		setEnabled(true);
 	}
@@ -65,7 +65,7 @@ public class OpenGLButton extends Rect {
 	}
 
 	public void setText(String psText) {
-		_text = new Text<String>(psText, _x, _y, _height);
+		_text = new Text(psText, _x, _y, _height);
 
 	}
 }
