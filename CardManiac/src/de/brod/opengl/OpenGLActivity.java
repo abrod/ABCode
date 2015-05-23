@@ -1,208 +1,307 @@
 package de.brod.opengl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-
-import javax.microedition.khronos.opengles.GL10;
-
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SubMenu;
+import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
 
-public abstract class OpenGLActivity extends Activity {
-	public class StateReader<E extends Serializable> {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-		private String	_sKey;
+public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle extends OpenGLRectangle, Button extends OpenGLButton>
+		extends Activity {
 
-		public StateReader(String psKey) {
-			_sKey = psKey;
+	class ThinkThread extends Thread {
+		IMoves action = null;
+		boolean finished = false;
+
+		public ThinkThread(IMoves pAction) {
+			action = pAction;
+			start();
 		}
 
-		private File getFile(String string) {
-			return new File(getFilesDir(), _sKey + "." + string + ".txt");
+		@Override
+		public void run() {
+			action.makeNextMove();
+			// draw again
+			requestRender();
 		}
 
-		public E readState(String string) {
-			File file = getFile(string);
-			try {
-				ObjectInputStream is = new ObjectInputStream(
-						new FileInputStream(file));
-				Object readObject = is.readObject();
-				is.close();
-				return (E) readObject;
-			} catch (Exception e) {
-				// could not read
-				e.printStackTrace();
-				// Log.e("OpenGLActivity", e.getLocalizedMessage());
-				return null;
-			}
-
+		public boolean isFinished() {
+			return finished && !isAlive();
 		}
 
-		public void saveState(String string, E state) {
-			File file = getFile(string);
-			try {
-				// ObjectInputStream is = new ObjectInputStream(new
-				// FileInputStream(
-				// file));
-				ObjectOutputStream out = new ObjectOutputStream(
-						new FileOutputStream(file));
-				out.writeObject(state);
-				out.close();
-			} catch (Exception e) {
-				// could not write
-				e.printStackTrace();
-				// Log.e("OpenGLActivity", e.getLocalizedMessage());
-			}
-		}
-	}
-
-	Hashtable<Integer, IAction>	htActions	= new Hashtable<Integer, IAction>();
-	private OpenGLView			mGLView;
-
-	public abstract boolean actionDown(float eventX, float eventY);
-
-	public abstract boolean actionMove(float eventX, float eventY);
-
-	public abstract boolean actionUp(float eventX, float eventY);
-
-	protected void confirm(String psText, final Runnable run) {
-		DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				run.run();
+		public boolean tryToFinish() {
+			if (!isAlive()) {
+				for (OpenGLRectangle iDrawArea : lstRectangles) {
+					iDrawArea.organize();
+				}
+				initMover();
 				requestRender();
+				finished = true;
 			}
-		};
-		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setIcon(android.R.drawable.ic_dialog_alert).setTitle("Confirm")
-		.setMessage(psText).setPositiveButton("Yes", onClickListener)
-		.setNegativeButton("No", null);
-
-		Handler h = new Handler();
-		h.post(new Runnable() {
-
-			@Override
-			public void run() {
-				builder.show();
-			}
-		});
-	}
-
-	public abstract void fillMenuActions(List<IAction> plstMenuActions);
-
-	public abstract int getColor();
-
-	public abstract void initSprites(GL10 gl, List<ISprite> lstSprites,
-			List<Rect> lstRectangles);
-
-	public Bitmap loadBitmap(int pDrawSource) {
-		InputStream is;
-		Bitmap bitmap;
-		is = getResources().openRawResource(pDrawSource);
-
-		bitmap = BitmapFactory.decodeStream(is);
-		try {
-			is.close();
-			is = null;
-		} catch (IOException e) {
+			return finished;
 		}
-		return bitmap;
+
 	}
 
+	List<Square> lstSquares = new ArrayList<Square>();
+	private List<Square> lstMove = new ArrayList<Square>();
+	private List<Square> lstMover = new ArrayList<Square>();
+	List<Rectangle> lstRectangles = new ArrayList<Rectangle>();
+	List<Button> lstButtons = new ArrayList<Button>();
+
+	private long moverStart;
+	private ThinkThread thinkThread = null;
+	private OpenGLView<Square, Rectangle, Button> view;
+	private OpenGLButton _pressedButton;
+
+	protected boolean isThinking() {
+		if (thinkThread == null) {
+			return false;
+		}
+		synchronized (lstMover) {
+			if (thinkThread.isFinished()) {
+				thinkThread = null;
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected void requestRender() {
+		view.requestRender();
+	}
+
+	boolean actionUp(float eventX, float eventY) {
+		if (isThinking()) {
+			return true;
+		}
+		if (_pressedButton != null) {
+			if (_pressedButton.touches(eventX, eventY)) {
+				_pressedButton.action();
+			}
+			_pressedButton.setPressed(false);
+			return true;
+		}
+		boolean bMove = lstMove.size() > 0;
+		if (bMove) {
+			Rectangle selGLRectangle = null;
+			for (Rectangle openGLRectangle : lstRectangles) {
+				if (openGLRectangle.touches(eventX, eventY)) {
+					selGLRectangle = openGLRectangle;
+					break;
+				}
+			}
+			actionUp(lstMove, selGLRectangle);
+			initMover();
+			hasNextAction();
+			return true;
+		} else {
+			lstMover.clear();
+		}
+
+		return hasNextAction();
+	}
+
+	private boolean hasNextAction() {
+		// get the next action
+		IMoves action = getAction();
+		if (action.hasNextMove()) {
+			synchronized (lstMover) {
+				// create a new thread (because thinking was false)
+				thinkThread = new ThinkThread(action);
+			}
+			// repaint
+			return true;
+		}
+		return false;
+	}
+
+	private void initMover() {
+		lstMover.clear();
+		moverStart = System.currentTimeMillis();
+		for (Square s : lstSquares) {
+			if (s.move(0)) {
+				lstMover.add(s);
+				s.setLevel(1);
+			} else {
+				s.setLevel(0);
+			}
+		}
+		sortSqares();
+	}
+
+	protected abstract void actionUp(List<Square> lstMove2,
+									 Rectangle openGLRectangle);
+
+	boolean actionMove(float eventX, float eventY) {
+		if (isThinking()) {
+			return true;
+		}
+		boolean bMove = lstMove.size() > 0;
+		if (bMove) {
+			for (OpenGLSquare s : lstMove) {
+				s.moveTo(eventX, eventY);
+			}
+			sortSqares();
+		}
+		return bMove;
+	}
+
+	boolean actionDown(float eventX, float eventY) {
+		lstMove.clear();
+		moverStart = 0;
+		if (isThinking()) {
+			return true;
+		}
+		_pressedButton = null;
+		slideSquares(true);
+		for (OpenGLButton button : lstButtons) {
+			if (button.touches(eventX, eventY)) {
+				_pressedButton = button;
+				button.setPressed(true);
+				return true;
+			}
+		}
+		for (int i = lstSquares.size() - 1; i >= 0; i--) {
+			Square s = lstSquares.get(i);
+			if (s.touches(eventX, eventY)) {
+				actionDown(s, lstMove);
+				break;
+			}
+		}
+		for (OpenGLSquare s : lstSquares) {
+			s.setLevel(0);
+		}
+		boolean bMove = lstMove.size() > 0;
+		if (bMove) {
+			// set the touch flags
+			for (OpenGLSquare s : lstMove) {
+				s.setLevel(1);
+				s.setTouch(eventX, eventY);
+			}
+			// sortSqares();
+		}
+		return bMove;
+	}
+
+	public abstract void actionDown(Square pDown, List<Square> plstMove);
+
+	/**
+	 * Called when the activity is first created.
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		// no title
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+		// full screen
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		mGLView = new OpenGLView(this);
-		setContentView(mGLView);
+
+		// set the view
+		view = new OpenGLView<Square, Rectangle, Button>(this);
+		setContentView(view);
+
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		// menu.add(0, MENU_ADD, Menu.NONE,
-		// R.string.your-add-text).setIcon(R.drawable.your-add-icon);
+	private void sortSqares() {
+		Collections.sort(lstSquares);
+	}
 
-		List<IAction> lstMenuActions = new ArrayList<IAction>();
-		fillMenuActions(lstMenuActions);
-		int iGroup = 0;
-		int iCount = 0;
-		for (int i = 0; i < lstMenuActions.size(); i++) {
-			IAction action = lstMenuActions.get(i);
-			if (action instanceof ISubAction) {
-				SubMenu addSubMenu = menu.addSubMenu(action.getTitle());
-				for (IAction subAction : ((ISubAction) action).getSubItems()) {
-					iCount++;
-					htActions.put(Integer.valueOf(iCount), subAction);
-					addSubMenu.add(iGroup, iCount, Menu.NONE,
-							subAction.getTitle());
-				}
-				iGroup++;
+	protected abstract void init(float pWd, float pHg, List<Square> lstSquares,
+								 List<Rectangle> lstIDrawArea, List<Button> lstButtons);
+
+	public void refreshView(float pWd, float pHg) {
+
+		for (OpenGLRectangle iDrawArea : lstRectangles) {
+			iDrawArea.organize();
+		}
+		for (Square square : lstSquares) {
+			square.move(1);
+			square.setLevel(0);
+			square.refreshView();
+		}
+		sortSqares();
+	}
+
+	boolean slideSquares(boolean pbMoveToEnd) {
+		float f;
+		if (moverStart <= 0 || pbMoveToEnd) {
+			f = 1;
+		} else {
+			f = (System.currentTimeMillis() - moverStart) / 1000f;
+		}
+		boolean bchange = false;
+		for (int i = 0; i < lstMover.size(); ) {
+			Square c = lstMover.get(i);
+			if (c.move(f)) {
+				i++;
 			} else {
-				iCount++;
-				htActions.put(Integer.valueOf(iCount), action);
-				menu.add(iGroup, iCount, Menu.NONE, action.getTitle());
+				c.setLevel(0);
+				bchange = true;
+				lstMover.remove(i);
 			}
 		}
-		return true;
-	}
-
-	public abstract boolean onDrawFrame();
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		try {
-			IAction iAction = htActions.get(Integer.valueOf(item.getItemId()));
-			iAction.doAction();
-
-			requestRender();
-		} catch (Exception ex) {
-			// ignore
+		if (bchange) {
+			sortSqares();
 		}
-		return true;
-
+		boolean b = lstMover.size() > 0;
+		synchronized (lstMover) {
+			if (!b && thinkThread != null) {
+				// try to finish
+				if (thinkThread.tryToFinish()) {
+					thinkThread = null;
+					// check next action
+					hasNextAction();
+					return true;
+				}
+			}
+		}
+		return b;
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mGLView.onPause();
+	protected abstract IMoves getAction();
+
+	public void onViewCreate() {
+		lstRectangles.clear();
+		lstSquares.clear();
+		lstMove.clear();
+		lstButtons.clear();
+
+		Display display = getWindowManager().getDefaultDisplay();
+		float width = display.getWidth(); // deprecated
+		float height = display.getHeight(); // deprecated
+		if (width > height) {
+			width = width / height;
+			height = 1;
+		} else {
+			height = height / width;
+			width = 1;
+		}
+
+		init(width, height, lstSquares, lstRectangles, lstButtons);
+
+		sortSqares();
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		mGLView.onResume();
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-	}
-
-	public void requestRender() {
-		mGLView.requestRender();
+	public void clearAll() {
+		for (Square square : lstSquares) {
+			square.clear();
+		}
+		for (Rectangle square : lstRectangles) {
+			square.clear();
+		}
+		for (Button square : lstButtons) {
+			square.clear();
+		}
+		lstSquares.clear();
+		lstRectangles.clear();
+		lstButtons.clear();
 	}
 
 }
