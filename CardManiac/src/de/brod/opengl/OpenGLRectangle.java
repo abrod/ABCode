@@ -149,24 +149,11 @@ public abstract class OpenGLRectangle {
     protected abstract void organize();
 
     public boolean touches(float eventX, float eventY) {
-        if (x2 < eventX || x1 > eventX) {
-            return false;
-        }
-        if (y2 < eventY || y1 > eventY) {
-            return false;
-        }
-        return true;
-    }
-
-    private String g(float x22) {
-        String s = String.valueOf(Math.round(x22 * 100) / 100.0);
-        return s;
+        return !(x2 < eventX || x1 > eventX || y2 < eventY || y1 > eventY);
     }
 
     /**
      * This function draws our square on screen.
-     *
-     * @param gl
      */
     void draw(GL10 gl, Context context) {
         for (OpenGLSquare glSquare : openGLSquare[iUp]) {

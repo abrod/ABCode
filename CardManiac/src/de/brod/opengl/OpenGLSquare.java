@@ -188,10 +188,10 @@ public class OpenGLSquare implements Comparable<OpenGLSquare> {
         return this;
     }
 
+
     /**
      * This function draws our square on screen.
      *
-     * @param gl
      */
     void draw(GL10 gl, OpenGLSquare old, Context context) {
 
