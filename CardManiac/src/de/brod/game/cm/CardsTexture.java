@@ -32,20 +32,20 @@ public class CardsTexture extends OpenGLTexture {
 
         Bitmap bitmap = Bitmap
                 .createBitmap(maxX, maxY, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(bitmap);
-        Paint p = new Paint();
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
 
-        p.setColor(Color.WHITE);
-        p.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setColor(Color.WHITE);
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
         float dx = maxX * 1f / countX;
         float dy = maxY * 1f / countY;
         int textSize = (int) (dy / 6);
 
         for (int i = 0; i < countX; i++) {
             for (int j = 0; j < countY; j++) {
-                RectF r = new RectF(i * dx + 1, j * dy + 1, (i + 1) * dx - 1,
+                RectF rectF = new RectF(i * dx + 1, j * dy + 1, (i + 1) * dx - 1,
                         (j + 1) * dy - 1);
-                drawCard(i + j * countX, c, r, p, dx, textSize);
+                drawCard(i + j * countX, canvas, rectF, paint, dx, textSize);
             }
         }
         return bitmap;

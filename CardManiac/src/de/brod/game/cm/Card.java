@@ -65,14 +65,17 @@ public class Card extends OpenGLSquare {
     public static final int maxx, maxy;
 
     static {
-        maxx = 8 - 1;
+        int dx = 8;
+        int dy = 6;
 
-        wd = 2 / 8f;
+        maxx = dx - 1;
+
+        wd = 2f / dx;
         wd2 = (2 - wd) / maxx;
         wdOff = wd / 2 - 1;
 
-        maxy = 6 - 1;
-        hg = 2 / 6f;
+        maxy = dy - 1;
+        hg = 2f / dy;
         hg2 = (2 - hg) / maxy;
         hgOff = hg / 2 - 1;
     }
