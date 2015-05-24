@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">CardManiac</string>
-    <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="new_game">New Game</string>
+    <string name="do_you_want_to_start_a_new_game">Do you really want to start a new game</string>
 
 </resources>

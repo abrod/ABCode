@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">CardManiac</string>
+    <string name="new_game">Neues Spiel</string>
+    <string name="do_you_want_to_start_a_new_game">Wollen Sie wirklich ein neues Spiel starten</string>
+
+</resources>

@@ -1,9 +1,11 @@
 package de.brod.game.cm.games;
 
+import de.brod.cardmaniac.R;
 import de.brod.game.cm.Button;
 import de.brod.game.cm.Card;
 import de.brod.game.cm.CardsTexture;
 import de.brod.game.cm.Hand;
+import de.brod.opengl.IAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +25,16 @@ public class FreeCell extends Patience {
 
             @Override
             public void action() {
-                newGame(true);
+                getGameActivity().confirm(getString(R.string.do_you_want_to_start_a_new_game), new IAction() {
+                    @Override
+                    public void doAction() {
+                        newGame(true);
+                    }
+                });
             }
 
         };
-        button[0].setText("Button " + ((char) 77));
+        button[0].setText(getString(R.string.new_game));
 
         // create 2*8 Hands
         hand = new Hand[16];

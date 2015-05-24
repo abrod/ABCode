@@ -88,5 +88,6 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
         game.init(_wd > _hg, _wd, _hg);
 
         setHandAndButtons();
+        requestRender();
     }
 }

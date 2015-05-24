@@ -1,6 +1,8 @@
 package de.brod.opengl;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Window;
@@ -11,297 +13,312 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle extends OpenGLRectangle, Button extends OpenGLButton>
-		extends Activity {
+        extends Activity {
 
-	class ThinkThread extends Thread {
-		IMoves action = null;
-		boolean finished = false;
+    public void confirm(String s, final IAction iActionYes) {
+        new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Confirm")
+                .setMessage(s)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        iActionYes.doAction();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
 
-		public ThinkThread(IMoves pAction) {
-			action = pAction;
-			start();
-		}
+    class ThinkThread extends Thread {
+        IMoves action = null;
+        boolean finished = false;
 
-		@Override
-		public void run() {
-			action.makeNextMove();
-			// draw again
-			requestRender();
-		}
+        public ThinkThread(IMoves pAction) {
+            action = pAction;
+            start();
+        }
 
-		public boolean isFinished() {
-			return finished && !isAlive();
-		}
+        @Override
+        public void run() {
+            action.makeNextMove();
+            // draw again
+            requestRender();
+        }
 
-		public boolean tryToFinish() {
-			if (!isAlive()) {
-				for (OpenGLRectangle iDrawArea : lstRectangles) {
-					iDrawArea.organize();
-				}
-				initMover();
-				requestRender();
-				finished = true;
-			}
-			return finished;
-		}
+        public boolean isFinished() {
+            return finished && !isAlive();
+        }
 
-	}
+        public boolean tryToFinish() {
+            if (!isAlive()) {
+                for (OpenGLRectangle iDrawArea : lstRectangles) {
+                    iDrawArea.organize();
+                }
+                initMover();
+                requestRender();
+                finished = true;
+            }
+            return finished;
+        }
 
-	List<Square> lstSquares = new ArrayList<Square>();
-	private List<Square> lstMove = new ArrayList<Square>();
-	private List<Square> lstMover = new ArrayList<Square>();
-	List<Rectangle> lstRectangles = new ArrayList<Rectangle>();
-	List<Button> lstButtons = new ArrayList<Button>();
+    }
 
-	private long moverStart;
-	private ThinkThread thinkThread = null;
-	private OpenGLView<Square, Rectangle, Button> view;
-	private OpenGLButton _pressedButton;
+    List<Square> lstSquares = new ArrayList<Square>();
+    private List<Square> lstMove = new ArrayList<Square>();
+    private List<Square> lstMover = new ArrayList<Square>();
+    List<Rectangle> lstRectangles = new ArrayList<Rectangle>();
+    List<Button> lstButtons = new ArrayList<Button>();
 
-	protected boolean isThinking() {
-		if (thinkThread == null) {
-			return false;
-		}
-		synchronized (lstMover) {
-			if (thinkThread.isFinished()) {
-				thinkThread = null;
-				return false;
-			}
-		}
-		return true;
-	}
+    private long moverStart;
+    private ThinkThread thinkThread = null;
+    private OpenGLView<Square, Rectangle, Button> view;
+    private OpenGLButton _pressedButton;
 
-	protected void requestRender() {
-		view.requestRender();
-	}
+    protected boolean isThinking() {
+        if (thinkThread == null) {
+            return false;
+        }
+        synchronized (lstMover) {
+            if (thinkThread.isFinished()) {
+                thinkThread = null;
+                return false;
+            }
+        }
+        return true;
+    }
 
-	boolean actionUp(float eventX, float eventY) {
-		if (isThinking()) {
-			return true;
-		}
-		if (_pressedButton != null) {
-			if (_pressedButton.touches(eventX, eventY)) {
-				_pressedButton.action();
-			}
-			_pressedButton.setPressed(false);
-			return true;
-		}
-		boolean bMove = lstMove.size() > 0;
-		if (bMove) {
-			Rectangle selGLRectangle = null;
-			for (Rectangle openGLRectangle : lstRectangles) {
-				if (openGLRectangle.touches(eventX, eventY)) {
-					selGLRectangle = openGLRectangle;
-					break;
-				}
-			}
-			actionUp(lstMove, selGLRectangle);
-			initMover();
-			hasNextAction();
-			return true;
-		} else {
-			lstMover.clear();
-		}
+    protected void requestRender() {
+        view.requestRender();
+    }
 
-		return hasNextAction();
-	}
+    boolean actionUp(float eventX, float eventY) {
+        if (isThinking()) {
+            return true;
+        }
+        if (_pressedButton != null) {
+            if (_pressedButton.touches(eventX, eventY)) {
+                _pressedButton.action();
+            }
+            _pressedButton.setPressed(false);
+            return true;
+        }
+        boolean bMove = lstMove.size() > 0;
+        if (bMove) {
+            Rectangle selGLRectangle = null;
+            for (Rectangle openGLRectangle : lstRectangles) {
+                if (openGLRectangle.touches(eventX, eventY)) {
+                    selGLRectangle = openGLRectangle;
+                    break;
+                }
+            }
+            actionUp(lstMove, selGLRectangle);
+            initMover();
+            hasNextAction();
+            return true;
+        } else {
+            lstMover.clear();
+        }
 
-	private boolean hasNextAction() {
-		// get the next action
-		IMoves action = getAction();
-		if (action.hasNextMove()) {
-			synchronized (lstMover) {
-				// create a new thread (because thinking was false)
-				thinkThread = new ThinkThread(action);
-			}
-			// repaint
-			return true;
-		}
-		return false;
-	}
+        return hasNextAction();
+    }
 
-	private void initMover() {
-		lstMover.clear();
-		moverStart = System.currentTimeMillis();
-		for (Square s : lstSquares) {
-			if (s.move(0)) {
-				lstMover.add(s);
-				s.setLevel(1);
-			} else {
-				s.setLevel(0);
-			}
-		}
-		sortSqares();
-	}
+    private boolean hasNextAction() {
+        // get the next action
+        IMoves action = getAction();
+        if (action.hasNextMove()) {
+            synchronized (lstMover) {
+                // create a new thread (because thinking was false)
+                thinkThread = new ThinkThread(action);
+            }
+            // repaint
+            return true;
+        }
+        return false;
+    }
 
-	protected abstract void actionUp(List<Square> lstMove2,
-									 Rectangle openGLRectangle);
+    private void initMover() {
+        lstMover.clear();
+        moverStart = System.currentTimeMillis();
+        for (Square s : lstSquares) {
+            if (s.move(0)) {
+                lstMover.add(s);
+                s.setLevel(1);
+            } else {
+                s.setLevel(0);
+            }
+        }
+        sortSqares();
+    }
 
-	boolean actionMove(float eventX, float eventY) {
-		if (isThinking()) {
-			return true;
-		}
-		boolean bMove = lstMove.size() > 0;
-		if (bMove) {
-			for (OpenGLSquare s : lstMove) {
-				s.moveTo(eventX, eventY);
-			}
-			sortSqares();
-		}
-		return bMove;
-	}
+    protected abstract void actionUp(List<Square> lstMove2,
+                                     Rectangle openGLRectangle);
 
-	boolean actionDown(float eventX, float eventY) {
-		lstMove.clear();
-		moverStart = 0;
-		if (isThinking()) {
-			return true;
-		}
-		_pressedButton = null;
-		slideSquares(true);
-		for (OpenGLButton button : lstButtons) {
-			if (button.touches(eventX, eventY)) {
-				_pressedButton = button;
-				button.setPressed(true);
-				return true;
-			}
-		}
-		for (int i = lstSquares.size() - 1; i >= 0; i--) {
-			Square s = lstSquares.get(i);
-			if (s.touches(eventX, eventY)) {
-				actionDown(s, lstMove);
-				break;
-			}
-		}
-		for (OpenGLSquare s : lstSquares) {
-			s.setLevel(0);
-		}
-		boolean bMove = lstMove.size() > 0;
-		if (bMove) {
-			// set the touch flags
-			for (OpenGLSquare s : lstMove) {
-				s.setLevel(1);
-				s.setTouch(eventX, eventY);
-			}
-			// sortSqares();
-		}
-		return bMove;
-	}
+    boolean actionMove(float eventX, float eventY) {
+        if (isThinking()) {
+            return true;
+        }
+        boolean bMove = lstMove.size() > 0;
+        if (bMove) {
+            for (OpenGLSquare s : lstMove) {
+                s.moveTo(eventX, eventY);
+            }
+            sortSqares();
+        }
+        return bMove;
+    }
 
-	public abstract void actionDown(Square pDown, List<Square> plstMove);
+    boolean actionDown(float eventX, float eventY) {
+        lstMove.clear();
+        moverStart = 0;
+        if (isThinking()) {
+            return true;
+        }
+        _pressedButton = null;
+        slideSquares(true);
+        for (OpenGLButton button : lstButtons) {
+            if (button.touches(eventX, eventY)) {
+                _pressedButton = button;
+                button.setPressed(true);
+                return true;
+            }
+        }
+        for (int i = lstSquares.size() - 1; i >= 0; i--) {
+            Square s = lstSquares.get(i);
+            if (s.touches(eventX, eventY)) {
+                actionDown(s, lstMove);
+                break;
+            }
+        }
+        for (OpenGLSquare s : lstSquares) {
+            s.setLevel(0);
+        }
+        boolean bMove = lstMove.size() > 0;
+        if (bMove) {
+            // set the touch flags
+            for (OpenGLSquare s : lstMove) {
+                s.setLevel(1);
+                s.setTouch(eventX, eventY);
+            }
+            // sortSqares();
+        }
+        return bMove;
+    }
 
-	/**
-	 * Called when the activity is first created.
-	 */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// no title
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    public abstract void actionDown(Square pDown, List<Square> plstMove);
 
-		// full screen
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    /**
+     * Called when the activity is first created.
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // no title
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		// set the view
-		view = new OpenGLView<Square, Rectangle, Button>(this);
-		setContentView(view);
+        // full screen
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-	}
+        // set the view
+        view = new OpenGLView<Square, Rectangle, Button>(this);
+        setContentView(view);
 
-	private void sortSqares() {
-		Collections.sort(lstSquares);
-	}
+    }
 
-	protected abstract void init(float pWd, float pHg, List<Square> lstSquares,
-								 List<Rectangle> lstIDrawArea, List<Button> lstButtons);
+    private void sortSqares() {
+        Collections.sort(lstSquares);
+    }
 
-	public void refreshView(float pWd, float pHg) {
+    protected abstract void init(float pWd, float pHg, List<Square> lstSquares,
+                                 List<Rectangle> lstIDrawArea, List<Button> lstButtons);
 
-		for (OpenGLRectangle iDrawArea : lstRectangles) {
-			iDrawArea.organize();
-		}
-		for (Square square : lstSquares) {
-			square.move(1);
-			square.setLevel(0);
-			square.refreshView();
-		}
-		sortSqares();
-	}
+    public void refreshView(float pWd, float pHg) {
 
-	boolean slideSquares(boolean pbMoveToEnd) {
-		float f;
-		if (moverStart <= 0 || pbMoveToEnd) {
-			f = 1;
-		} else {
-			f = (System.currentTimeMillis() - moverStart) / 1000f;
-		}
-		boolean bchange = false;
-		for (int i = 0; i < lstMover.size(); ) {
-			Square c = lstMover.get(i);
-			if (c.move(f)) {
-				i++;
-			} else {
-				c.setLevel(0);
-				bchange = true;
-				lstMover.remove(i);
-			}
-		}
-		if (bchange) {
-			sortSqares();
-		}
-		boolean b = lstMover.size() > 0;
-		synchronized (lstMover) {
-			if (!b && thinkThread != null) {
-				// try to finish
-				if (thinkThread.tryToFinish()) {
-					thinkThread = null;
-					// check next action
-					hasNextAction();
-					return true;
-				}
-			}
-		}
-		return b;
-	}
+        for (OpenGLRectangle iDrawArea : lstRectangles) {
+            iDrawArea.organize();
+        }
+        for (Square square : lstSquares) {
+            square.move(1);
+            square.setLevel(0);
+            square.refreshView();
+        }
+        sortSqares();
+    }
 
-	protected abstract IMoves getAction();
+    boolean slideSquares(boolean pbMoveToEnd) {
+        float f;
+        if (moverStart <= 0 || pbMoveToEnd) {
+            f = 1;
+        } else {
+            f = (System.currentTimeMillis() - moverStart) / 1000f;
+        }
+        boolean bchange = false;
+        for (int i = 0; i < lstMover.size(); ) {
+            Square c = lstMover.get(i);
+            if (c.move(f)) {
+                i++;
+            } else {
+                c.setLevel(0);
+                bchange = true;
+                lstMover.remove(i);
+            }
+        }
+        if (bchange) {
+            sortSqares();
+        }
+        boolean b = lstMover.size() > 0;
+        synchronized (lstMover) {
+            if (!b && thinkThread != null) {
+                // try to finish
+                if (thinkThread.tryToFinish()) {
+                    thinkThread = null;
+                    // check next action
+                    hasNextAction();
+                    return true;
+                }
+            }
+        }
+        return b;
+    }
 
-	public void onViewCreate() {
-		lstRectangles.clear();
-		lstSquares.clear();
-		lstMove.clear();
-		lstButtons.clear();
+    protected abstract IMoves getAction();
 
-		Display display = getWindowManager().getDefaultDisplay();
-		float width = display.getWidth(); // deprecated
-		float height = display.getHeight(); // deprecated
-		if (width > height) {
-			width = width / height;
-			height = 1;
-		} else {
-			height = height / width;
-			width = 1;
-		}
+    public void onViewCreate() {
+        lstRectangles.clear();
+        lstSquares.clear();
+        lstMove.clear();
+        lstButtons.clear();
 
-		init(width, height, lstSquares, lstRectangles, lstButtons);
+        Display display = getWindowManager().getDefaultDisplay();
+        float width = display.getWidth(); // deprecated
+        float height = display.getHeight(); // deprecated
+        if (width > height) {
+            width = width / height;
+            height = 1;
+        } else {
+            height = height / width;
+            width = 1;
+        }
 
-		sortSqares();
-	}
+        init(width, height, lstSquares, lstRectangles, lstButtons);
 
-	public void clearAll() {
-		for (Square square : lstSquares) {
-			square.clear();
-		}
-		for (Rectangle square : lstRectangles) {
-			square.clear();
-		}
-		for (Button square : lstButtons) {
-			square.clear();
-		}
-		lstSquares.clear();
-		lstRectangles.clear();
-		lstButtons.clear();
-	}
+        sortSqares();
+    }
+
+    public void clearAll() {
+        for (Square square : lstSquares) {
+            square.clear();
+        }
+        for (Rectangle square : lstRectangles) {
+            square.clear();
+        }
+        for (Button square : lstButtons) {
+            square.clear();
+        }
+        lstSquares.clear();
+        lstRectangles.clear();
+        lstButtons.clear();
+    }
 
 }

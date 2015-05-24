@@ -21,4 +21,13 @@ public abstract class Game implements IMoves {
         gameActivity = pGameActivity;
     }
 
+    public GameActivity getGameActivity() {
+        return gameActivity;
+    }
+
+
+    String getString(int piCounter) {
+        return gameActivity.getString(piCounter);
+    }
+
 }
