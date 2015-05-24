@@ -28,17 +28,16 @@ public class CardsTexture extends OpenGLTexture {
         String binaryString = Integer
                 .toBinaryString((piScreenWidth + piScreenHeight) / 2);
         int maxX = (int) Math.pow(2, binaryString.length());
-        int maxY = maxX;
 
         Bitmap bitmap = Bitmap
-                .createBitmap(maxX, maxY, Bitmap.Config.ARGB_8888);
+                .createBitmap(maxX, maxX, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
 
         paint.setColor(Color.WHITE);
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         float dx = maxX * 1f / countX;
-        float dy = maxY * 1f / countY;
+        float dy = maxX * 1f / countY;
         int textSize = (int) (dy / 6);
 
         for (int i = 0; i < countX; i++) {
@@ -76,7 +75,7 @@ public class CardsTexture extends OpenGLTexture {
         } else {
             p.setColor(Color.RED);
         }
-        p.setTextSize(pTextSize);
+        p.setTextSize(pTextSize * 1.3f);
 
         Rect bounds = new Rect();
         Value cardVal = values[iCardNumber % values.length];
