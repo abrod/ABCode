@@ -15,18 +15,25 @@ import java.util.List;
 public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle extends OpenGLRectangle, Button extends OpenGLButton>
         extends Activity {
 
-    public void confirm(String s, final IAction iActionYes) {
+    public void confirm(String sTitle, String sConfirmText, String sButtonYes, final IAction iActionYes, String sButtonNo, final IAction iActionNo) {
+        DialogInterface.OnClickListener listenYes = iActionYes != null ? new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                iActionYes.doAction();
+            }
+        } : null;
+        DialogInterface.OnClickListener listenNo = iActionNo != null ? new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                iActionNo.doAction();
+            }
+        } : null;
         new AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Confirm")
-                .setMessage(s)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        iActionYes.doAction();
-                    }
-                })
-                .setNegativeButton("No", null)
+                .setTitle(sTitle)
+                .setMessage(sConfirmText)
+                .setPositiveButton(sButtonYes, listenYes)
+                .setNegativeButton(sButtonNo, listenNo)
                 .show();
     }
 
@@ -291,8 +298,8 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         lstButtons.clear();
 
         Display display = getWindowManager().getDefaultDisplay();
-        float width = display.getWidth(); // deprecated
-        float height = display.getHeight(); // deprecated
+        float width = display.getWidth();
+        float height = display.getHeight();
         if (width > height) {
             width = width / height;
             height = 1;

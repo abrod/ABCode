@@ -25,12 +25,13 @@ public class FreeCell extends Patience {
 
             @Override
             public void action() {
-                getGameActivity().confirm(getString(R.string.do_you_want_to_start_a_new_game), new IAction() {
+
+                getGameActivity().confirm(getString(R.string.question), getString(R.string.do_you_want_to_start_a_new_game), getString(R.string.confirm_yes), new IAction() {
                     @Override
                     public void doAction() {
                         newGame(true);
                     }
-                });
+                }, getString(R.string.confirm_no), null);
             }
 
         };
@@ -126,12 +127,7 @@ public class FreeCell extends Patience {
 
     @Override
     public void makeNextMove() {
-        //		try {
-        //			Thread.sleep(1000);
-        //		} catch (InterruptedException e) {
-        //			// TODO Auto-generated catch block
-        //			e.printStackTrace();
-        //		}
+
         nextCard:
         while (lstNextMove.size() > 0) {
             Card remove = lstNextMove.remove(0);

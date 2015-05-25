@@ -25,19 +25,21 @@ public class CardsTexture extends OpenGLTexture {
 
     @Override
     protected Bitmap createBitmap(int piScreenWidth, int piScreenHeight) {
+        int avgSize = (piScreenWidth + piScreenHeight) / 2;
         String binaryString = Integer
-                .toBinaryString((piScreenWidth + piScreenHeight) / 2);
+                .toBinaryString(avgSize);
         int maxX = (int) Math.pow(2, binaryString.length());
+        int maxY = (int) Math.pow(2, binaryString.length());
 
         Bitmap bitmap = Bitmap
-                .createBitmap(maxX, maxX, Bitmap.Config.ARGB_8888);
+                .createBitmap(maxX, maxY, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
 
         paint.setColor(Color.WHITE);
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         float dx = maxX * 1f / countX;
-        float dy = maxX * 1f / countY;
+        float dy = maxY * 1f / countY;
         int textSize = (int) (dy / 6);
 
         for (int i = 0; i < countX; i++) {

@@ -4,5 +4,8 @@
     <string name="app_name">CardManiac</string>
     <string name="new_game">New Game</string>
     <string name="do_you_want_to_start_a_new_game">Do you really want to start a new game</string>
+    <string name="question">Question</string>
+    <string name="confirm_yes">Yes</string>
+    <string name="confirm_no">No</string>
 
 </resources>
