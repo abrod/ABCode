@@ -21,7 +21,7 @@ public class FreeCell extends Patience {
         List<Card> cards = CardsTexture.create52Cards();
 
         button = new Button[1];
-        button[0] = new Button(-pWd, pHg, -pWd + Card.wd * 2, pHg - Card.wd) {
+        button[0] = new Button(-pWd, pHg, -pWd + Card.wd * 3, pHg - Card.wd) {
 
             @Override
             public void action() {

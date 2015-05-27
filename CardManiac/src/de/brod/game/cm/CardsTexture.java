@@ -31,6 +31,9 @@ public class CardsTexture extends OpenGLTexture {
         int maxX = (int) Math.pow(2, binaryString.length());
         int maxY = (int) Math.pow(2, binaryString.length());
 
+        maxX = avgSize;
+        maxY = maxX * countY / countX * 8 / 6;
+
         Bitmap bitmap = Bitmap
                 .createBitmap(maxX, maxY, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);

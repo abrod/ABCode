@@ -36,7 +36,7 @@ public abstract class OpenGLTexture {
         int width = metrics.widthPixels;
         int height = metrics.heightPixels;
 
-        Bitmap bitmap = createBitmap(width, height);
+        Bitmap bitmap = resizeBitmap(createBitmap(width, height));
         // loading texture
 
         // generate one texture pointer
@@ -56,6 +56,39 @@ public abstract class OpenGLTexture {
         // Clean up
         bitmap.recycle();
     }
+
+    private Bitmap resizeBitmap(Bitmap bitmap) {
+        int wd = bitmap.getWidth();
+        int hg = bitmap.getHeight();
+
+        int wd2 = get2exp(wd);
+        int hg2 = get2exp(hg);
+        if (wd != wd2 || hg != hg2) {
+            // create a new bitmap
+            Bitmap newBmp = Bitmap.createScaledBitmap(bitmap, wd2, hg2, true);
+            bitmap.recycle();
+            return newBmp;
+        }
+        return bitmap;
+    }
+
+    private int get2exp(int wOrig) {
+        if (wOrig < 4)
+            return 4;
+        int wNew = 256;
+        if (wNew > wOrig) {
+            while (wNew > wOrig) {
+                wNew /= 2;
+            }
+            return wNew * 2;
+        } else {
+            while (wNew < wOrig) {
+                wNew *= 2;
+            }
+        }
+        return wNew;
+    }
+
 
     protected abstract Bitmap createBitmap(int piScreenWidth, int piScreenHeight);
 
