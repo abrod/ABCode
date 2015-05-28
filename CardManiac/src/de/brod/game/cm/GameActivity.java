@@ -1,11 +1,13 @@
 package de.brod.game.cm;
 
+import android.content.Context;
 import de.brod.game.cm.games.FreeCell;
 import de.brod.game.cm.games.Game;
 import de.brod.opengl.IMoves;
 import de.brod.opengl.OpenGLActivity;
 import de.brod.opengl.OpenGLSquare;
 
+import java.io.*;
 import java.util.List;
 
 public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
@@ -30,7 +32,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
 
         game.setActivity(this);
 
-        newGame(false);
+        newGame(true);
 
     }
 
@@ -72,10 +74,33 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
         for (OpenGLSquare square : lstMove2) {
             ((Card) square).hand.dirty = true;
         }
-        for (Hand h : game.hand) {
-            if (h.dirty) {
-                h.organize();
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(bytes);
+
+        // organize and save
+        try {
+            out.write(game.hand.length);
+            for (Hand h : game.hand) {
+                // save the state
+                out.write(h.getId());
+                List<Card> cards = h.getCards();
+                out.write(cards.size());
+                for (Card c : cards) {
+                    out.write(c.getId());
+                }
+                // organize
+                if (h.dirty) {
+                    h.organize();
+                }
             }
+
+            // final save
+            FileOutputStream fileOut = openFileOutput(game.getClass().getName() + ".txt", Context.MODE_PRIVATE);
+            fileOut.write(bytes.toByteArray());
+            fileOut.close();
+
+        } catch (IOException e) {
+            // should not happen on outputstream
         }
     }
 
@@ -84,10 +109,23 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
         return game;
     }
 
-    public void newGame(boolean pbAsk) {
+    public void newGame(boolean pbLoadOld) {
         game.init(_wd > _hg, _wd, _hg);
 
         setHandAndButtons();
+
+        if (pbLoadOld) {
+            try {
+                DataInputStream in = new DataInputStream(
+                        openFileInput(game.getClass().getName() + ".txt"));
+                int iCountHands = in.readInt();
+                for (int i = 0; i < iCountHands; i++) {
+
+                }
+            } catch (Exception ex) {
+                // ignore
+            }
+        }
         requestRender();
     }
 }

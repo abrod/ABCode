@@ -110,7 +110,8 @@ public class CardsTexture extends OpenGLTexture {
         return createCell(i % countX, i / countX);
     }
 
-    public static List<Card> create52Cards() {
+    public static List<Card> create52Cards(int piOffset) {
+        int iCounter = piOffset;
         List<Card> listCards = new ArrayList<Card>();
         for (de.brod.game.cm.Card.Color col : de.brod.game.cm.Card.Color
                 .values()) {
@@ -119,15 +120,15 @@ public class CardsTexture extends OpenGLTexture {
             }
             CardsTexture texture = getTexture(col);
             for (int j = 0; j < 13; j++) {
-                listCards.add(texture.createCard(Card.Value.values()[j]));
+                listCards.add(texture.createCard(iCounter++, Card.Value.values()[j]));
             }
         }
         Collections.shuffle(listCards);
         return listCards;
     }
 
-    public Card createCard(Value value) {
-        return new Card(this, value, 0, 0);
+    public Card createCard(int piId, Value value) {
+        return new Card(piId, this, value, 0, 0);
     }
 
     private static CardsTexture getTexture(de.brod.game.cm.Card.Color pColor) {

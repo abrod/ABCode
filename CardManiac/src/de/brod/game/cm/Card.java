@@ -7,9 +7,11 @@ public class Card extends OpenGLSquare {
     private Value _val;
     private Color _col;
     public Hand hand;
+    private final int id;
 
-    public Card(CardsTexture tex, Value val, float x, float y) {
+    public Card(int piId, CardsTexture tex, Value val, float x, float y) {
         super(getX(x), getY(y), wd, hg, tex.createCell(val.ordinal()));
+        id = piId;
         _val = val;
         _col = tex.color;
         setRotateY(0);
@@ -22,6 +24,11 @@ public class Card extends OpenGLSquare {
     static float getX(float x) {
         return x * wd2 + wdOff;
     }
+
+    public int getId() {
+        return id;
+    }
+
 
     public enum Value {
         c2("2"), c3("3"), c4("4"), c5("5"), c6("6"), c7("7"), c8("8"), c9("9"), c10(
@@ -91,7 +98,7 @@ public class Card extends OpenGLSquare {
     public void setPosition(int piId, float x, float y) {
         float x2 = getX(x);
         float y2 = getY(y);
-        setId(piId);
+        setOrder(piId);
         setXY(x2, y2);
     }
 }

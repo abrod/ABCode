@@ -13,8 +13,8 @@ public abstract class Game implements IMoves {
 
     public abstract void init(boolean pbLandscape, float pWd, float pHg);
 
-    protected void newGame(boolean pbAsk) {
-        gameActivity.newGame(pbAsk);
+    protected void newGame(boolean pbLoadOld) {
+        gameActivity.newGame(pbLoadOld);
     }
 
     public void setActivity(GameActivity pGameActivity) {

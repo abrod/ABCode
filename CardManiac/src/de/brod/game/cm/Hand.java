@@ -7,6 +7,7 @@ import java.util.List;
 
 public abstract class Hand extends OpenGLRectangle {
 
+    private final int id;
     float x1, x2, y1, y2;
     private int count;
 
@@ -14,11 +15,11 @@ public abstract class Hand extends OpenGLRectangle {
 
     public boolean dirty;
 
-    public Hand(float px1, float py1, float px2, float py2, int piCount) {
-        this(px1, py1, px2, py2, piCount, false);
+    public Hand(int id, float px1, float py1, float px2, float py2, int piCount) {
+        this(id, px1, py1, px2, py2, piCount, false);
     }
 
-    public Hand(float px1, float py1, float px2, float py2, int piCount,
+    public Hand(int id, float px1, float py1, float px2, float py2, int piCount,
                 boolean pbLandscape) {
         super(Card.getX(Math.min(px1, px2)) - (pbLandscape ? Card.hg : Card.wd)
                 / 2, Card.getY(Math.min(py1, py2))
@@ -27,6 +28,7 @@ public abstract class Hand extends OpenGLRectangle {
                 .getY(Math.max(py1, py2))
                 + (!pbLandscape ? Card.hg : Card.wd)
                 / 2);
+        this.id = id;
         x1 = px1;
         x2 = px2;
         y2 = py2;
@@ -72,4 +74,11 @@ public abstract class Hand extends OpenGLRectangle {
         dirty = false;
     }
 
+    public List<Card> getCards() {
+        return lstCards;
+    }
+
+    public int getId() {
+        return id;
+    }
 }

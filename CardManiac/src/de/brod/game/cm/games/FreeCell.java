@@ -18,7 +18,7 @@ public class FreeCell extends Patience {
     public void init(boolean pbLandscape, float pWd, float pHg) {
 
         // create the cards
-        List<Card> cards = CardsTexture.create52Cards();
+        List<Card> cards = CardsTexture.create52Cards(0);
 
         button = new Button[1];
         button[0] = new Button(-pWd, pHg, -pWd + Card.wd * 3, pHg - Card.wd) {
@@ -29,7 +29,7 @@ public class FreeCell extends Patience {
                 getGameActivity().confirm(getString(R.string.question), getString(R.string.do_you_want_to_start_a_new_game), getString(R.string.confirm_yes), new IAction() {
                     @Override
                     public void doAction() {
-                        newGame(true);
+                        newGame(false);
                     }
                 }, getString(R.string.confirm_no), null);
             }
@@ -42,7 +42,7 @@ public class FreeCell extends Patience {
         for (int x = 0; x < 8; x++) {
             float iTop = x + (x < 4 ? -1 : 1) * 0.0f;
             if (x < 4) {
-                hand[x + 8] = new Hand(iTop, Card.maxy, iTop, Card.maxy, 52) {
+                hand[x + 8] = new Hand(x + 8, iTop, Card.maxy, iTop, Card.maxy, 52) {
 
                     @Override
                     public void actionUp(List<Card> lstMove2) {
@@ -58,7 +58,7 @@ public class FreeCell extends Patience {
                     }
                 };
             } else {
-                hand[x + 8] = new Hand(iTop, Card.maxy, iTop, Card.maxy, 52) {
+                hand[x + 8] = new Hand(x + 8, iTop, Card.maxy, iTop, Card.maxy, 52) {
 
                     @Override
                     public void actionUp(List<Card> lstMove2) {
@@ -83,7 +83,7 @@ public class FreeCell extends Patience {
                 hand[x + 8].setText("A");
                 hand[x + 8].setTextColor(128, 128, 255, 64);
             }
-            hand[x] = new Hand(x, Card.maxy - 1, x, 0, 10) {
+            hand[x] = new Hand(x, x, Card.maxy - 1, x, 0, 10) {
 
                 @Override
                 public void actionUp(List<Card> lstMove2) {

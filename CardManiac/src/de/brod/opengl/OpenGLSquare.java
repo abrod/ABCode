@@ -67,7 +67,7 @@ public class OpenGLSquare implements Comparable<OpenGLSquare> {
     private boolean _visible;
     private Line _line = new Line();
     private float _xy = -123456;
-    private int _iLevel = 0, _id = 0;
+    private int _iLevel = 0, _iOrder = 0;
     private float _rotY = 0;
     private int _iUp = 0;
     private OpenGLText _openGLText;
@@ -302,19 +302,19 @@ public class OpenGLSquare implements Comparable<OpenGLSquare> {
         if (diff > 0) {
             return 1;
         }
-        return _id - another._id;
+        return _iOrder - another._iOrder;
     }
 
     protected void setLevel(int level) {
         _iLevel = level;
     }
 
-    public int getId() {
-        return _id;
+    public int getOrder() {
+        return _iOrder;
     }
 
-    public void setId(int id) {
-        this._id = id;
+    public void setOrder(int piOrder) {
+        this._iOrder = piOrder;
     }
 
     public void setRotateY(float pRotY) {
