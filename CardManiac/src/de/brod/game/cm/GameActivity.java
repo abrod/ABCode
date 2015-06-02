@@ -66,35 +66,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
     }
 
     @Override
-    protected void actionUp(List<Card> lstMove2, Hand openGLRectangle) {
-        if (openGLRectangle != null) {
-            openGLRectangle.dirty = true;
-            if (lstMove2.size() > 0) {
-                openGLRectangle.actionUp(lstMove2);
-            }
-        }
-        for (OpenGLSquare square : lstMove2) {
-            ((Card) square).hand.dirty = true;
-        }
-        // organize
-        for (Hand h : game.hand) {
-            // organize
-            if (h.dirty) {
-                h.organize();
-            }
-        }
-    }
-
-    protected void requestRender() {
-
-        // save
-        saveCards();
-
-        super.requestRender();
-    }
-
-
-    private void saveCards() {
+    protected void saveState() {
         try {
             Log.d("saveCards", "Start " + getFileName());
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -120,6 +92,31 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
             Log.e("saveCards", "Error", e);
         }
     }
+
+    @Override
+    protected void actionUp(List<Card> lstMove2, Hand openGLRectangle) {
+        if (openGLRectangle != null) {
+            openGLRectangle.dirty = true;
+            if (lstMove2.size() > 0) {
+                openGLRectangle.actionUp(lstMove2);
+            }
+        }
+        for (OpenGLSquare square : lstMove2) {
+            ((Card) square).hand.dirty = true;
+        }
+        // organize
+        for (Hand h : game.hand) {
+            // organize
+            if (h.dirty) {
+                h.organize();
+            }
+        }
+
+        // save
+        saveState();
+
+    }
+
 
     @Override
     protected IMoves getAction() {

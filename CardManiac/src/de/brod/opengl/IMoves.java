@@ -5,5 +5,4 @@ public interface IMoves {
     void makeNextMove();
 
     boolean hasNextMove();
-
 }

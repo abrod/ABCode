@@ -49,6 +49,7 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         @Override
         public void run() {
             action.makeNextMove();
+            saveState();
             // draw again
             requestRender();
         }
@@ -70,6 +71,8 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         }
 
     }
+
+    protected abstract void saveState();
 
     List<Square> lstSquares = new ArrayList<Square>();
     private List<Square> lstMove = new ArrayList<Square>();
