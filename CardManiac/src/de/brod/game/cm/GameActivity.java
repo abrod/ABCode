@@ -4,11 +4,13 @@ import android.content.Context;
 import android.util.Log;
 import de.brod.game.cm.games.FreeCell;
 import de.brod.game.cm.games.Game;
+import de.brod.opengl.IAction;
 import de.brod.opengl.IMoves;
 import de.brod.opengl.OpenGLActivity;
 import de.brod.opengl.OpenGLSquare;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -121,6 +123,23 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
     @Override
     protected IMoves getAction() {
         return game;
+    }
+
+    @Override
+    protected List<IAction> getMenuActions() {
+        List<IAction> lst = new ArrayList<>();
+        lst.add(new IAction() {
+            @Override
+            public String getTitle() {
+                return "Info";
+            }
+
+            @Override
+            public void doAction() {
+                showText("Info pressed");
+            }
+        });
+        return lst;
     }
 
     public void newGame(boolean pbLoadOld) {

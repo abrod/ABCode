@@ -28,6 +28,11 @@ public class FreeCell extends Patience {
 
                 getGameActivity().confirm(getString(R.string.question), getString(R.string.do_you_want_to_start_a_new_game), getString(R.string.confirm_yes), new IAction() {
                     @Override
+                    public String getTitle() {
+                        return "Confirm";
+                    }
+
+                    @Override
                     public void doAction() {
                         newGame(false);
                     }

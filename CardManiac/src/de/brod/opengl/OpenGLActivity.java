@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.*;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 
 public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle extends OpenGLRectangle, Button extends OpenGLButton>
@@ -35,6 +35,10 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
                 .setPositiveButton(sButtonYes, listenYes)
                 .setNegativeButton(sButtonNo, listenNo)
                 .show();
+    }
+
+    public void showText(String sText) {
+        Toast.makeText(this, sText, Toast.LENGTH_SHORT).show();
     }
 
     class ThinkThread extends Thread {
@@ -232,8 +236,8 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
 
         // set the view
         view = new OpenGLView<Square, Rectangle, Button>(this);
-        setContentView(view);
 
+        setContentView(view);
     }
 
     private void sortSqares() {
@@ -331,4 +335,31 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         lstButtons.clear();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        List<IAction> lst = getMenuActions();
+        htMenuActions.clear();
+        for (int i = 0; i < lst.size(); i++) {
+            IAction action = lst.get(i);
+            menu.add(0, i, 0, action.getTitle());
+            htMenuActions.put(Integer.valueOf(i), action);
+        }
+        return true;
+    }
+
+    protected abstract List<IAction> getMenuActions();
+
+    Hashtable<Integer, IAction> htMenuActions = new Hashtable<>();
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        IAction action = htMenuActions.get(Integer.valueOf(item.getItemId()));
+        if (action != null) {
+            action.doAction();
+            return true;
+        }
+        return false;
+    }
 }
