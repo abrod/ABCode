@@ -139,10 +139,13 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
                 showText("Info pressed");
             }
         });
+        game.addMenuActions(lst);
         return lst;
     }
 
     public void newGame(boolean pbLoadOld) {
+
+        Card.init(_wd, _hg);
         game.init(_wd > _hg, _wd, _hg);
 
         setHandAndButtons();

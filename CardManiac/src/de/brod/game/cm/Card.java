@@ -29,6 +29,29 @@ public class Card extends OpenGLSquare {
         return _id;
     }
 
+    public static void init(float pWd, float pHg) {
+        int dx = 8;
+        int dy = 6;
+
+        maxx = dx - 1;
+
+        wd = 2f / dx;
+        wd2 = (2 - wd) / maxx;
+        wdOff = wd / 2 - 2 + pWd;
+
+        maxy = dy - 1;
+        hg = 2f / dy;
+        hg2 = (2 - hg) / maxy;
+        hgOff = hg / 2 - pHg;
+
+        // add one card size
+        if (pWd > pHg) {
+            wdOff -= wd / 2;
+        } else {
+            hgOff += wd / 2;
+        }
+    }
+
 
     public enum Value {
         c2("2"), c3("3"), c4("4"), c5("5"), c6("6"), c7("7"), c8("8"), c9("9"), c10(
@@ -68,23 +91,11 @@ public class Card extends OpenGLSquare {
 
     }
 
-    public static final float wd, hg, hg2, hgOff, wd2, wdOff;
-    public static final int maxx, maxy;
+    public static float wd, hg, hg2, hgOff, wd2, wdOff;
+    public static int maxx, maxy;
 
     static {
-        int dx = 8;
-        int dy = 6;
-
-        maxx = dx - 1;
-
-        wd = 2f / dx;
-        wd2 = (2 - wd) / maxx;
-        wdOff = wd / 2 - 1;
-
-        maxy = dy - 1;
-        hg = 2f / dy;
-        hg2 = (2 - hg) / maxy;
-        hgOff = hg / 2 - 1;
+        init(5f / 3f, 1f);
     }
 
     public Value getValue() {

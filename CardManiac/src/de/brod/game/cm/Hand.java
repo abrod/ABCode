@@ -78,6 +78,10 @@ public abstract class Hand extends OpenGLRectangle {
         return lstCards;
     }
 
+    public int getCardCount() {
+        return lstCards.size();
+    }
+
     public int getId() {
         return id;
     }
