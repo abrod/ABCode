@@ -83,7 +83,7 @@ public class FreeCell extends Patience {
                                 addCard(c);
                             }
                         }
-                        if (cardCount != getCardCount()) {
+                        if (cardCount == getCardCount()) {
                             getGameActivity().showText(getString(R.string.this_move_is_not_allowed));
                         }
                     }

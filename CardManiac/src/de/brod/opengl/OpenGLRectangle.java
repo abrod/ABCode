@@ -139,7 +139,16 @@ public abstract class OpenGLRectangle {
     }
 
     public void setUp(boolean pbUp) {
-        iUp = pbUp ? 0 : 1;
+        int iUpNew = pbUp ? 0 : 1;
+        if (iUp != iUpNew) {
+            iUp = iUpNew;
+            if (pbUp) {
+                openGLText.moveTo(cx, cy);
+            } else {
+                float min = Math.min(wd, hg) / 30;
+                openGLText.moveTo(cx + min, cy - min);
+            }
+        }
     }
 
     protected void initColor() {
