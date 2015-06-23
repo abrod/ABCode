@@ -8,6 +8,7 @@
     <string name="confirm_yes">Ja</string>
     <string name="confirm_no">Nein</string>
     <string name="confirm">Bestätigung</string>
-    <string name="this_move_is_not_allowed">this move is not allowed</string>
+    <string name="this_move_is_not_allowed">Dieser Zug ist nicht erlaubt</string>
+    <string name="select_game">Wähle Spiel</string>
 
 </resources>

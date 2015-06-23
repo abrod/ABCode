@@ -8,9 +8,10 @@ public class Card extends OpenGLSquare {
     private Color _col;
     public Hand hand;
     private final int _id;
+    private boolean hidden;
 
     public Card(int piId, CardsTexture tex, Value val, float x, float y) {
-        super(getX(x), getY(y), wd, hg, tex.createCell(val.ordinal()));
+        super(getX(x), getY(y), wd, hg, tex.createCell(val.ordinal(), CardsTexture.background));
         _id = piId;
         _val = val;
         _col = tex.color;
@@ -49,6 +50,17 @@ public class Card extends OpenGLSquare {
             wdOff -= wd / 2;
         } else {
             hgOff += wd / 2;
+        }
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean pHidden) {
+        if (this.hidden != pHidden) {
+            this.hidden = pHidden;
+            setRotateY(pHidden ? 1 : 0);
         }
     }
 

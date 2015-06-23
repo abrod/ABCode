@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import de.brod.game.cm.games.FreeCell;
 import de.brod.game.cm.games.Game;
+import de.brod.game.cm.games.Solitair;
 import de.brod.opengl.IAction;
 import de.brod.opengl.IMoves;
 import de.brod.opengl.OpenGLActivity;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
 
-    Game game;
+    public Game game;
     private List<Card> _lstSquares;
     private List<Hand> _lstIDrawArea;
     private List<Button> _lstButtons;
@@ -32,12 +33,23 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
         _wd = pWd;
         _hg = pHg;
 
-        game = new FreeCell();
+        // selectGame(FreeCell.class);
+        selectGame(Solitair.class);
 
+    }
+
+    public void selectGame(Class<? extends Game> pGameClass) {
+        try {
+            game = pGameClass.newInstance();
+        } catch (Exception e) {
+            // fallback
+            game = new FreeCell();
+        }
         game.setActivity(this);
 
         newGame(true);
 
+        game.organize();
     }
 
     private void setHandAndButtons() {
@@ -78,6 +90,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
             for (Hand h : game.hand) {
                 // save the state
                 out.writeInt(h.getId());
+                h.write(out);
                 List<Card> cards = h.getCards();
                 out.writeInt(cards.size());
                 for (Card c : cards) {
@@ -128,17 +141,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
     @Override
     protected List<IAction> getMenuActions() {
         List<IAction> lst = new ArrayList<>();
-        lst.add(new IAction() {
-            @Override
-            public String getTitle() {
-                return "Info";
-            }
 
-            @Override
-            public void doAction() {
-                showText("Info pressed");
-            }
-        });
         game.addMenuActions(lst);
         return lst;
     }
@@ -152,8 +155,9 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
 
         if (pbLoadOld) {
             loadCards();
+        } else {
+            requestRender();
         }
-        requestRender();
     }
 
     private void loadCards() {
@@ -173,18 +177,20 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
             for (int i = 0; i < iCountHands; i++) {
                 int iHand = in.readInt();
                 Hand hand = htHands.get(Integer.valueOf(iHand));
-
+                hand.read(in);
                 int iCountCards = in.readInt();
                 for (int j = 0; j < iCountCards; j++) {
                     int iCard = in.readInt();
                     Card card = htCards.get(Integer.valueOf(iCard));
                     hand.addCard(card);
                 }
+                hand.organize();
             }
-
+            requestRender();
         } catch (Exception ex) {
             // ignore
             Log.e("loadCards", "Error", ex);
+            newGame(false);
         }
     }
 

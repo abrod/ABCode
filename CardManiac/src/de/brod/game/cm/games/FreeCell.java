@@ -52,9 +52,9 @@ public class FreeCell extends Patience {
                     @Override
                     public void actionUp(List<Card> lstMove2) {
                         if (lstCards.size() > 0) {
-                            getGameActivity().showText(getString(R.string.this_move_is_not_allowed));
+                            showMoveIsNotAllowed();
                         } else if (lstMove2.size() != 1) {
-                            getGameActivity().showText(getString(R.string.this_move_is_not_allowed));
+                            showMoveIsNotAllowed();
                         } else {
                             Card c = lstMove2.get(0);
                             addCard(c);
@@ -84,7 +84,7 @@ public class FreeCell extends Patience {
                             }
                         }
                         if (cardCount == getCardCount()) {
-                            getGameActivity().showText(getString(R.string.this_move_is_not_allowed));
+                            showMoveIsNotAllowed();
                         }
                     }
 
@@ -103,7 +103,7 @@ public class FreeCell extends Patience {
                     Card lastCard = getLastCard();
                     if (lastCard != null
                             && !isNext(lastCard, lstMove2.get(0), false)) {
-                        getGameActivity().showText(getString(R.string.this_move_is_not_allowed));
+                        showMoveIsNotAllowed();
                         return;
                     }
                     for (Card c : lstMove2) {

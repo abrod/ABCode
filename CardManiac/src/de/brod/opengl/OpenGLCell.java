@@ -14,7 +14,7 @@ public class OpenGLCell {
 
     OpenGLTexture t;
 
-    public OpenGLCell(OpenGLTexture pTextures, float x, float y) {
+    public OpenGLCell(OpenGLTexture pTextures, float x1, float y1, float x2, float y2) {
         textures = pTextures.textures;
         t = pTextures;
         textureBuffer = new FloatBuffer[2];
@@ -23,21 +23,25 @@ public class OpenGLCell {
             byteBuffer.order(ByteOrder.nativeOrder());
             textureBuffer[i] = byteBuffer.asFloatBuffer();
         }
-        setGrid(x, y);
+        setGrid(x1, y1, x2, y2);
     }
 
-    protected void setGrid(float x, float y) {
-        setGrid(x, y, x + 1, y + 1);
+    public OpenGLCell(OpenGLTexture pTextures, float x, float y) {
+        this(pTextures, x, y, x, y);
     }
 
-    protected void setGrid(float x, float y, float xMax, float yMax) {
+    protected void setGrid(float x1, float y1, float x2, float y2) {
+        setGrid(x1, y1, x1 + 1, y1 + 1, x2, y2, x2 + 1, y2 + 1);
+    }
+
+    protected void setGrid(float px1, float py1, float px1Max, float py1Max, float px2, float py2, float px2Max, float py2Max) {
 
         textureBuffer[0].position(0);
 
-        float x1 = x / t.cx;
-        float y1 = y / t.cy;
-        float y2 = yMax / t.cy;
-        float x2 = xMax / t.cx;
+        float x1 = px1 / t.cx;
+        float y1 = py1 / t.cy;
+        float y2 = py1Max / t.cy;
+        float x2 = px1Max / t.cx;
 
         // bottom left  (V1)
         textureBuffer[0].put(x1);
@@ -55,6 +59,18 @@ public class OpenGLCell {
         textureBuffer[0].position(0);
 
         textureBuffer[1].position(0);
+
+        if (px2 != px1 || py1 != py2) {
+            x2 = px2 / t.cx;
+            y1 = py2 / t.cy;
+            y2 = py2Max / t.cy;
+            x1 = px2Max / t.cx;
+        } else {
+            x1 = px2 / t.cx;
+            y1 = py2 / t.cy;
+            y2 = py2Max / t.cy;
+            x2 = px2Max / t.cx;
+        }
 
         // top left     (V2)
         textureBuffer[1].put(x1);

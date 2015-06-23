@@ -191,7 +191,6 @@ public class OpenGLSquare implements Comparable<OpenGLSquare> {
 
     /**
      * This function draws our square on screen.
-     *
      */
     void draw(GL10 gl, OpenGLSquare old, Context context) {
 
@@ -226,7 +225,7 @@ public class OpenGLSquare implements Comparable<OpenGLSquare> {
     }
 
     void refreshView() {
-        float xy = _x - _y * 4f;
+        float xy = _x - _y * 4f + _rotY / 100000f;
         if (xy == _xy) {
             return;
         }

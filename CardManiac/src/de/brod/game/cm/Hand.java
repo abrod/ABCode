@@ -2,6 +2,9 @@ package de.brod.game.cm;
 
 import de.brod.opengl.OpenGLRectangle;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +12,7 @@ public abstract class Hand extends OpenGLRectangle {
 
     private final int id;
     float x1, x2, y1, y2;
-    private int count;
+    protected int count, hidden;
 
     protected List<Card> lstCards = new ArrayList<Card>();
 
@@ -43,10 +46,14 @@ public abstract class Hand extends OpenGLRectangle {
     public void addCard(Card card) {
         if (card.hand != null) {
             card.hand.lstCards.remove(card);
-            card.hand.dirty = true;
+            if (card.hand != this) {
+                card.hand.setHidden();
+                card.hand.dirty = true;
+            }
         }
         lstCards.add(card);
         card.hand = this;
+        setHidden();
         dirty = true;
     }
 
@@ -72,6 +79,7 @@ public abstract class Hand extends OpenGLRectangle {
             y += dy;
         }
         dirty = false;
+        setHidden();
     }
 
     public List<Card> getCards() {
@@ -84,5 +92,31 @@ public abstract class Hand extends OpenGLRectangle {
 
     public int getId() {
         return id;
+    }
+
+    public int getHidden() {
+        return hidden;
+    }
+
+    public void setHidden(int piHidden) {
+        if (this.hidden != piHidden) {
+            dirty = true;
+            this.hidden = piHidden;
+            organize();
+        }
+    }
+
+    protected void setHidden() {
+        for (int i = 0; i < lstCards.size(); i++) {
+            lstCards.get(i).setHidden(i < hidden);
+        }
+    }
+
+    public void write(DataOutputStream out) throws IOException {
+        out.writeInt(hidden);
+    }
+
+    public void read(DataInputStream in) throws IOException {
+        hidden = in.readInt();
     }
 }

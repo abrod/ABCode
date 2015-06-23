@@ -92,13 +92,13 @@ public abstract class OpenGLTexture {
 
     protected abstract Bitmap createBitmap(int piScreenWidth, int piScreenHeight);
 
-    public OpenGLCell createCell(float x, float y) {
-        return new OpenGLCell(this, x, y);
+    public OpenGLCell createCell(float x, float y, float xBack, float yBack) {
+        return new OpenGLCell(this, x, y, xBack, yBack);
     }
 
-    public OpenGLCell createCell(float x, float y, float xMax, float yMax) {
+    public OpenGLCell createRectangle(float x, float y, float xMax, float yMax) {
         OpenGLCell cell = new OpenGLCell(this, x, y);
-        cell.setGrid(x, y, xMax, yMax);
+        cell.setGrid(x, y, xMax, yMax, x, y, xMax, yMax);
         return cell;
     }
 }

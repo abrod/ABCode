@@ -13,6 +13,8 @@ public class CardsTexture extends OpenGLTexture {
 
     static int countX = 5;
     static int countY = 3;
+    public static int background = 14;
+
     private static CardsTexture[] tex = new CardsTexture[de.brod.game.cm.Card.Color
             .length() + 1];
 
@@ -55,21 +57,27 @@ public class CardsTexture extends OpenGLTexture {
         return bitmap;
     }
 
-    private void drawCard(int iCardNumber, Canvas c, RectF r, Paint p,
+    private void drawCard(int iCardNumber, Canvas c, RectF pr, Paint p,
                           float dx, int pTextSize) {
         Value[] values = Card.Value.values();
         p.setColor(Color.argb(64, 0, 0, 0));
         float dx10 = dx / 10;
         float dx20 = dx / 20;
-        c.drawRoundRect(r, dx10, dx10, p);
+        c.drawRoundRect(pr, dx10, dx10, p);
         float dx40 = dx20 / 2;
         float dx80 = dx40 / 2;
-        r = new RectF(r.left + dx80, r.top + dx40, r.right - dx40, r.bottom
+        RectF r = new RectF(pr.left + dx80, pr.top + dx40, pr.right - dx40, pr.bottom
                 - dx80);
         p.setColor(Color.WHITE);
         c.drawRoundRect(r, dx10, dx10, p);
 
         if (iCardNumber > values.length) {
+            if (iCardNumber == background) {
+                r = new RectF(r.left + dx40, r.top + dx40, r.right - dx40, r.bottom
+                        - dx40);
+                p.setColor(Color.BLUE);
+                c.drawRoundRect(r, dx10, dx10, p);
+            }
             return;
         }
 
@@ -106,18 +114,15 @@ public class CardsTexture extends OpenGLTexture {
 
     }
 
-    public OpenGLCell createCell(int i) {
-        return createCell(i % countX, i / countX);
+    public OpenGLCell createCell(int i, int iBack) {
+        return createCell(i % countX, i / countX, iBack % countX, iBack / countX);
     }
 
     public static List<Card> create52Cards(int piOffset) {
         int iCounter = piOffset;
         List<Card> listCards = new ArrayList<Card>();
-        for (de.brod.game.cm.Card.Color col : de.brod.game.cm.Card.Color
-                .values()) {
-            if (col.ordinal() >= 4) {
-                continue;
-            }
+        de.brod.game.cm.Card.Color[] colors = {Card.Color.clubs, Card.Color.diamonds, Card.Color.hearts, Card.Color.spades};
+        for (de.brod.game.cm.Card.Color col : colors) {
             CardsTexture texture = getTexture(col);
             for (int j = 0; j < 13; j++) {
                 listCards.add(texture.createCard(iCounter++, Card.Value.values()[j]));
