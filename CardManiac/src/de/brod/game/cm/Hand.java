@@ -118,5 +118,6 @@ public abstract class Hand extends OpenGLRectangle {
 
     public void read(DataInputStream in) throws IOException {
         hidden = in.readInt();
+        dirty = true;
     }
 }

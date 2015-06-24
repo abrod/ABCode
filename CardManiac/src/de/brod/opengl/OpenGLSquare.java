@@ -57,6 +57,7 @@ public class OpenGLSquare implements Comparable<OpenGLSquare> {
     private float _xStart, _yStart, _xEnd, _yEnd, _dx, _dy, _d;
     private float _touchX, _touchY;
     private float _r, _g, _b, _a;
+    private float _rY;
     private long _color;
 
     private OpenGLCell _cell;
@@ -225,11 +226,12 @@ public class OpenGLSquare implements Comparable<OpenGLSquare> {
     }
 
     void refreshView() {
-        float xy = _x - _y * 4f + _rotY / 1000f;
-        if (xy == _xy) {
+        float xy = _x - _y * 4f;
+        if (xy == _xy && _rY == _rotY) {
             return;
         }
         _xy = xy;
+        _rY = _rotY;
         int iPos = 0;
         for (int k = 0; k < _edges.length; k++) {
             float x = (_x + _width * _edges[k]);
@@ -333,6 +335,7 @@ public class OpenGLSquare implements Comparable<OpenGLSquare> {
     }
 
     public void setText(String psText) {
+        clear();
         _openGLText = new OpenGLText(_x, _y, _width * 2, _height * 2, psText);
     }
 }

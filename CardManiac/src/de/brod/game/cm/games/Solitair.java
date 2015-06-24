@@ -25,7 +25,7 @@ public class Solitair extends Patience {
         hand = new Hand[7 + 2 + 4];
 
 
-        hand[0] = new Hand(0, 0, Card.maxy, 1, Card.maxy, 20) {
+        hand[0] = new Hand(0, 0, Card.maxy, 1.3f, Card.maxy, 16) {
 
             @Override
             public void actionUp(List<Card> lstMove2) {
@@ -33,16 +33,21 @@ public class Solitair extends Patience {
                 if (lstMove2.get(0).hand == this) {
                     hand[1].addCard(lstMove2.get(0));
                     checkHand0();
+                } else {
+                    showMoveIsNotAllowed();
                 }
             }
 
             @Override
             public void actionDown(Card pDown, List<Card> plstMove) {
-                plstMove.add(pDown);
+                Card lastCard = getLastCard();
+                if (pDown.equals(lastCard)) {
+                    plstMove.add(lastCard);
+                }
             }
         };
 
-        hand[1] = new Hand(1, 2f, Card.maxy, 2.7f, Card.maxy, 4) {
+        hand[1] = new Hand(1, 2.3f, Card.maxy, 2.7f, Card.maxy, 3) {
 
             @Override
             public void actionUp(List<Card> lstMove2) {
@@ -59,7 +64,8 @@ public class Solitair extends Patience {
 
             @Override
             public void actionDown(Card pDown, List<Card> plstMove) {
-                plstMove.add(pDown);
+                if (pDown.equals(getLastCard()))
+                    plstMove.add(pDown);
             }
         };
 
@@ -84,16 +90,17 @@ public class Solitair extends Patience {
                     if (cardCount == getCardCount()) {
                         showMoveIsNotAllowed();
                     } else {
-                        organize();
+                        Solitair.this.organize();
                     }
                 }
 
                 @Override
                 public void actionDown(Card pDown, List<Card> plstMove) {
-                    plstMove.add(pDown);
+                    if (pDown.equals(getLastCard()))
+                        plstMove.add(pDown);
                 }
-
             };
+            setStackText(hand[x + 2], "A");
         }
 
         for (int x = 0; x < 7; x++) {
@@ -117,7 +124,7 @@ public class Solitair extends Patience {
                     for (Card c : lstMove2) {
                         addCard(c);
                     }
-                    organize();
+                    Solitair.this.organize();
                 }
 
                 @Override
@@ -179,9 +186,9 @@ public class Solitair extends Patience {
             int hidden = h.getHidden();
             if (hidden >= h.getCardCount()) {
                 h.setHidden(h.getCardCount() - 1);
-                h.organize();
             }
         }
+        super.organize();
     }
 
     @Override

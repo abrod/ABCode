@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class Game implements IMoves {
 
-    public Class<?>[] gameClasses = {FreeCell.class, Solitair.class};
+    public static final Class<?>[] gameClasses = {FreeCell.class, Solitair.class};
 
     public Hand[] hand;
     public Button[] button;

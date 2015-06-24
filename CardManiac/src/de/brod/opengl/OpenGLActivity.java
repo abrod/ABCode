@@ -41,6 +41,8 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         Toast.makeText(this, sText, Toast.LENGTH_SHORT).show();
     }
 
+    public abstract float[] getColorsRGB();
+
     class ThinkThread extends Thread {
         IMoves action = null;
         boolean finished = false;
@@ -240,7 +242,7 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         setContentView(view);
     }
 
-    private void sortSqares() {
+    protected void sortSqares() {
         Collections.sort(lstSquares);
     }
 

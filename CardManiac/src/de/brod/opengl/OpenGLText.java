@@ -43,7 +43,7 @@ public class OpenGLText extends OpenGLSquare {
             // draw the text to own canvas
             Paint p = new Paint();
             p.setTextSize(dy);
-            p.setColor(Color.BLACK);
+            p.setColor(Color.WHITE);
             Rect bounds = new Rect();
             p.getTextBounds(_sText, 0, _sText.length(), bounds);
             int border = bounds.height() / 2;
@@ -64,8 +64,6 @@ public class OpenGLText extends OpenGLSquare {
             float f3 = dx * 1f / dy;
 
             float f = f2 / f1;
-            System.out.println(f1 + " " + f2 + " = " + f3 + " ... " + _wd + " "
-                    + _hg + " " + f);
             int py = (int) ((dy - dy * f) / 2);
             int px = 0;
             if (py < 0) {

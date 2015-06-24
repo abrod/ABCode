@@ -3,6 +3,7 @@ package de.brod.game.cm.games;
 import de.brod.game.cm.Card;
 import de.brod.game.cm.Card.Color;
 import de.brod.game.cm.Card.Value;
+import de.brod.game.cm.Hand;
 
 public abstract class Patience extends Game {
     boolean isNext(Card found, Card c, boolean bExactColor) {
@@ -50,4 +51,13 @@ public abstract class Patience extends Game {
         return -1;
     }
 
+    public void setStackText(Hand hand, String psText) {
+        hand.setText(psText);
+        float[] colorsRGB = getGameActivity().getColorsRGB();
+        hand.setTextColor(getIntColor(colorsRGB[0], 2), getIntColor(colorsRGB[1], 2), getIntColor(colorsRGB[2], 2), 255);
+    }
+
+    private int getIntColor(float pfColor, int piFactor) {
+        return Math.min(255, Math.round(pfColor * 255 * piFactor));
+    }
 }

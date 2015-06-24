@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 import de.brod.game.cm.games.FreeCell;
 import de.brod.game.cm.games.Game;
-import de.brod.game.cm.games.Solitair;
 import de.brod.opengl.IAction;
 import de.brod.opengl.IMoves;
 import de.brod.opengl.OpenGLActivity;
@@ -22,19 +21,21 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
     private List<Hand> _lstIDrawArea;
     private List<Button> _lstButtons;
     private float _wd, _hg;
+    private float[] _colors;
 
     @Override
     protected void init(float pWd, float pHg, List<Card> lstSquares,
                         List<Hand> lstIDrawArea, List<Button> lstButtons) {
 
+        _colors = new float[]{0, 0, 0.3f};
         this._lstSquares = lstSquares;
         this._lstIDrawArea = lstIDrawArea;
         this._lstButtons = lstButtons;
         _wd = pWd;
         _hg = pHg;
 
-        // selectGame(FreeCell.class);
-        selectGame(Solitair.class);
+        selectGame(loadLastGameClass());
+
 
     }
 
@@ -45,6 +46,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
             // fallback
             game = new FreeCell();
         }
+        saveGameName();
         game.setActivity(this);
 
         newGame(true);
@@ -77,6 +79,45 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
     @Override
     public void actionDown(Card pDown, List<Card> plstMove) {
         pDown.hand.actionDown(pDown, plstMove);
+    }
+
+    @Override
+    public float[] getColorsRGB() {
+        return _colors;
+    }
+
+    private Class<? extends Game> loadLastGameClass() {
+        try {
+            Log.d("LastGame.txt", "Load");
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(openFileInput("LastGame.txt")));
+            String s = in.readLine();
+            in.close();
+            for (Class<?> gc : Game.gameClasses) {
+                if (gc.getName().equals(s)) {
+                    return (Class<? extends Game>) gc;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            // ignore
+            Log.d("LastGame.txt", "... not found");
+        } catch (Exception e) {
+            // could not read
+            e.printStackTrace();
+        }
+        return FreeCell.class;
+    }
+
+    private void saveGameName() {
+        FileOutputStream fileOut = null;
+        try {
+            Log.d("LastGame.txt", "Start " + game.getClass().getName());
+            fileOut = openFileOutput("LastGame.txt", Context.MODE_PRIVATE);
+            fileOut.write(game.getClass().getName().getBytes());
+            fileOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -151,11 +192,14 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
         Card.init(_wd, _hg);
         game.init(_wd > _hg, _wd, _hg);
 
-        setHandAndButtons();
-
         if (pbLoadOld) {
             loadCards();
+            setHandAndButtons();
+            sortSqares();
+            requestRender();
         } else {
+            setHandAndButtons();
+            sortSqares();
             requestRender();
         }
     }
@@ -186,7 +230,6 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
                 }
                 hand.organize();
             }
-            requestRender();
         } catch (Exception ex) {
             // ignore
             Log.e("loadCards", "Error", ex);

@@ -182,8 +182,8 @@ public abstract class OpenGLRectangle {
     public void setText(String psText) {
         if (openGLText == null) {
             openGLText = new OpenGLSquare(cx, cy, wd, hg, null);
-            openGLText.setText(psText);
         }
+        openGLText.setText(psText);
     }
 
     public void setTextColor(int pr, int pg, int pb, int pa) {

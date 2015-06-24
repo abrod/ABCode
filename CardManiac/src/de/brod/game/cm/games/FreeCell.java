@@ -93,8 +93,7 @@ public class FreeCell extends Patience {
                         plstMove.add(pDown);
                     }
                 };
-                hand[x + 8].setText("A");
-                hand[x + 8].setTextColor(128, 128, 255, 64);
+                setStackText(hand[x + 8], "A");
             }
             hand[x] = new Hand(x, x, Card.maxy - 1, x, 0, 10) {
 
