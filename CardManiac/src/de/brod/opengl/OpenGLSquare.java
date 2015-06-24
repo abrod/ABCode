@@ -225,7 +225,7 @@ public class OpenGLSquare implements Comparable<OpenGLSquare> {
     }
 
     void refreshView() {
-        float xy = _x - _y * 4f + _rotY / 100000f;
+        float xy = _x - _y * 4f + _rotY / 1000f;
         if (xy == _xy) {
             return;
         }
