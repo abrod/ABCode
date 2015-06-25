@@ -41,6 +41,35 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         Toast.makeText(this, sText, Toast.LENGTH_SHORT).show();
     }
 
+//    public void showPopupMenu(List<IAction> lst){
+//        /** Instantiating PopupMenu class */
+//        PopupMenu popup = new PopupMenu(getBaseContext(), view);
+//
+//        Hashtable<Integer, IAction> menuActions = new Hashtable<>();
+//
+//        /** Adding menu items to the popumenu */
+//        Menu menu = popup.getMenu();
+//        for (int i = 0; i < lst.size(); i++) {
+//            IAction action = lst.get(i);
+//            menu.add(0, i, 0, action.getTitle());
+//            menuActions.put(Integer.valueOf(i), action);
+//        }
+//
+//
+//        /** Defining menu item click listener for the popup menu */
+//        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//
+//            @Override
+//            public boolean onMenuItemClick(MenuItem item) {
+//                Toast.makeText(getBaseContext(), "You selected the action : " + item.getTitle(), Toast.LENGTH_SHORT).show();
+//                return true;
+//            }
+//        });
+//
+//        /** Showing the popup menu */
+//        popup.show();
+//    }
+    
     public abstract float[] getColorsRGB();
 
     class ThinkThread extends Thread {

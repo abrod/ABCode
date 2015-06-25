@@ -10,5 +10,6 @@
     <string name="confirm">Confirm</string>
     <string name="this_move_is_not_allowed">this move is not allowed</string>
     <string name="select_game">Select game</string>
+    <string name="only_2_moves_possible">only 2 moves possible</string>
 
 </resources>
