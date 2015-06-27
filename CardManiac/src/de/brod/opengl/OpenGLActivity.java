@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.*;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.List;
 
 public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle extends OpenGLRectangle, Button extends OpenGLButton>
         extends Activity {
+
+    private PopupWindow gameSelectPopupWindow;
 
     public void confirm(String sTitle, String sConfirmText, String sButtonYes, final IAction iActionYes, String sButtonNo, final IAction iActionNo) {
         DialogInterface.OnClickListener listenYes = iActionYes != null ? new DialogInterface.OnClickListener() {
@@ -41,35 +44,7 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         Toast.makeText(this, sText, Toast.LENGTH_SHORT).show();
     }
 
-//    public void showPopupMenu(List<IAction> lst){
-//        /** Instantiating PopupMenu class */
-//        PopupMenu popup = new PopupMenu(getBaseContext(), view);
-//
-//        Hashtable<Integer, IAction> menuActions = new Hashtable<>();
-//
-//        /** Adding menu items to the popumenu */
-//        Menu menu = popup.getMenu();
-//        for (int i = 0; i < lst.size(); i++) {
-//            IAction action = lst.get(i);
-//            menu.add(0, i, 0, action.getTitle());
-//            menuActions.put(Integer.valueOf(i), action);
-//        }
-//
-//
-//        /** Defining menu item click listener for the popup menu */
-//        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                Toast.makeText(getBaseContext(), "You selected the action : " + item.getTitle(), Toast.LENGTH_SHORT).show();
-//                return true;
-//            }
-//        });
-//
-//        /** Showing the popup menu */
-//        popup.show();
-//    }
-    
+
     public abstract float[] getColorsRGB();
 
     class ThinkThread extends Thread {
@@ -370,17 +345,30 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        List<IAction> lst = getMenuActions();
+        List<IMenuAction> lst = getMenuActions();
         htMenuActions.clear();
         for (int i = 0; i < lst.size(); i++) {
-            IAction action = lst.get(i);
-            menu.add(0, i, 0, action.getTitle());
-            htMenuActions.put(Integer.valueOf(i), action);
+            IMenuAction action = lst.get(i);
+            addMenuItem(menu, action);
         }
         return true;
     }
 
-    protected abstract List<IAction> getMenuActions();
+    private void addMenuItem(Menu pMenu, IMenuAction pAction) {
+        int iCounter = htMenuActions.size() + 1;
+        List<IMenuAction> lst = pAction.getSubMenu();
+        if (lst == null || lst.size() == 0) {
+            pMenu.add(0, iCounter, 0, pAction.getTitle());
+            htMenuActions.put(Integer.valueOf(iCounter), pAction);
+        } else {
+            SubMenu subMenu = pMenu.addSubMenu(pAction.getTitle());
+            for (IMenuAction mAction : lst) {
+                addMenuItem(subMenu, mAction);
+            }
+        }
+    }
+
+    protected abstract List<IMenuAction> getMenuActions();
 
     Hashtable<Integer, IAction> htMenuActions = new Hashtable<>();
 

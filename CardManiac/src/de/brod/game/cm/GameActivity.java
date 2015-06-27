@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import de.brod.game.cm.games.FreeCell;
 import de.brod.game.cm.games.Game;
-import de.brod.opengl.IAction;
+import de.brod.opengl.IMenuAction;
 import de.brod.opengl.IMoves;
 import de.brod.opengl.OpenGLActivity;
 import de.brod.opengl.OpenGLSquare;
@@ -180,8 +180,8 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
     }
 
     @Override
-    protected List<IAction> getMenuActions() {
-        List<IAction> lst = new ArrayList<>();
+    protected List<IMenuAction> getMenuActions() {
+        List<IMenuAction> lst = new ArrayList<>();
 
         game.addMenuActions(lst);
         return lst;

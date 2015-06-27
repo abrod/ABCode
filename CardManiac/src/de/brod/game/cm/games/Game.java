@@ -5,8 +5,10 @@ import de.brod.game.cm.Button;
 import de.brod.game.cm.GameActivity;
 import de.brod.game.cm.Hand;
 import de.brod.opengl.IAction;
+import de.brod.opengl.IMenuAction;
 import de.brod.opengl.IMoves;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Game implements IMoves {
@@ -36,13 +38,22 @@ public abstract class Game implements IMoves {
         return gameActivity.getString(piCounter);
     }
 
-    public void addMenuActions(List<IAction> lst) {
+    public void addMenuActions(List<IMenuAction> lst) {
         lst.add(actionNewGame());
         lst.add(actionSelectGame());
     }
 
-    private IAction actionSelectGame() {
-        return new IAction() {
+    private IMenuAction actionSelectGame() {
+        return new IMenuAction() {
+
+            @Override
+            public List<IMenuAction> getSubMenu() {
+                List<IMenuAction> lst = new ArrayList<>();
+                for (Class<?> g : gameClasses) {
+                    lst.add(getSelectGame(g));
+                }
+                return lst;
+            }
 
             @Override
             public String getTitle() {
@@ -51,21 +62,40 @@ public abstract class Game implements IMoves {
 
             @Override
             public void doAction() {
-                for (int i = 0; i < gameClasses.length; i++) {
-                    GameActivity gameActivity = getGameActivity();
-                    if (gameActivity.game.getClass().equals(gameClasses[i])) {
-                        Class<? extends Game> gameClass = (Class<? extends Game>) gameClasses[(i + 1) % gameClasses.length];
-                        gameActivity.selectGame(gameClass);
-                        return;
-                    }
-                }
+                // subMenu
+            }
+        };
+    }
+
+    private IMenuAction getSelectGame(final Class<?> pGame) {
+        return new IMenuAction() {
+            @Override
+            public List<IMenuAction> getSubMenu() {
+                return null;
+            }
+
+            @Override
+            public String getTitle() {
+                String name = pGame.getName();
+                return name.substring(name.lastIndexOf(".") + 1);
+            }
+
+            @Override
+            public void doAction() {
+                GameActivity gameActivity = getGameActivity();
+                gameActivity.selectGame((Class<? extends Game>) pGame);
             }
         };
     }
 
 
-    private IAction actionNewGame() {
-        return new IAction() {
+    private IMenuAction actionNewGame() {
+        return new IMenuAction() {
+
+            @Override
+            public List<IMenuAction> getSubMenu() {
+                return null;
+            }
 
             @Override
             public String getTitle() {
