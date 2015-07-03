@@ -196,7 +196,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
             @Override
             public List<IMenuAction> getSubMenu() {
                 List<IMenuAction> lst = new ArrayList<>();
-                Hashtable<String, String> htCodes = new Hashtable<>();
+                final Hashtable<String, String> htCodes = new Hashtable<>();
                 // https://developers.google.com/igoogle/docs/i18n?csw=1
                 htCodes.put(getString(R.string.la_english), "us");
                 htCodes.put(getString(R.string.la_german), "de");
@@ -206,7 +206,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
                 htCodes.put(getString(R.string.la_russian), "ru");
                 htCodes.put(getString(R.string.la_chinese), "zh");
 
-                for (String sLanguage : htCodes.keySet()) {
+                for (final String sLanguage : htCodes.keySet()) {
                     lst.add(new IMenuAction() {
                         @Override
                         public List<IMenuAction> getSubMenu() {
