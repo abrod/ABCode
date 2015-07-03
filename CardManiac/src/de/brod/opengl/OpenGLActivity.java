@@ -3,20 +3,21 @@ package de.brod.opengl;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle extends OpenGLRectangle, Button extends OpenGLButton>
         extends Activity {
 
     private PopupWindow gameSelectPopupWindow;
+    private Locale myLocale;
 
     public void confirm(String sTitle, String sConfirmText, String sButtonYes, final IAction iActionYes, String sButtonNo, final IAction iActionNo) {
         DialogInterface.OnClickListener listenYes = iActionYes != null ? new DialogInterface.OnClickListener() {
@@ -232,8 +233,11 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         // no title
+        initConfiguration(savedInstanceState);
+
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         // full screen
@@ -245,6 +249,8 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
 
         setContentView(view);
     }
+
+    protected abstract void initConfiguration(Bundle savedInstanceState);
 
     protected void sortSqares() {
         Collections.sort(lstSquares);
@@ -344,8 +350,8 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-
         List<IMenuAction> lst = getMenuActions();
+        Log.d("Create Menu", lst.size() + " entries");
         htMenuActions.clear();
         for (int i = 0; i < lst.size(); i++) {
             IMenuAction action = lst.get(i);
@@ -380,5 +386,41 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
             return true;
         }
         return false;
+    }
+
+    public void selectLocale(String psLocale) {
+        // supported languages
+        // https://developers.google.com/igoogle/docs/i18n?csw=1
+        Log.d("Select Locale", psLocale);
+        Locale locale = new Locale(psLocale);
+        if (psLocale.equalsIgnoreCase(""))
+            return;
+        myLocale = new Locale(psLocale);
+        saveLocale(psLocale);
+        Locale.setDefault(myLocale);
+        android.content.res.Configuration config = new android.content.res.Configuration();
+        config.locale = myLocale;
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+    }
+
+    public void restart() {
+        Intent i = getBaseContext().getPackageManager()
+                .getLaunchIntentForPackage(getBaseContext().getPackageName());
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        finish();
+        startActivity(i);
+    }
+
+    public void saveLocale(String lang) {
+        SharedPreferences prefs = getSharedPreferences("CommonPrefs", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("Language", lang);
+        editor.commit();
+    }
+
+    public void loadLocale() {
+        SharedPreferences prefs = getSharedPreferences("CommonPrefs", Activity.MODE_PRIVATE);
+        String language = prefs.getString("Language", "");
+        selectLocale(language);
     }
 }

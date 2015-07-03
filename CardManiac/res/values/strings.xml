@@ -11,5 +11,13 @@
     <string name="this_move_is_not_allowed">this move is not allowed</string>
     <string name="select_game">Select game</string>
     <string name="only_2_moves_possible">only 2 moves possible</string>
+    <string name="select_language">Select language</string>
+    <string name="la_english">english</string>
+    <string name="la_german">deutsch</string>
+    <string name="la_french">français</string>
+    <string name="la_italian">italiano</string>
+    <string name="la_spanish">español</string>
+    <string name="la_russian">русский</string>
+    <string name="la_chinese">中國</string>
 
 </resources>

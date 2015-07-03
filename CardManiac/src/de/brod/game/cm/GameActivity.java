@@ -1,7 +1,9 @@
 package de.brod.game.cm;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
+import de.brod.cardmaniac.R;
 import de.brod.game.cm.games.FreeCell;
 import de.brod.game.cm.games.Game;
 import de.brod.opengl.IMenuAction;
@@ -24,19 +26,20 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
     private float[] _colors;
 
     @Override
+    protected void initConfiguration(Bundle savedInstanceState) {
+        loadLocale();
+    }
+
+    @Override
     protected void init(float pWd, float pHg, List<Card> lstSquares,
                         List<Hand> lstIDrawArea, List<Button> lstButtons) {
-
         _colors = new float[]{0, 0, 0.3f};
         this._lstSquares = lstSquares;
         this._lstIDrawArea = lstIDrawArea;
         this._lstButtons = lstButtons;
         _wd = pWd;
         _hg = pHg;
-
         selectGame(loadLastGameClass());
-
-
     }
 
     public void selectGame(Class<? extends Game> pGameClass) {
@@ -184,7 +187,57 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
         List<IMenuAction> lst = new ArrayList<>();
 
         game.addMenuActions(lst);
+        lst.add(getSelectLanguageMenu());
         return lst;
+    }
+
+    private IMenuAction getSelectLanguageMenu() {
+        return new IMenuAction() {
+            @Override
+            public List<IMenuAction> getSubMenu() {
+                List<IMenuAction> lst = new ArrayList<>();
+                Hashtable<String, String> htCodes = new Hashtable<>();
+                // https://developers.google.com/igoogle/docs/i18n?csw=1
+                htCodes.put(getString(R.string.la_english), "us");
+                htCodes.put(getString(R.string.la_german), "de");
+                htCodes.put(getString(R.string.la_french), "fr");
+                htCodes.put(getString(R.string.la_italian), "it");
+                htCodes.put(getString(R.string.la_spanish), "es");
+                htCodes.put(getString(R.string.la_russian), "ru");
+                htCodes.put(getString(R.string.la_chinese), "zh");
+
+                for (String sLanguage : htCodes.keySet()) {
+                    lst.add(new IMenuAction() {
+                        @Override
+                        public List<IMenuAction> getSubMenu() {
+                            return null;
+                        }
+
+                        @Override
+                        public String getTitle() {
+                            return sLanguage;
+                        }
+
+                        @Override
+                        public void doAction() {
+                            selectLocale(htCodes.get(sLanguage));
+                            restart();
+                        }
+                    });
+                }
+                return lst;
+            }
+
+            @Override
+            public String getTitle() {
+                return getString(R.string.select_language);
+            }
+
+            @Override
+            public void doAction() {
+
+            }
+        };
     }
 
     public void newGame(boolean pbLoadOld) {
