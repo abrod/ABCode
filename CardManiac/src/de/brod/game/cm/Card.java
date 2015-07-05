@@ -1,5 +1,6 @@
 package de.brod.game.cm;
 
+import android.util.Log;
 import de.brod.opengl.OpenGLSquare;
 
 public class Card extends OpenGLSquare {
@@ -64,11 +65,21 @@ public class Card extends OpenGLSquare {
         }
     }
 
+    public static void initValues(String psValues) {
+        String[] split = psValues.split("[ ]+");
+        if (split.length == 4) {
+            Log.d("Select cards", psValues);
+            Value.cJ.sText = split[0];
+            Value.cQ.sText = split[1];
+            Value.cK.sText = split[2];
+            Value.cA.sText = split[3];
+        }
+    }
 
     public enum Value {
-        c2("2"), c3("3"), c4("4"), c5("5"), c6("6"), c7("7"), c8("8"), c9("9"), c10(
-                "10"), cJ("B"), cQ("D"), cK("K"), cA("A");
 
+        c2("2"), c3("3"), c4("4"), c5("5"), c6("6"), c7("7"), c8("8"), c9("9"), c10(
+                "10"), cJ("J"), cQ("Q"), cK("K"), cA("A");
         private String sText;
 
         Value(String psText) {

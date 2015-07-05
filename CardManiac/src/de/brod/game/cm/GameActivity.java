@@ -39,6 +39,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
         this._lstButtons = lstButtons;
         _wd = pWd;
         _hg = pHg;
+        Card.initValues(getString(R.string.la_jack_queen_king_ace));
         selectGame(loadLastGameClass());
     }
 

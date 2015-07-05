@@ -2,15 +2,16 @@
 <resources>
 
     <string name="app_name">CardManiac</string>
-    <string name="new_game">Neues Spiel</string>
-    <string name="do_you_want_to_start_a_new_game">Wollen Sie wirklich ein neues Spiel starten</string>
-    <string name="question">Frage</string>
-    <string name="confirm_yes">Ja</string>
-    <string name="confirm_no">Nein</string>
-    <string name="confirm">Bestätigung</string>
-    <string name="this_move_is_not_allowed">Dieser Zug ist nicht erlaubt</string>
-    <string name="select_game">Wähle Spiel</string>
-    <string name="only_2_moves_possible">nur 2 Züge möglich</string>
-    <string name="select_language">Wähle Sprache</string>
 
+    <string name="la_jack_queen_king_ace">10 11 12 1</string>
+    <string name="new_game">Nuevo Juego</string>
+    <string name="question">Pregunta</string>
+    <string name="confirm_yes">Sí</string>
+    <string name="select_game">Seleccionar juego</string>
+    <string name="select_language">Seleccione idioma</string>
+    <string name="do_you_want_to_start_a_new_game">¿Realmente desea iniciar un nuevo juego</string>
+    <string name="confirm">Confirmar</string>
+    <string name="only_2_moves_possible">sólo 2 movimientos posibles</string>
+    <string name="confirm_no">No</string>
+    <string name="this_move_is_not_allowed">No se permite este movimiento</string>
 </resources>

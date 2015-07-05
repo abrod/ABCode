@@ -100,7 +100,7 @@ public class Solitair extends Patience {
                         plstMove.add(pDown);
                 }
             };
-            setStackText(hand[x + 2], "A");
+            setStackText(hand[x + 2], Card.Value.cA.getText());
         }
 
         for (int x = 0; x < 7; x++) {

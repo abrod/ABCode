@@ -91,7 +91,7 @@ public class FreeCell extends Patience {
                         plstMove.add(pDown);
                     }
                 };
-                setStackText(hand[x + 8], "A");
+                setStackText(hand[x + 8], Card.Value.cA.getText());
             }
             hand[x] = new Hand(x, x, Card.maxy - 1, x, 0, 10) {
 
