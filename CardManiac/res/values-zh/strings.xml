@@ -3,7 +3,7 @@
 
     <string name="app_name">CardManiac</string>
 
-    <string name="la_jack_queen_king_ace">J Q K A</string>
+    <string name="la_jack_queen_king_ace">騎士 女王 國王 高手</string>
     <string name="new_game">新遊戲</string>
     <string name="question">題</string>
     <string name="confirm_yes">是</string>
