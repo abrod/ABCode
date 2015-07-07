@@ -21,7 +21,7 @@ public class CardsTexture extends OpenGLTexture {
     de.brod.game.cm.Card.Color color;
 
     public CardsTexture(de.brod.game.cm.Card.Color piCount) {
-        super(countX, countY);
+        super(countX, countY, false);
         color = piCount;
     }
 

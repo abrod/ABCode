@@ -10,7 +10,7 @@ import java.nio.FloatBuffer;
 public class OpenGLCell {
     private FloatBuffer[] textureBuffer;    // buffer holding the texture coordinates
 
-    private int[] textures;
+    protected int[] textures;
 
     OpenGLTexture t;
 
@@ -94,4 +94,7 @@ public class OpenGLCell {
         gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureBuffer[i]);
     }
 
+    public void clear() {
+        t.clear();
+    }
 }

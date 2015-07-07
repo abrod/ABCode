@@ -14,8 +14,8 @@ public class OpenGLText extends OpenGLSquare {
         private OpenGLCell _cell;
         private float _wd, _hg;
 
-        public OpenGLTextTexture(String psText, float wd, float hg) {
-            super(1, 1);
+        public OpenGLTextTexture(String psText, float wd, float hg, boolean pbFreeAutomatically) {
+            super(1, 1, pbFreeAutomatically);
             _sText = psText;
             _wd = wd;
             _hg = hg;
@@ -88,7 +88,7 @@ public class OpenGLText extends OpenGLSquare {
         private OpenGLTextTexture _initTexture;
 
         public OpenGLTextCell(String psText, float wd, float hg) {
-            super(new OpenGLTextTexture(psText, wd, hg), 0, 0);
+            super(new OpenGLTextTexture(psText, wd, hg, true), 0, 0);
             _initTexture = (OpenGLTextTexture) t;
             _initTexture.setCell(this);
         }

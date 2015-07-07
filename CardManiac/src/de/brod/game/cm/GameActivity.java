@@ -41,6 +41,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
         _hg = pHg;
         Card.initValues(getString(R.string.la_jack_queen_king_ace));
         selectGame(loadLastGameClass());
+        //
     }
 
     public void selectGame(Class<? extends Game> pGameClass) {

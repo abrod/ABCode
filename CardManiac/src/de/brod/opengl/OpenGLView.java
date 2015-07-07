@@ -67,6 +67,9 @@ public class OpenGLView<Square extends OpenGLSquare, Rectangle extends OpenGLRec
     @Override
     public void onDrawFrame(GL10 gl) {
         synchronized (this) {
+
+            OpenGLText.OpenGLTextTexture.checkTextures(gl);
+
             boolean slideSquares = a.slideSquares(false);
 
             float colors[] = a.getColorsRGB();

@@ -332,6 +332,9 @@ public class OpenGLSquare implements Comparable<OpenGLSquare> {
         if (_openGLText != null) {
             _openGLText.clear();
         }
+        if (_cell != null) {
+            _cell.clear();
+        }
     }
 
     public void setText(String psText) {

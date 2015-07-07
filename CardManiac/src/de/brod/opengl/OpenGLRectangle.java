@@ -9,7 +9,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 public abstract class OpenGLRectangle {
 
-    private static OpenGLRectangleTexture rectTexture;
+    private static OpenGLRectangleTexture buttonRectTexture;
     private float x1, x2, y1, y2;
     private OpenGLSquare[][] openGLSquare;
     private OpenGLSquare openGLText;
@@ -19,7 +19,7 @@ public abstract class OpenGLRectangle {
     static class OpenGLRectangleTexture extends OpenGLTexture {
 
         public OpenGLRectangleTexture() {
-            super(6, 3);
+            super(6, 3, false);
         }
 
         @Override
@@ -65,7 +65,7 @@ public abstract class OpenGLRectangle {
     }
 
     static {
-        rectTexture = new OpenGLRectangleTexture();
+        buttonRectTexture = new OpenGLRectangleTexture();
     }
 
     public OpenGLRectangle(float px1, float py1, float px2, float py2) {
@@ -86,14 +86,14 @@ public abstract class OpenGLRectangle {
             openGLSquare = new OpenGLSquare[][]{
                     {
                             new OpenGLSquare(cx, cy - hg / 4, wd, hg / 2,
-                                    rectTexture.createRectangle(0, 0, 3, 1.5f)),
+                                    buttonRectTexture.createRectangle(0, 0, 3, 1.5f)),
                             new OpenGLSquare(cx, cy + hg / 4, wd, hg / 2,
-                                    rectTexture.createRectangle(1.5f, 0, 3, 3))},
+                                    buttonRectTexture.createRectangle(1.5f, 0, 3, 3))},
                     {
                             new OpenGLSquare(cx, cy - hg / 4, wd, hg / 2,
-                                    rectTexture.createRectangle(0, 0, 3, 1.5f)),
+                                    buttonRectTexture.createRectangle(0, 0, 3, 1.5f)),
                             new OpenGLSquare(cx, cy + hg / 4, wd, hg / 2,
-                                    rectTexture.createRectangle(1.5f, 0, 3, 3))}};
+                                    buttonRectTexture.createRectangle(1.5f, 0, 3, 3))}};
         } else if (wd < hg) {
             float hg2 = wd / 3;
             float h2 = hg - hg2 * 2;
@@ -102,18 +102,18 @@ public abstract class OpenGLRectangle {
             openGLSquare = new OpenGLSquare[][]{
                     {
                             new OpenGLSquare(cx, cy + hOff, wd, hg2,
-                                    rectTexture.createRectangle(0, 0, 3, 1)),
+                                    buttonRectTexture.createRectangle(0, 0, 3, 1)),
                             new OpenGLSquare(cx, cy, wd, h2,
-                                    rectTexture.createRectangle(0, 1, 3, 2)),
+                                    buttonRectTexture.createRectangle(0, 1, 3, 2)),
                             new OpenGLSquare(cx, cy - hOff, wd, hg2,
-                                    rectTexture.createRectangle(0, 2, 3, 3))},
+                                    buttonRectTexture.createRectangle(0, 2, 3, 3))},
                     {
                             new OpenGLSquare(cx, cy + hOff, wd, hg2,
-                                    rectTexture.createRectangle(3, 0, 6, 1)),
+                                    buttonRectTexture.createRectangle(3, 0, 6, 1)),
                             new OpenGLSquare(cx, cy, wd, h2,
-                                    rectTexture.createRectangle(3, 1, 6, 2)),
+                                    buttonRectTexture.createRectangle(3, 1, 6, 2)),
                             new OpenGLSquare(cx, cy - hOff, wd, hg2,
-                                    rectTexture.createRectangle(3, 2, 6, 3))}};
+                                    buttonRectTexture.createRectangle(3, 2, 6, 3))}};
         } else {
             float wd2 = hg / 3;
             float w2 = wd - wd2 * 2;
@@ -122,18 +122,18 @@ public abstract class OpenGLRectangle {
             openGLSquare = new OpenGLSquare[][]{
                     {
                             new OpenGLSquare(cx - wOff, cy, wd2, hg,
-                                    rectTexture.createRectangle(0, 0, 1, 3)),
+                                    buttonRectTexture.createRectangle(0, 0, 1, 3)),
                             new OpenGLSquare(cx, cy, w2, hg,
-                                    rectTexture.createRectangle(1, 0, 2, 3)),
+                                    buttonRectTexture.createRectangle(1, 0, 2, 3)),
                             new OpenGLSquare(cx + wOff, cy, wd2, hg,
-                                    rectTexture.createRectangle(2, 0, 3, 3))},
+                                    buttonRectTexture.createRectangle(2, 0, 3, 3))},
                     {
                             new OpenGLSquare(cx - wOff, cy, wd2, hg,
-                                    rectTexture.createRectangle(3, 0, 4, 3)),
+                                    buttonRectTexture.createRectangle(3, 0, 4, 3)),
                             new OpenGLSquare(cx, cy, w2, hg,
-                                    rectTexture.createRectangle(4, 0, 5, 3)),
+                                    buttonRectTexture.createRectangle(4, 0, 5, 3)),
                             new OpenGLSquare(cx + wOff, cy, wd2, hg,
-                                    rectTexture.createRectangle(5, 0, 6, 3))}};
+                                    buttonRectTexture.createRectangle(5, 0, 6, 3))}};
         }
         initColor();
     }
