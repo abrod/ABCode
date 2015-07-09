@@ -15,6 +15,7 @@ public abstract class OpenGLRectangle {
     private OpenGLSquare openGLText;
     private int iUp;
     private float cx, cy, wd, hg;
+    private OpenGLSquare _icon;
 
     static class OpenGLRectangleTexture extends OpenGLTexture {
 
@@ -142,12 +143,23 @@ public abstract class OpenGLRectangle {
         int iUpNew = pbUp ? 0 : 1;
         if (iUp != iUpNew) {
             iUp = iUpNew;
-            if (pbUp) {
+            if (openGLText == null) {
+                // ignore
+            } else if (pbUp) {
                 openGLText.moveTo(cx, cy);
             } else {
                 float min = Math.min(wd, hg) / 30;
                 openGLText.moveTo(cx + min, cy - min);
             }
+            if (_icon == null) {
+                // ignore
+            } else if (pbUp) {
+                _icon.moveTo(cx, cy);
+            } else {
+                float min = Math.min(wd, hg) / 30;
+                _icon.moveTo(cx + min, cy - min);
+            }
+
         }
     }
 
@@ -170,6 +182,9 @@ public abstract class OpenGLRectangle {
         }
         if (openGLText != null) {
             openGLText.draw(gl, null, context);
+        }
+        if (_icon != null) {
+            _icon.draw(gl, null, context);
         }
     }
 
@@ -198,5 +213,10 @@ public abstract class OpenGLRectangle {
                 openGLSquare.clear();
             }
         }
+    }
+
+    public void setIcon(OpenGLTexture pOpenGLTextTexture) {
+        OpenGLCell cell = new OpenGLCell(pOpenGLTextTexture, 1, 1);
+        _icon = new OpenGLSquare(cx, cy, wd * 0.8f, hg * 0.8f, cell);
     }
 }

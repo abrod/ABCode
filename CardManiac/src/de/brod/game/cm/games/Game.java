@@ -129,4 +129,18 @@ public abstract class Game implements IMoves {
     public void organize() {
         // make nothing specail
     }
+
+    public void addButton(Button pButton) {
+        if (button == null) {
+            button = new Button[1];
+        } else {
+            // Arrays.copyOf does not work for selected API
+            Button[] button2 = new Button[button.length + 1];
+            for (int i = 0; i < button.length; i++) {
+                button2[i] = button[i];
+            }
+            button = button2;
+        }
+        button[button.length - 1] = pButton;
+    }
 }

@@ -1,15 +1,14 @@
 package de.brod.game.cm;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import de.brod.cardmaniac.R;
 import de.brod.game.cm.games.FreeCell;
 import de.brod.game.cm.games.Game;
-import de.brod.opengl.IMenuAction;
-import de.brod.opengl.IMoves;
-import de.brod.opengl.OpenGLActivity;
-import de.brod.opengl.OpenGLSquare;
+import de.brod.opengl.*;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -246,6 +245,24 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
 
         Card.init(_wd, _hg);
         game.init(_wd > _hg, _wd, _hg);
+
+        Button button = new Button(-_wd, _hg, -_wd + Card.wd, _hg - Card.wd) {
+
+            @Override
+            public void action() {
+                showText("Button pressed");
+            }
+        };
+        button.setIcon(new OpenGLTexture(1, 1, true) {
+
+            @Override
+            protected Bitmap createBitmap(int piScreenWidth, int piScreenHeight) {
+                return BitmapFactory.decodeResource(getResources(), R.drawable.flag);
+            }
+        });
+
+        game.addButton(button);
+
 
         if (pbLoadOld) {
             loadCards();
