@@ -250,7 +250,8 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
 
             @Override
             public void action() {
-                showText("Button pressed");
+                openOptionsMenu();
+                // showText("Button pressed");
             }
         };
         button.setIcon(new OpenGLTexture(1, 1, true) {
@@ -259,7 +260,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
             protected Bitmap createBitmap(int piScreenWidth, int piScreenHeight) {
                 return BitmapFactory.decodeResource(getResources(), R.drawable.flag);
             }
-        });
+        }, 3, 2);
 
         game.addButton(button);
 

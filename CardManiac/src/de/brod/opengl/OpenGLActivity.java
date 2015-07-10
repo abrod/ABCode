@@ -96,6 +96,10 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
     private OpenGLView<Square, Rectangle, Button> view;
     private OpenGLButton _pressedButton;
 
+    protected View getView() {
+        return view;
+    }
+
     protected boolean isThinking() {
         if (thinkThread == null) {
             return false;

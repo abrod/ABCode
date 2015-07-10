@@ -84,17 +84,20 @@ public abstract class OpenGLRectangle {
         wd -= min;
         hg -= min;
         if (wd == hg) {
+            float hg2 = hg / 2;
+            float hOff = hg2 / 2;
+
             openGLSquare = new OpenGLSquare[][]{
                     {
-                            new OpenGLSquare(cx, cy - hg / 4, wd, hg / 2,
-                                    buttonRectTexture.createRectangle(0, 0, 3, 1.5f)),
-                            new OpenGLSquare(cx, cy + hg / 4, wd, hg / 2,
-                                    buttonRectTexture.createRectangle(1.5f, 0, 3, 3))},
+                            new OpenGLSquare(cx, cy + hOff, wd, hg2,
+                                    buttonRectTexture.createRectangle(0, 0, 3, 1)),
+                            new OpenGLSquare(cx, cy - hOff, wd, hg2,
+                                    buttonRectTexture.createRectangle(0, 2, 3, 3))},
                     {
-                            new OpenGLSquare(cx, cy - hg / 4, wd, hg / 2,
-                                    buttonRectTexture.createRectangle(0, 0, 3, 1.5f)),
-                            new OpenGLSquare(cx, cy + hg / 4, wd, hg / 2,
-                                    buttonRectTexture.createRectangle(1.5f, 0, 3, 3))}};
+                            new OpenGLSquare(cx, cy + hOff, wd, hg2,
+                                    buttonRectTexture.createRectangle(3, 0, 6, 1)),
+                            new OpenGLSquare(cx, cy - hOff, wd, hg2,
+                                    buttonRectTexture.createRectangle(3, 2, 6, 3))}};
         } else if (wd < hg) {
             float hg2 = wd / 3;
             float h2 = hg - hg2 * 2;
@@ -215,8 +218,12 @@ public abstract class OpenGLRectangle {
         }
     }
 
-    public void setIcon(OpenGLTexture pOpenGLTextTexture) {
+    public void setIcon(OpenGLTexture pOpenGLTextTexture, float pWd, float pHg) {
         OpenGLCell cell = new OpenGLCell(pOpenGLTextTexture, 1, 1);
-        _icon = new OpenGLSquare(cx, cy, wd * 0.8f, hg * 0.8f, cell);
+        float ratio = pWd / pHg;
+        if (ratio >= 1)
+            _icon = new OpenGLSquare(cx, cy, wd * 0.8f, hg * 0.8f / ratio, cell);
+        else
+            _icon = new OpenGLSquare(cx, cy, wd * 0.8f * ratio, hg * 0.8f, cell);
     }
 }
