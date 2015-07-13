@@ -45,7 +45,7 @@ public class CardsTexture extends OpenGLTexture {
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         float dx = maxX * 1f / countX;
         float dy = maxY * 1f / countY;
-        int textSize = (int) (dy / 8);
+        int textSize = (int) (dy / 6);
 
         for (int i = 0; i < countX; i++) {
             for (int j = 0; j < countY; j++) {
