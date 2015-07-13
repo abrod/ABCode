@@ -18,6 +18,8 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
 
     private PopupWindow gameSelectPopupWindow;
     private Locale myLocale;
+    private IMenuAction _contextMenu;
+    private Hashtable<Integer, IAction> _contextMenuItems;
 
     public void confirm(String sTitle, String sConfirmText, String sButtonYes, final IAction iActionYes, String sButtonNo, final IAction iActionNo) {
         DialogInterface.OnClickListener listenYes = iActionYes != null ? new DialogInterface.OnClickListener() {
@@ -354,17 +356,20 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        List<IMenuAction> lst = getMenuActions();
-        Log.d("Create Menu", lst.size() + " entries");
         htMenuActions.clear();
-        for (int i = 0; i < lst.size(); i++) {
-            IMenuAction action = lst.get(i);
-            addMenuItem(menu, action);
-        }
+        addMenuItems(htMenuActions, menu, getMenuActions());
         return true;
     }
 
-    private void addMenuItem(Menu pMenu, IMenuAction pAction) {
+    private void addMenuItems(Hashtable<Integer, IAction> htMenuActions, Menu pMenu, List<IMenuAction> lst) {
+        Log.d("Create Menu", lst.size() + " entries");
+        for (int i = 0; i < lst.size(); i++) {
+            IMenuAction action = lst.get(i);
+            addMenuItem(htMenuActions, pMenu, action);
+        }
+    }
+
+    private void addMenuItem(Hashtable<Integer, IAction> htMenuActions, Menu pMenu, IMenuAction pAction) {
         int iCounter = htMenuActions.size() + 1;
         List<IMenuAction> lst = pAction.getSubMenu();
         if (lst == null || lst.size() == 0) {
@@ -373,7 +378,7 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         } else {
             SubMenu subMenu = pMenu.addSubMenu(pAction.getTitle());
             for (IMenuAction mAction : lst) {
-                addMenuItem(subMenu, mAction);
+                addMenuItem(htMenuActions, subMenu, mAction);
             }
         }
     }
@@ -426,5 +431,40 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         SharedPreferences prefs = getSharedPreferences("CommonPrefs", Activity.MODE_PRIVATE);
         String language = prefs.getString("Language", "");
         selectLocale(language);
+    }
+
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if (_contextMenu == null)
+            return;
+        List<IMenuAction> subMenu = _contextMenu.getSubMenu();
+        _contextMenuItems = new Hashtable<>();
+        if (subMenu != null && subMenu.size() > 0) {
+            menu.setHeaderTitle(_contextMenu.getTitle());
+            addMenuItems(_contextMenuItems, menu, subMenu);
+        } else {
+            addMenuItem(_contextMenuItems, menu, _contextMenu);
+        }
+    }
+
+    protected void openPopupMenu(IMenuAction pMenu) {
+        _contextMenu = pMenu;
+        View view = getView();
+        registerForContextMenu(view);
+        openContextMenu(view);
+        unregisterForContextMenu(view);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (_contextMenuItems == null)
+            return false;
+        IAction iAction = _contextMenuItems.get(item.getItemId());
+        if (iAction == null)
+            return false;
+        iAction.doAction();
+        return true;
     }
 }

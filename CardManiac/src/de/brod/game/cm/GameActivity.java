@@ -250,8 +250,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
 
             @Override
             public void action() {
-                openOptionsMenu();
-                // showText("Button pressed");
+                openPopupMenu(getSelectLanguageMenu());
             }
         };
         button.setIcon(new OpenGLTexture(1, 1, true) {
@@ -276,6 +275,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
             requestRender();
         }
     }
+
 
     private void loadCards() {
         try {
