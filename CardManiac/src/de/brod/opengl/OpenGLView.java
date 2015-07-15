@@ -102,20 +102,7 @@ public class OpenGLView<Square extends OpenGLSquare, Rectangle extends OpenGLRec
             // gl.glTranslatef(0, 0, -4);
             gl.glColor4x(255, 255, 255, 255);
             // draw the rectangles
-            for (Rectangle rect : a.lstRectangles) {
-                rect.draw(gl, a);
-            }
-            // draw the buttons
-            for (Button rect : a.lstButtons) {
-                rect.draw(gl, a);
-            }
-
-            Square old = null;
-            // draw the squares
-            for (Square s : a.lstSquares) {
-                s.draw(gl, old, a);
-                old = s;
-            }
+            a.drawItems(gl);
 
             // Disable the vertices buffer.
             gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);

@@ -11,6 +11,7 @@ import android.view.*;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import javax.microedition.khronos.opengles.GL10;
 import java.util.*;
 
 public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle extends OpenGLRectangle, Button extends OpenGLButton>
@@ -50,12 +51,32 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
 
     public abstract float[] getColorsRGB();
 
+    public void drawItems(GL10 gl) {
+        for (Rectangle rect : lstRectangles) {
+            rect.draw(gl, this);
+        }
+        // draw the buttons
+        for (Button rect : lstButtons) {
+            rect.draw(gl, this);
+        }
+
+        Square old = null;
+        // draw the squares
+        for (Square s : lstSquares) {
+            s.draw(gl, old, this);
+            old = s;
+        }
+
+    }
+
     class ThinkThread extends Thread {
         IMoves action = null;
         boolean finished = false;
+        OpenGLActivity activity;
 
-        public ThinkThread(IMoves pAction) {
+        public ThinkThread(IMoves pAction, OpenGLActivity pActivity) {
             action = pAction;
+            activity = pActivity;
             start();
         }
 
@@ -73,10 +94,12 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
 
         public boolean tryToFinish() {
             if (!isAlive()) {
-                for (OpenGLRectangle iDrawArea : lstRectangles) {
-                    iDrawArea.organize();
+                synchronized (activity) {
+                    for (OpenGLRectangle iDrawArea : lstRectangles) {
+                        iDrawArea.organize();
+                    }
+                    initMover();
                 }
-                initMover();
                 requestRender();
                 finished = true;
             }
@@ -87,11 +110,11 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
 
     protected abstract void saveState();
 
-    List<Square> lstSquares = new ArrayList<Square>();
+    private List<Square> lstSquares = new ArrayList<Square>();
     private List<Square> lstMove = new ArrayList<Square>();
     private List<Square> lstMover = new ArrayList<Square>();
-    List<Rectangle> lstRectangles = new ArrayList<Rectangle>();
-    List<Button> lstButtons = new ArrayList<Button>();
+    private List<Rectangle> lstRectangles = new ArrayList<Rectangle>();
+    private List<Button> lstButtons = new ArrayList<Button>();
 
     private long moverStart;
     private ThinkThread thinkThread = null;
@@ -156,7 +179,7 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         if (action.hasNextMove()) {
             synchronized (lstMover) {
                 // create a new thread (because thinking was false)
-                thinkThread = new ThinkThread(action);
+                thinkThread = new ThinkThread(action, this);
             }
             // repaint
             return true;
@@ -339,18 +362,20 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
     }
 
     public void clearAll() {
-        for (Square square : lstSquares) {
-            square.clear();
+        synchronized (this) {
+            for (Square square : lstSquares) {
+                square.clear();
+            }
+            for (Rectangle square : lstRectangles) {
+                square.clear();
+            }
+            for (Button square : lstButtons) {
+                square.clear();
+            }
+            lstSquares.clear();
+            lstRectangles.clear();
+            lstButtons.clear();
         }
-        for (Rectangle square : lstRectangles) {
-            square.clear();
-        }
-        for (Button square : lstButtons) {
-            square.clear();
-        }
-        lstSquares.clear();
-        lstRectangles.clear();
-        lstButtons.clear();
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import javax.microedition.khronos.opengles.GL10;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public abstract class OpenGLTexture {
     protected static void checkTextures(GL10 gl) {
         while (hsFree.size() > 0) {
             int[] tex = {hsFree.pop().intValue()};
+            Log.d("Texture", "Remove " + tex[0]);
             gl.glDeleteTextures(1, tex, 0);
             // BindTexture(GL10.GL_TEXTURE_2D, textures[0]);
         }
@@ -69,6 +71,7 @@ public abstract class OpenGLTexture {
 
         // Clean up
         bitmap.recycle();
+        Log.d("Texture", "Create " + textures[0]);
     }
 
     private Bitmap resizeBitmap(Bitmap bitmap) {
