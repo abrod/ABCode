@@ -1,12 +1,12 @@
 package de.brod.game.cm.games;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.brod.cardmaniac.R;
 import de.brod.game.cm.Card;
 import de.brod.game.cm.CardsTexture;
 import de.brod.game.cm.Hand;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FreeCell extends Patience {
 
@@ -100,8 +100,9 @@ public class FreeCell extends Patience {
                     Card lastCard = getLastCard();
                     if (lastCard != null
                             && !isNext(lastCard, lstMove2.get(0), false)) {
-                        if (!lastCard.hand.equals(this))
-                            showMoveIsNotAllowed();
+                        if (!lastCard.hand.equals(this)) {
+							showMoveIsNotAllowed();
+						}
                         return;
                     }
                     for (Card c : lstMove2) {
@@ -112,7 +113,7 @@ public class FreeCell extends Patience {
                 @Override
                 public void actionDown(Card pDown, List<Card> plstMove) {
                     Card found = null;
-                    List<Card> lst = new ArrayList<>();
+                    List<Card> lst = new ArrayList<Card>();
                     for (Card c : lstCards) {
                         if (c.equals(pDown)) {
                             found = c;
@@ -128,13 +129,15 @@ public class FreeCell extends Patience {
                     }
                     int iCount1 = 1;
                     for (int i = 8; i < 12; i++) {
-                        if (hand[i].getCardCount() == 0)
-                            iCount1++;
+                        if (hand[i].getCardCount() == 0) {
+							iCount1++;
+						}
                     }
                     int iCount2 = 1;
                     for (int i = 0; i < 8; i++) {
-                        if (hand[i].getCardCount() == 0)
-                            iCount2++;
+                        if (hand[i].getCardCount() == 0) {
+							iCount2++;
+						}
                     }
                     int iCount = iCount1;
                     for (int i = 2; i <= iCount2 && 0 > iCount1; i++) {

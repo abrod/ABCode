@@ -1,5 +1,13 @@
 package de.brod.opengl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Locale;
+
+import javax.microedition.khronos.opengles.GL10;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -7,12 +15,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.*;
+import android.view.ContextMenu;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.Toast;
-
-import javax.microedition.khronos.opengles.GL10;
-import java.util.*;
 
 public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle extends OpenGLRectangle, Button extends OpenGLButton>
         extends Activity {
@@ -410,7 +422,7 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
 
     protected abstract List<IMenuAction> getMenuActions();
 
-    Hashtable<Integer, IAction> htMenuActions = new Hashtable<>();
+    Hashtable<Integer, IAction> htMenuActions = new Hashtable<Integer, IAction>();
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -427,8 +439,9 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
         // https://developers.google.com/igoogle/docs/i18n?csw=1
         Log.d("Select Locale", psLocale);
         Locale locale = new Locale(psLocale);
-        if (psLocale.equalsIgnoreCase(""))
-            return;
+        if (psLocale.equalsIgnoreCase("")) {
+			return;
+		}
         myLocale = new Locale(psLocale);
         saveLocale(psLocale);
         Locale.setDefault(myLocale);
@@ -462,10 +475,11 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        if (_contextMenu == null)
-            return;
+        if (_contextMenu == null) {
+			return;
+		}
         List<IMenuAction> subMenu = _contextMenu.getSubMenu();
-        _contextMenuItems = new Hashtable<>();
+        _contextMenuItems = new Hashtable<Integer, IAction>();
         if (subMenu != null && subMenu.size() > 0) {
             menu.setHeaderTitle(_contextMenu.getTitle());
             addMenuItems(_contextMenuItems, menu, subMenu);
@@ -484,11 +498,13 @@ public abstract class OpenGLActivity<Square extends OpenGLSquare, Rectangle exte
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (_contextMenuItems == null)
-            return false;
+        if (_contextMenuItems == null) {
+			return false;
+		}
         IAction iAction = _contextMenuItems.get(item.getItemId());
-        if (iAction == null)
-            return false;
+        if (iAction == null) {
+			return false;
+		}
         iAction.doAction();
         return true;
     }

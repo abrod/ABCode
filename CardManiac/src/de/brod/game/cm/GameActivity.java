@@ -1,5 +1,17 @@
 package de.brod.game.cm;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,12 +20,11 @@ import android.util.Log;
 import de.brod.cardmaniac.R;
 import de.brod.game.cm.games.FreeCell;
 import de.brod.game.cm.games.Game;
-import de.brod.opengl.*;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import de.brod.opengl.IMenuAction;
+import de.brod.opengl.IMoves;
+import de.brod.opengl.OpenGLActivity;
+import de.brod.opengl.OpenGLSquare;
+import de.brod.opengl.OpenGLTexture;
 
 public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
 
@@ -185,7 +196,7 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
 
     @Override
     protected List<IMenuAction> getMenuActions() {
-        List<IMenuAction> lst = new ArrayList<>();
+        List<IMenuAction> lst = new ArrayList<IMenuAction>();
 
         game.addMenuActions(lst);
         lst.add(getSelectLanguageMenu());
@@ -196,8 +207,8 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
         return new IMenuAction() {
             @Override
             public List<IMenuAction> getSubMenu() {
-                List<IMenuAction> lst = new ArrayList<>();
-                final Hashtable<String, String> htCodes = new Hashtable<>();
+                List<IMenuAction> lst = new ArrayList<IMenuAction>();
+                final Hashtable<String, String> htCodes = new Hashtable<String, String>();
                 // https://developers.google.com/igoogle/docs/i18n?csw=1
                 htCodes.put(getString(R.string.la_english), "us");
                 htCodes.put(getString(R.string.la_german), "de");
@@ -280,8 +291,8 @@ public class GameActivity extends OpenGLActivity<Card, Hand, Button> {
     private void loadCards() {
         try {
             Log.d("loadCards", "Start " + getFileName());
-            Hashtable<Integer, Hand> htHands = new Hashtable<>();
-            Hashtable<Integer, Card> htCards = new Hashtable<>();
+            Hashtable<Integer, Hand> htHands = new Hashtable<Integer, Hand>();
+            Hashtable<Integer, Card> htCards = new Hashtable<Integer, Card>();
             for (Hand h : game.hand) {
                 htHands.put(Integer.valueOf(h.getId()), h);
                 for (Card c : h.lstCards) {

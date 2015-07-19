@@ -1,19 +1,20 @@
 package de.brod.opengl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
+import javax.microedition.khronos.opengles.GL10;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-import javax.microedition.khronos.opengles.GL10;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-
 public abstract class OpenGLTexture {
 
-    private static Stack<Integer> hsFree = new Stack<>();
+    private static Stack<Integer> hsFree = new Stack<Integer>();
 
     protected static void checkTextures(GL10 gl) {
         while (hsFree.size() > 0) {
@@ -90,8 +91,9 @@ public abstract class OpenGLTexture {
     }
 
     private int get2exp(int wOrig) {
-        if (wOrig < 4)
-            return 4;
+        if (wOrig < 4) {
+			return 4;
+		}
         int wNew = 256;
         if (wNew > wOrig) {
             while (wNew > wOrig) {

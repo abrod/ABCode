@@ -1,5 +1,8 @@
 package de.brod.game.cm.games;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.brod.cardmaniac.R;
 import de.brod.game.cm.Button;
 import de.brod.game.cm.GameActivity;
@@ -7,9 +10,6 @@ import de.brod.game.cm.Hand;
 import de.brod.opengl.IAction;
 import de.brod.opengl.IMenuAction;
 import de.brod.opengl.IMoves;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class Game implements IMoves {
 
@@ -48,7 +48,7 @@ public abstract class Game implements IMoves {
 
             @Override
             public List<IMenuAction> getSubMenu() {
-                List<IMenuAction> lst = new ArrayList<>();
+                List<IMenuAction> lst = new ArrayList<IMenuAction>();
                 for (Class<?> g : gameClasses) {
                     lst.add(getSelectGame(g));
                 }

@@ -1,20 +1,20 @@
 package de.brod.game.cm.games;
 
-import de.brod.game.cm.Card;
-import de.brod.game.cm.CardsTexture;
-import de.brod.game.cm.Hand;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+
+import de.brod.game.cm.Card;
+import de.brod.game.cm.CardsTexture;
+import de.brod.game.cm.Hand;
 
 /**
  * Created by Andreas on 23.06.2015.
  */
 public class Solitair extends Patience {
 
-    private List<Card> lstNextMove = new ArrayList<>();
+    private List<Card> lstNextMove = new ArrayList<Card>();
 
     @Override
     public void init(boolean pbLandscape, float pWd, float pHg) {
@@ -64,8 +64,9 @@ public class Solitair extends Patience {
 
             @Override
             public void actionDown(Card pDown, List<Card> plstMove) {
-                if (pDown.equals(getLastCard()))
-                    plstMove.add(pDown);
+                if (pDown.equals(getLastCard())) {
+					plstMove.add(pDown);
+				}
             }
         };
 
@@ -96,8 +97,9 @@ public class Solitair extends Patience {
 
                 @Override
                 public void actionDown(Card pDown, List<Card> plstMove) {
-                    if (pDown.equals(getLastCard()))
-                        plstMove.add(pDown);
+                    if (pDown.equals(getLastCard())) {
+						plstMove.add(pDown);
+					}
                 }
             };
             setStackText(hand[x + 2], Card.Value.cA.getText());
@@ -168,7 +170,7 @@ public class Solitair extends Patience {
 
     private void checkHand0() {
         if (hand[0].getCardCount() == 0) {
-            List<Card> lst = new ArrayList<>();
+            List<Card> lst = new ArrayList<Card>();
             for (int i = 0; i < hand[1].getCards().size() - 1; i++) {
                 lst.add(hand[1].getCards().get(i));
             }
