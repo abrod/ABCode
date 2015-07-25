@@ -30,7 +30,7 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
 	public void setQuads(List<GuiQuad> plstQuads) {
 		if (_lstQuads != null) {
-			// close all quads
+			// close all old quads
 			for (GuiQuad guiQuad : _lstQuads) {
 				guiQuad.close();
 			}

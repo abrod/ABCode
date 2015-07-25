@@ -67,7 +67,7 @@ public class GuiQuad {
 	private float[]						_range		= new float[4];
 	private float[]						_verticles	= new float[4 * 3];
 
-	GuiQuad(GuiGrid grid, float px, float py, float wd, float hg) {
+	protected GuiQuad(GuiGrid grid, float px, float py, float wd, float hg) {
 		_grid = grid;
 
 		_x = px;
@@ -173,13 +173,14 @@ public class GuiQuad {
 	}
 
 	public void draw(GL10 gl) {
-		gl.glColor4f(_r, _g, _b, _a);
 
-		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, _vertexBuffer);
-		_grid.bindTexture(gl);
-		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, _textureBuffer[_iUp]);
-		gl.glDrawElements(GL10.GL_TRIANGLES, _indices.length,
-				GL10.GL_UNSIGNED_SHORT, _indexBuffer);
+		if (_grid.bindTexture(gl)) {
+			gl.glColor4f(_r, _g, _b, _a);
+			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, _vertexBuffer);
+			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, _textureBuffer[_iUp]);
+			gl.glDrawElements(GL10.GL_TRIANGLES, _indices.length,
+					GL10.GL_UNSIGNED_SHORT, _indexBuffer);
+		}
 	}
 
 	public void setGrid(float pfX, float pfY, boolean pbTop) {

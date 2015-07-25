@@ -1,45 +1,67 @@
 package de.brod.gui;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 public abstract class GuiGrid {
 
 	private static GuiView	_view;
 	private float			_xMax, _yMax;
-	private int[]			textures;
+	private int[]			_textures;
+	List<GuiQuad>			_lstGuiQuads;
+	private boolean			bReload;
 
 	public GuiGrid(float pfCountX, float pfCountY) {
+		_lstGuiQuads = new ArrayList<GuiQuad>();
 		_xMax = pfCountX;
 		_yMax = pfCountY;
-		textures = null;
+		_textures = null;
+		bReload = true;
 	}
 
 	void remove(GuiQuad guiQuad) {
-		// TODO Auto-generated method stub
-
+		_lstGuiQuads.remove(guiQuad);
+		if (_lstGuiQuads.size() == 0) {
+			bReload = true;
+		}
 	}
 
 	public GuiQuad createQuad(float pfX, float pfY, float px, float py,
 			float wd, float hg) {
 		GuiQuad guiQuad = new GuiQuad(this, px, py, wd, hg);
-		guiQuad.setGrid(pfX, pfY, true);
-		guiQuad.setGrid(pfX, pfY, false);
+		initGrid(guiQuad, pfX, pfY);
+		_lstGuiQuads.add(guiQuad);
 		return guiQuad;
 	}
 
-	public void bindTexture(GL10 gl) {
-		if (textures == null) {
+	public void initGrid(GuiQuad guiQuad, float pfX, float pfY) {
+		guiQuad.setGrid(pfX, pfY, true);
+		guiQuad.setGrid(pfX, pfY, false);
+
+	}
+
+	public boolean bindTexture(GL10 gl) {
+
+		if (bReload) {
+			bReload = false;
+			if (_textures != null) {
+				Log.d("Texture", "Delete " + _textures[0]);
+				gl.glDeleteTextures(_textures.length, _textures, 0);
+			}
 			int width = _view.width;
 			int height = _view.height;
 			Bitmap bitmap = createBitmap(width, height);
-
-			textures = new int[] { GuiTexture.bind(gl, bitmap) };
+			_textures = new int[] { GuiTexture.bind(gl, bitmap) };
+			Log.d("Texture", "Init " + _textures[0]);
 		}
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
+		gl.glBindTexture(GL10.GL_TEXTURE_2D, _textures[0]);
+		return true;
 	}
 
 	protected abstract Bitmap createBitmap(int width, int height);

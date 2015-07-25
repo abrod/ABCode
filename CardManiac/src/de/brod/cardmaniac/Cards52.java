@@ -8,10 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import de.brod.game.cm.Card;
-import de.brod.game.cm.Card.Value;
 import de.brod.gui.GuiGrid;
-import de.brod.gui.GuiQuad;
 
 public class Cards52 {
 
@@ -52,21 +49,18 @@ public class Cards52 {
 		}
 	}
 
-	Hashtable<CardColor, CardSetColor>	cards	= new Hashtable<Cards52.CardColor, Cards52.CardSetColor>();
+	private final Hashtable<CardColor, CardSetGrid>	cards		= new Hashtable<Cards52.CardColor, Cards52.CardSetGrid>();
 
-	public Cards52() {
-		for (CardColor cc : CardColor.values()) {
-			cards.put(cc, new CardSetColor(CardColor.clubs));
-		}
-	}
+	public static int								background	= 14;
+	private static int								countX		= 5;
+	private static int								countY		= 3;
 
-	public static int	background	= 14;
-	private static int	countX		= 5;
-	private static int	countY		= 3;
+	protected static float							CARD_WIDTH	= 1 / 4f;
+	protected static float							CARD_HEIGHT	= 3 / 8f;
 
-	private class CardSetColor extends GuiGrid {
+	private class CardSetGrid extends GuiGrid {
 
-		public CardSetColor(CardColor pColor) {
+		public CardSetGrid(CardColor pColor) {
 			super(countX, countY);
 			color = pColor;
 		}
@@ -89,7 +83,7 @@ public class Cards52 {
 			paint.setStyle(Paint.Style.FILL_AND_STROKE);
 			float dx = maxX * 1f / countX;
 			float dy = maxY * 1f / countY;
-			int textSize = (int) (dy / 6);
+			int textSize = (int) (dy / 7);
 
 			for (int i = 0; i < countX; i++) {
 				for (int j = 0; j < countY; j++) {
@@ -103,7 +97,7 @@ public class Cards52 {
 
 		private void drawCard(int iCardNumber, Canvas c, RectF pr, Paint p,
 				float dx, int pTextSize) {
-			Value[] values = Card.Value.values();
+			CardValue[] values = CardValue.values();
 			p.setColor(Color.argb(64, 0, 0, 0));
 			float dx10 = dx / 10;
 			float dx20 = dx / 20;
@@ -135,7 +129,7 @@ public class Cards52 {
 			p.setTextSize(pTextSize * 1.3f);
 
 			Rect bounds = new Rect();
-			Value cardVal = values[iCardNumber % values.length];
+			CardValue cardVal = values[iCardNumber % values.length];
 			String sValue = cardVal.getText();
 			float border = Math.max(1, dx20);
 
@@ -159,14 +153,32 @@ public class Cards52 {
 
 		}
 
-		public GuiQuad createCard(CardValue ca, float x, float y) {
+		public Card createCard(CardValue ca, float x, float y) {
+			Card card = new Card(this, x, y, CARD_WIDTH, CARD_HEIGHT);
 			int ordinal = ca.ordinal();
-			return createQuad(ordinal % countX, ordinal / countX, x, y, 1 / 4f,
-					3 / 8f);
+			initGrid(card, ordinal % countX, ordinal / countX);
+			return card;
 		}
 	}
 
-	public GuiQuad createCard(CardColor spades, CardValue ca, float x, float y) {
-		return cards.get(spades).createCard(ca, x, y);
+	public Card createCard(CardColor spades, CardValue ca, float x, float y) {
+		CardSetGrid cardSetColor = cards.get(spades);
+		if (cardSetColor == null) {
+			cardSetColor = new CardSetGrid(spades);
+			cards.put(spades, cardSetColor);
+		}
+		return cardSetColor.createCard(ca, x, y);
+	}
+
+	public float getX(float i) {
+		float wdLeft = CARD_WIDTH / 2 - 1;
+		float wdScreen = 2 - CARD_WIDTH;
+		return wdLeft + wdScreen * i / 7;
+	}
+
+	public float getY(float i) {
+		float hgTop = CARD_HEIGHT / 2 - 1;
+		float hgScreen = 2 - CARD_HEIGHT;
+		return hgTop + hgScreen * i / 4;
 	}
 }
