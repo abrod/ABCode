@@ -9,9 +9,9 @@ import de.brod.cardmaniac.Cards52.CardValue;
 import de.brod.gui.GuiActivity;
 import de.brod.gui.GuiQuad;
 
-public class MainActivity extends GuiActivity {
+public class MainActivity extends GuiActivity<Card> {
 
-	private List<GuiQuad>	_lstActionQuads	= new ArrayList<GuiQuad>();
+	private List<Card>	_lstActionCards	= new ArrayList<Card>();
 
 	@Override
 	protected void initActivity(Bundle savedInstanceState) {
@@ -20,7 +20,7 @@ public class MainActivity extends GuiActivity {
 	}
 
 	@Override
-	protected void createQuads(List<GuiQuad> lstQuads, float wd, float hg,
+	protected void createQuads(List<Card> lstQuads, float wd, float hg,
 			int width, int height) {
 		Cards52 cards52 = new Cards52();
 		lstQuads.add(cards52.createCard(CardColor.spades, CardValue.cA, 0, 0));
@@ -46,14 +46,14 @@ public class MainActivity extends GuiActivity {
 
 	@Override
 	public boolean actionDown(float eventX, float eventY) {
-		getQuadsAt(_lstActionQuads, eventX, eventY, 1);
-		return _lstActionQuads.size() > 0;
+		getQuadsAt(_lstActionCards, eventX, eventY, 1);
+		return _lstActionCards.size() > 0;
 	}
 
 	@Override
 	public boolean actionMove(float eventX, float eventY) {
-		if (_lstActionQuads.size() > 0) {
-			for (GuiQuad guiQuad : _lstActionQuads) {
+		if (_lstActionCards.size() > 0) {
+			for (GuiQuad guiQuad : _lstActionCards) {
 				guiQuad.moveTo(eventX, eventY);
 			}
 			sortQuads();

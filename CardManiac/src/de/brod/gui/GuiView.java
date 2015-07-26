@@ -12,11 +12,11 @@ import android.view.MotionEvent;
 
 public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
-	private List<GuiQuad>	_lstQuads;
-	private GuiActivity		_context;
+	private List<? extends GuiQuad>	_lstQuads;
+	private GuiActivity				_context;
 
-	static float			_wd, _hg, _dx, _dy;
-	int						width, height;
+	static float					_wd, _hg, _dx, _dy;
+	int								width, height;
 
 	public GuiView(GuiActivity context) {
 		super(context);
@@ -30,7 +30,7 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
 	}
 
-	public void setQuads(List<GuiQuad> plstQuads) {
+	public void setQuads(List<? extends GuiQuad> plstQuads) {
 		if (_lstQuads != null) {
 			// close all old quads
 			for (GuiQuad guiQuad : _lstQuads) {
