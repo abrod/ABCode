@@ -9,7 +9,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 public abstract class GuiActivity extends Activity {
-	private GuiView	_view;
+	private GuiView				_view;
+	private ArrayList<GuiQuad>	lstQuads;
 
 	/**
 	 * Called when the activity is first created.
@@ -37,8 +38,8 @@ public abstract class GuiActivity extends Activity {
 
 	public void reloadAll() {
 		// create a list of quads
-		List<GuiQuad> lstQuads = new ArrayList<GuiQuad>();
-		createQuads(lstQuads, _view.wd * 2, _view.hg * 2, _view.width,
+		lstQuads = new ArrayList<GuiQuad>();
+		createQuads(lstQuads, _view._wd * 2, _view._hg * 2, _view.width,
 				_view.height);
 
 		_view.setQuads(lstQuads);
@@ -48,7 +49,11 @@ public abstract class GuiActivity extends Activity {
 	protected abstract void createQuads(List<GuiQuad> lstQuads, float wd,
 			float hg, int width, int height);
 
-	private void requestRender() {
+	public void sortQuads() {
+		_view.sortQuads();
+	}
+
+	protected void requestRender() {
 		_view.sortQuads();
 		_view.requestRender();
 	}
@@ -61,5 +66,25 @@ public abstract class GuiActivity extends Activity {
 
 	public boolean slideSquares(boolean b) {
 		return false;
+	}
+
+	public abstract boolean actionDown(float eventX, float eventY);
+
+	public abstract boolean actionMove(float eventX, float eventY);
+
+	public abstract boolean actionUp(float eventX, float eventY);
+
+	public void getQuadsAt(List<GuiQuad> lstFound, float eventX, float eventY,
+			int iSize) {
+		lstFound.clear();
+		for (int j = lstQuads.size() - 1; j >= 0; j--) {
+			GuiQuad guiQuad = lstQuads.get(j);
+			if (guiQuad.touches(eventX, eventY)) {
+				lstFound.add(guiQuad);
+				if (lstFound.size() >= iSize) {
+					break;
+				}
+			}
+		}
 	}
 }

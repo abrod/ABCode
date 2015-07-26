@@ -6,14 +6,16 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.annotation.SuppressLint;
 import android.opengl.GLSurfaceView;
+import android.view.MotionEvent;
 
 public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
 	private List<GuiQuad>	_lstQuads;
 	private GuiActivity		_context;
 
-	float					wd, hg;
+	static float			_wd, _hg, _dx, _dy;
 	int						width, height;
 
 	public GuiView(GuiActivity context) {
@@ -41,55 +43,56 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onDrawFrame(GL10 pGL10) {
+		synchronized (this) {
 
-		boolean slideSquares = _context.slideSquares(false);
+			boolean slideSquares = _context.slideSquares(false);
 
-		float colors[] = _context.getColorsRGB();
-		if (_context.isThinking()) {
-			// Set the background color to black ( rgba ).
-			pGL10.glClearColor(colors[0], colors[1], colors[2], 0.9f);
-		} else {
-			// Set the background color to black ( rgba ).
-			pGL10.glClearColor(colors[0], colors[1], colors[2], 1f);
+			float colors[] = _context.getColorsRGB();
+			if (_context.isThinking()) {
+				// Set the background color to black ( rgba ).
+				pGL10.glClearColor(colors[0], colors[1], colors[2], 0.9f);
+			} else {
+				// Set the background color to black ( rgba ).
+				pGL10.glClearColor(colors[0], colors[1], colors[2], 1f);
+			}
+
+			// Clears the screen and depth buffer.
+			pGL10.glClear(GL10.GL_COLOR_BUFFER_BIT | //
+					GL10.GL_DEPTH_BUFFER_BIT);
+
+			// Replace the current matrix with the identity matrix
+			pGL10.glLoadIdentity();
+
+			// Counter-clockwise winding.
+			pGL10.glFrontFace(GL10.GL_CCW);
+			// Enable face culling.
+			pGL10.glEnable(GL10.GL_CULL_FACE);
+			// What faces to remove with the face culling.
+			pGL10.glCullFace(GL10.GL_BACK);
+			// Enabled the vertex buffer for writing and to be used during rendering.
+			pGL10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+			pGL10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+
+			// Translates 4 units into the screen.
+			// gl.glTranslatef(0, 0, -4);
+			pGL10.glColor4x(255, 255, 255, 255);
+
+			// draw the rectangles
+			for (GuiQuad quad : _lstQuads) {
+				quad.draw(pGL10);
+			}
+
+			// Disable the vertices buffer.
+			pGL10.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+			pGL10.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+
+			// Disable face culling.
+			pGL10.glDisable(GL10.GL_CULL_FACE);
+
+			if (slideSquares) {
+				requestRender();
+			}
 		}
-
-		// Clears the screen and depth buffer.
-		pGL10.glClear(GL10.GL_COLOR_BUFFER_BIT | //
-				GL10.GL_DEPTH_BUFFER_BIT);
-
-		// Replace the current matrix with the identity matrix
-		pGL10.glLoadIdentity();
-
-		// Counter-clockwise winding.
-		pGL10.glFrontFace(GL10.GL_CCW);
-		// Enable face culling.
-		pGL10.glEnable(GL10.GL_CULL_FACE);
-		// What faces to remove with the face culling.
-		pGL10.glCullFace(GL10.GL_BACK);
-		// Enabled the vertex buffer for writing and to be used during rendering.
-		pGL10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-		pGL10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-		// Translates 4 units into the screen.
-		// gl.glTranslatef(0, 0, -4);
-		pGL10.glColor4x(255, 255, 255, 255);
-
-		// draw the rectangles
-		for (GuiQuad quad : _lstQuads) {
-			quad.draw(pGL10);
-		}
-
-		// Disable the vertices buffer.
-		pGL10.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-		pGL10.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-		// Disable face culling.
-		pGL10.glDisable(GL10.GL_CULL_FACE);
-
-		if (slideSquares) {
-			requestRender();
-		}
-
 	}
 
 	@Override
@@ -111,18 +114,20 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		gl.glLoadIdentity();
 		if (ratio > 1) { // Landscape
-			wd = ratio;
-			hg = 1;
+			_wd = ratio;
+			_hg = 1;
 		} else {
-			wd = 1;
+			_wd = 1;
 			ratio = 1 / ratio;
-			hg = ratio;
+			_hg = ratio;
 		}
 
 		// _wd = 1f;
 		// _hg = 1.5f;
+		_dx = 2f * _wd / width;
+		_dy = 2f * _hg / height;
 
-		gl.glOrthof(-wd, wd, -hg, hg, 1f, -1f);
+		gl.glOrthof(-_wd, _wd, -_hg, _hg, 1f, -1f);
 
 		// Select the projection matrix
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
@@ -153,6 +158,38 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
 	public void sortQuads() {
 		Collections.sort(_lstQuads, GuiQuad.COMPERATOR);
+	}
+
+	@SuppressLint("ClickableViewAccessibility")
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		synchronized (this) {
+			float eventX = event.getX() * _dx - _wd;
+			float eventY = _hg - event.getY() * _dy;
+
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				if (_context.actionDown(eventX, eventY)) {
+					requestRender();
+				}
+				return true;
+			}
+
+			if (event.getAction() == MotionEvent.ACTION_MOVE) {
+				if (_context.actionMove(eventX, eventY)) {
+					requestRender();
+				}
+				return true;
+
+			}
+			if (event.getAction() == MotionEvent.ACTION_UP) {
+				if (_context.actionUp(eventX, eventY)) {
+					requestRender();
+				}
+				return true;
+			}
+
+			return true;
+		}
 	}
 
 }

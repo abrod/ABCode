@@ -66,6 +66,9 @@ public class GuiQuad {
 	private Line						_line		= new Line();
 	private float[]						_range		= new float[4];
 	private float[]						_verticles	= new float[4 * 3];
+	private boolean						_visible	= true;
+	private float						_touchX;
+	private float						_touchY;
 
 	protected GuiQuad(GuiGrid grid, float px, float py, float wd, float hg) {
 		_grid = grid;
@@ -189,6 +192,54 @@ public class GuiQuad {
 		} else {
 			_grid.fillTexture(pfX, pfY, _textureBuffer[1]);
 		}
+	}
+
+	boolean touches(float eventX, float eventY) {
+		if (!_visible) {
+			return false;
+		}
+		if (eventX < _range[0] || eventX > _range[1]) {
+			return false;
+		}
+		if (eventY < _range[2] || eventY > _range[3]) {
+			return false;
+		}
+		boolean oddNodes = false;
+		float x1, y1, x2 = 0, y2 = 0;
+		for (int a = 0; a < _points.length; a++) {
+			int i = _points[a] * 3;
+			x1 = _verticles[i];
+			y1 = _verticles[i + 1];
+			if (a > 0) {
+				if (((y1 < eventY) && (y2 >= eventY)) || (y1 >= eventY)
+						&& (y2 < eventY)) {
+					if ((eventY - y1) / (y2 - y1) * (x2 - x1) < (eventX - x1)) {
+						oddNodes = !oddNodes;
+					}
+				}
+			}
+			x2 = x1;
+			y2 = y1;
+		}
+		_touchX = _x - eventX;
+		_touchY = _y - eventY;
+		return oddNodes;
+	}
+
+	public boolean isVisible() {
+		return _visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this._visible = visible;
+	}
+
+	public void moveTo(float eventX, float eventY) {
+		_x = Math.max(_width - GuiView._wd,
+				Math.min(GuiView._wd - _width, _touchX + eventX));
+		_y = Math.max(_height - GuiView._hg,
+				Math.min(GuiView._hg - _height, _touchY + eventY));
+		refreshView();
 	}
 
 }

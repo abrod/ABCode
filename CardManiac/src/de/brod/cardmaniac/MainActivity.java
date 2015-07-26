@@ -1,5 +1,6 @@
 package de.brod.cardmaniac;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import de.brod.gui.GuiActivity;
 import de.brod.gui.GuiQuad;
 
 public class MainActivity extends GuiActivity {
+
+	private List<GuiQuad>	_lstActionQuads	= new ArrayList<GuiQuad>();
 
 	@Override
 	protected void initActivity(Bundle savedInstanceState) {
@@ -37,6 +40,30 @@ public class MainActivity extends GuiActivity {
 
 	@Override
 	public boolean isThinking() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean actionDown(float eventX, float eventY) {
+		getQuadsAt(_lstActionQuads, eventX, eventY, 1);
+		return _lstActionQuads.size() > 0;
+	}
+
+	@Override
+	public boolean actionMove(float eventX, float eventY) {
+		if (_lstActionQuads.size() > 0) {
+			for (GuiQuad guiQuad : _lstActionQuads) {
+				guiQuad.moveTo(eventX, eventY);
+			}
+			sortQuads();
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean actionUp(float eventX, float eventY) {
 		// TODO Auto-generated method stub
 		return false;
 	}
