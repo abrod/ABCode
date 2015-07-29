@@ -8,15 +8,14 @@ import java.util.Comparator;
 
 import javax.microedition.khronos.opengles.GL10;
 
-public class GuiQuad {
+public class GuiQuad implements IGuiQuad {
 
-	private static class GuiQuadComparator implements
-			Comparator<de.brod.gui.GuiQuad> {
+	private static class GuiQuadComparator implements Comparator<IGuiQuad> {
 
 		@Override
-		public int compare(GuiQuad lhs, GuiQuad rhs) {
-			float keyL = lhs._xy;
-			float keyR = rhs._xy;
+		public int compare(IGuiQuad lhs, IGuiQuad rhs) {
+			float keyL = lhs.getXY();
+			float keyR = rhs.getXY();
 			if (keyL < keyR) {
 				return -1;
 			}
@@ -46,7 +45,7 @@ public class GuiQuad {
 		}
 	}
 
-	static final Comparator<GuiQuad>	COMPERATOR	= new GuiQuadComparator();
+	static final Comparator<IGuiQuad>	COMPERATOR	= new GuiQuadComparator();
 	private static final short[]		_indices	= { 0, 1, 2, 0, 2, 3 };
 	private static final int[]			_points		= { 0, 1, 2, 3, 0 };
 	private static final float[]		_edges		= { -1, 1, -1, -1, 1, -1,
@@ -171,10 +170,12 @@ public class GuiQuad {
 		}
 	}
 
+	@Override
 	public void close() {
 		_grid.remove(this);
 	}
 
+	@Override
 	public void draw(GL10 gl) {
 
 		if (_grid.bindTexture(gl)) {
@@ -186,15 +187,17 @@ public class GuiQuad {
 		}
 	}
 
-	public void setGrid(float pfX, float pfY, boolean pbTop) {
+	public GuiQuad setGrid(float pfX, float pfY, boolean pbTop) {
 		if (pbTop) {
 			_grid.fillTexture(pfX, pfY, _textureBuffer[0]);
 		} else {
 			_grid.fillTexture(pfX, pfY, _textureBuffer[1]);
 		}
+		return this;
 	}
 
-	boolean touches(float eventX, float eventY) {
+	@Override
+	public boolean touches(float eventX, float eventY) {
 		if (!_visible) {
 			return false;
 		}
@@ -234,12 +237,18 @@ public class GuiQuad {
 		this._visible = visible;
 	}
 
+	@Override
 	public void moveTo(float eventX, float eventY) {
 		_x = Math.max(_width - GuiView._wd,
 				Math.min(GuiView._wd - _width, _touchX + eventX));
 		_y = Math.max(_height - GuiView._hg,
 				Math.min(GuiView._hg - _height, _touchY + eventY));
 		refreshView();
+	}
+
+	@Override
+	public float getXY() {
+		return _xy;
 	}
 
 }

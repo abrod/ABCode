@@ -7,11 +7,13 @@ import android.os.Bundle;
 import de.brod.cardmaniac.Cards52.CardColor;
 import de.brod.cardmaniac.Cards52.CardValue;
 import de.brod.gui.GuiActivity;
-import de.brod.gui.GuiQuad;
+import de.brod.gui.GuiButton;
+import de.brod.gui.IGuiQuad;
 
-public class MainActivity extends GuiActivity<Card> {
+public class MainActivity extends GuiActivity {
 
-	private List<Card>	_lstActionCards	= new ArrayList<Card>();
+	private List<IGuiQuad>	_lstActionCards	= new ArrayList<IGuiQuad>();
+	private float			startX, startY;
 
 	@Override
 	protected void initActivity(Bundle savedInstanceState) {
@@ -20,10 +22,9 @@ public class MainActivity extends GuiActivity<Card> {
 	}
 
 	@Override
-	protected void createQuads(List<Card> lstQuads, float wd, float hg,
+	protected void createQuads(List<IGuiQuad> lstQuads, float wd, float hg,
 			int width, int height) {
 		Cards52 cards52 = new Cards52();
-		lstQuads.add(cards52.createCard(CardColor.spades, CardValue.cA, 0, 0));
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 8; i++) {
 				lstQuads.add(cards52.createCard(CardColor.values()[j],
@@ -31,6 +32,7 @@ public class MainActivity extends GuiActivity<Card> {
 						cards52.getY(j * 4f / 3)));
 			}
 		}
+		lstQuads.add(new GuiButton(0, 0, 1 / 3f, 1 / 4f));
 	}
 
 	@Override
@@ -46,6 +48,8 @@ public class MainActivity extends GuiActivity<Card> {
 
 	@Override
 	public boolean actionDown(float eventX, float eventY) {
+		startX = eventX;
+		startY = eventY;
 		getQuadsAt(_lstActionCards, eventX, eventY, 1);
 		return _lstActionCards.size() > 0;
 	}
@@ -53,7 +57,7 @@ public class MainActivity extends GuiActivity<Card> {
 	@Override
 	public boolean actionMove(float eventX, float eventY) {
 		if (_lstActionCards.size() > 0) {
-			for (GuiQuad guiQuad : _lstActionCards) {
+			for (IGuiQuad guiQuad : _lstActionCards) {
 				guiQuad.moveTo(eventX, eventY);
 			}
 			sortQuads();
@@ -64,6 +68,12 @@ public class MainActivity extends GuiActivity<Card> {
 
 	@Override
 	public boolean actionUp(float eventX, float eventY) {
+		float dx = eventX - startX;
+		float dy = eventY - startY;
+		if ((dx * dx + dy * dy) < 1 / 64f) {
+			// select
+		}
+
 		// TODO Auto-generated method stub
 		return false;
 	}
