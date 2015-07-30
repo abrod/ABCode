@@ -51,7 +51,11 @@ public class MainActivity extends GuiActivity {
 		startX = eventX;
 		startY = eventY;
 		getQuadsAt(_lstActionCards, eventX, eventY, 1);
-		return _lstActionCards.size() > 0;
+		if (_lstActionCards.size() > 0){
+			IGuiQuad guiQuad = _lstActionCards.get(0);
+			return true;
+		}
+		return false;
 	}
 
 	@Override

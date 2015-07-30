@@ -201,6 +201,8 @@ public class GuiQuad implements IGuiQuad {
 		if (!_visible) {
 			return false;
 		}
+		_touchX = _x - eventX;
+		_touchY = _y - eventY;
 		if (eventX < _range[0] || eventX > _range[1]) {
 			return false;
 		}
@@ -224,8 +226,6 @@ public class GuiQuad implements IGuiQuad {
 			x2 = x1;
 			y2 = y1;
 		}
-		_touchX = _x - eventX;
-		_touchY = _y - eventY;
 		return oddNodes;
 	}
 

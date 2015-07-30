@@ -13,6 +13,7 @@ public class GuiButton implements IGuiQuad {
 
 	GuiGrid				grid	= null;
 	private GuiQuad[]	lstQuads;
+	private float[]		dx, dy;
 	private float		size;
 	private float		width;
 	private float		height;
@@ -74,16 +75,22 @@ public class GuiButton implements IGuiQuad {
 		this.height = height;
 		grid = new ButtonGrid();
 		lstQuads = new GuiQuad[9];
+		dx = new float[9];
+		dy = new float[9];
 		size = Math.min(width, height) / 3f;
-		for (int i = -1; i <= 1; i++) {
-			float wd = i == 0 ? width - size * 2 : width;
-			float dx = x + i * (width - size) / 2;
-			for (int j = -1; j <= 1; j++) {
-				float hg = j == 0 ? height - size * 2 : height;
-				float dy = y + j * (height - size) / 2;
-				lstQuads[i + 1 + (1 - j) * 3] = new GuiQuad(grid, dx, dy, wd,
-						hg).setGrid(i + 1, j + 1, true).setGrid(i + 4, j + 1,
-						true);
+		int iCount = 0;
+		for (int j = -1; j <= 1; j++) {
+			float hg = j == 0 ? height - size * 2 : size;
+			float dy = j * (height - size) / 2;
+			for (int i = -1; i <= 1; i++) {
+				float wd = i == 0 ? width - size * 2 : size;
+				float dx = i * (width - size) / 2;
+				this.dx[iCount] = dx;
+				this.dy[iCount] = dy;
+				lstQuads[iCount] = new GuiQuad(grid, x + dx, y - dy, wd, hg)
+						.setGrid(i + 1, j + 1, true)
+						.setGrid(i + 4, j + 1, true);
+				iCount++;
 			}
 		}
 
@@ -110,22 +117,20 @@ public class GuiButton implements IGuiQuad {
 
 	@Override
 	public boolean touches(float eventX, float eventY) {
+		boolean bTouch = false;
 		for (GuiQuad guiQuad : lstQuads) {
+			// touch all elements
 			if (guiQuad.touches(eventX, eventY)) {
-				return true;
+				bTouch = true;
 			}
 		}
-		return false;
+		return bTouch;
 	}
 
 	@Override
 	public void moveTo(float eventX, float eventY) {
-		for (int i = -1; i <= 1; i++) {
-			float dx = eventX + i * (width - size) / 2;
-			for (int j = -1; j <= 1; j++) {
-				float dy = eventY + j * (height - size) / 2;
-				lstQuads[i + 1 + (j + 1) * 3].moveTo(dx, dy);
-			}
+		for (GuiQuad quad : lstQuads) {
+			quad.moveTo(eventX, eventY);
 		}
 	}
 
