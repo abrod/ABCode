@@ -14,6 +14,7 @@ public class MainActivity extends GuiActivity {
 
 	private List<IGuiQuad>	_lstActionCards	= new ArrayList<IGuiQuad>();
 	private float			startX, startY;
+	private GuiButton		button;
 
 	@Override
 	protected void initActivity(Bundle savedInstanceState) {
@@ -32,7 +33,10 @@ public class MainActivity extends GuiActivity {
 						cards52.getY(j * 4f / 3)));
 			}
 		}
-		lstQuads.add(new GuiButton(0, 0, 1 / 3f, 1 / 4f));
+		float wdButton = 1 / 2f * 2;
+		float hgButton = 1 / 4f;
+		lstQuads.add(new GuiButton((wd - wdButton) / 2f, (hg - hgButton) / 2f,
+				wdButton, hgButton, "Show"));
 	}
 
 	@Override
@@ -50,9 +54,15 @@ public class MainActivity extends GuiActivity {
 	public boolean actionDown(float eventX, float eventY) {
 		startX = eventX;
 		startY = eventY;
+		button = null;
 		getQuadsAt(_lstActionCards, eventX, eventY, 1);
-		if (_lstActionCards.size() > 0){
+		if (_lstActionCards.size() > 0) {
 			IGuiQuad guiQuad = _lstActionCards.get(0);
+			if (guiQuad instanceof GuiButton) {
+				button = (GuiButton) guiQuad;
+				(button).setDown(true);
+				_lstActionCards.clear();
+			}
 			return true;
 		}
 		return false;
@@ -72,6 +82,13 @@ public class MainActivity extends GuiActivity {
 
 	@Override
 	public boolean actionUp(float eventX, float eventY) {
+		if (button != null) {
+			button.setDown(false);
+			if (button.touches(eventX, eventY)) {
+				button.doAction();
+			}
+			return true;
+		}
 		float dx = eventX - startX;
 		float dy = eventY - startY;
 		if ((dx * dx + dy * dy) < 1 / 64f) {
@@ -79,7 +96,7 @@ public class MainActivity extends GuiActivity {
 		}
 
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }

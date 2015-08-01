@@ -170,6 +170,11 @@ public class GuiQuad implements IGuiQuad {
 		}
 	}
 
+	public void setRotationY(float pRotation) {
+		_rotY = pRotation;
+		refreshView();
+	}
+
 	@Override
 	public void close() {
 		_grid.remove(this);
@@ -193,6 +198,12 @@ public class GuiQuad implements IGuiQuad {
 		} else {
 			_grid.fillTexture(pfX, pfY, _textureBuffer[1]);
 		}
+		return this;
+	}
+
+	public GuiQuad setGrid(float pfX, float pfY) {
+		_grid.fillTexture(pfX, pfY, _textureBuffer[0]);
+		_grid.fillTexture(pfX, pfY, _textureBuffer[1]);
 		return this;
 	}
 

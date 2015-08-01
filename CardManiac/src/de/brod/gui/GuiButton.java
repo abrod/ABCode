@@ -7,27 +7,31 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Rect;
 import android.graphics.RectF;
 
 public class GuiButton implements IGuiQuad {
 
-	GuiGrid				grid	= null;
-	private GuiQuad[]	lstQuads;
-	private float[]		dx, dy;
-	private float		size;
-	private float		width;
-	private float		height;
+	GuiGrid			grid	= null;
+	private GuiQuad	lstQuads;
+	private float	size;
+	private float	width;
+	private float	height;
 
 	class ButtonGrid extends GuiGrid {
 
-		public ButtonGrid() {
-			super(6, 3);
+		private String	_sText;
+
+		public ButtonGrid(String psText) {
+			super(2, 1);
+			_sText = psText;
 		}
 
 		@Override
 		protected Bitmap createBitmap(int pwidth, int pheight) {
-			int maxX = (int) (width * pwidth / 2);
-			int maxY = (int) (height * pheight / 2);
+			float maxSize = Math.max(pwidth, pheight);
+			int maxX = (int) (maxSize * width / 2);
+			int maxY = (int) (maxSize * height / 2);
 			Bitmap bitmap = Bitmap.createBitmap(maxX * 2, maxY,
 					Bitmap.Config.ARGB_8888);
 			Canvas c = new Canvas(bitmap);
@@ -66,72 +70,57 @@ public class GuiButton implements IGuiQuad {
 			p.setARGB(255, 192, 192, 192);
 			p.setStyle(Style.FILL);
 			c.drawRoundRect(rect, corner, corner, p);
+			p.setARGB(255, 255, 255, 255);
+			Rect rect2 = new Rect();
+			p.getTextBounds(_sText.toCharArray(), 0, _sText.length(), rect2);
+			c.drawText(_sText, dx + d, d + rect2.height(), p);
 
 		}
 	}
 
-	public GuiButton(float x, float y, float width, float height) {
-		this.width = width;
-		this.height = height;
-		grid = new ButtonGrid();
-		lstQuads = new GuiQuad[9];
-		dx = new float[9];
-		dy = new float[9];
+	public GuiButton(float x, float y, float pfwidth, float pfheight,
+			String psText) {
+		this.width = pfwidth;
+		this.height = pfheight;
+		grid = new ButtonGrid(psText);
 		size = Math.min(width, height) / 3f;
-		int iCount = 0;
-		for (int j = -1; j <= 1; j++) {
-			float hg = j == 0 ? height - size * 2 : size;
-			float dy = j * (height - size) / 2;
-			for (int i = -1; i <= 1; i++) {
-				float wd = i == 0 ? width - size * 2 : size;
-				float dx = i * (width - size) / 2;
-				this.dx[iCount] = dx;
-				this.dy[iCount] = dy;
-				lstQuads[iCount] = new GuiQuad(grid, x + dx, y - dy, wd, hg)
-						.setGrid(i + 1, j + 1, true)
-						.setGrid(i + 4, j + 1, true);
-				iCount++;
-			}
-		}
+		lstQuads = new GuiQuad(grid, x, y, width, height);
+		lstQuads.setGrid(0, 0);
 
 	}
 
 	@Override
 	public void close() {
-		for (GuiQuad guiQuad : lstQuads) {
-			guiQuad.close();
-		}
+		lstQuads.close();
 	}
 
 	@Override
 	public void draw(GL10 pGL10) {
-		for (GuiQuad guiQuad : lstQuads) {
-			guiQuad.draw(pGL10);
-		}
+		lstQuads.draw(pGL10);
 	}
 
 	@Override
 	public float getXY() {
-		return lstQuads[4].getXY();
+		return lstQuads.getXY();
 	}
 
 	@Override
 	public boolean touches(float eventX, float eventY) {
-		boolean bTouch = false;
-		for (GuiQuad guiQuad : lstQuads) {
-			// touch all elements
-			if (guiQuad.touches(eventX, eventY)) {
-				bTouch = true;
-			}
-		}
-		return bTouch;
+		return lstQuads.touches(eventX, eventY);
 	}
 
 	@Override
 	public void moveTo(float eventX, float eventY) {
-		for (GuiQuad quad : lstQuads) {
-			quad.moveTo(eventX, eventY);
-		}
+		lstQuads.moveTo(eventX, eventY);
+	}
+
+	public void setDown(boolean pbDown) {
+		lstQuads.setGrid((pbDown ? 1 : 0), 0, true);
+	}
+
+	public void doAction() {
+		// TODO Auto-generated method stub
+
 	}
 
 }
