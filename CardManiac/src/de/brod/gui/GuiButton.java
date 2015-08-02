@@ -43,37 +43,50 @@ public class GuiButton implements IGuiQuad {
 		private void draw(Canvas c, int dx, int width, int height, int white,
 				int black) {
 			Paint p = new Paint();
-			int corner = Math.min(width, height) / 3;
+			int corner = Math.min(width, height) / 6;
 			int wd = corner / 3;
 			int d = wd / 2;
 
 			RectF rect = new RectF(dx + d, d, dx + width - d - wd, height - d
 					- wd);
 			p.setStyle(Style.STROKE);
-			p.setStrokeWidth(wd);
+			p.setStrokeWidth(wd + 1);
 			if (white != 0) {
 				p.setColor(white);
 				c.drawRoundRect(rect, corner, corner, p);
 			}
 
 			rect = new RectF(dx + d + wd, d + wd, dx + width - d, height - d);
-			d = 7;
-			int d2 = 7;
+			int d2 = d;
 			if (black != 0) {
 				p.setColor(black);
 				c.drawRoundRect(rect, corner, corner, p);
 			} else {
-				d2 = 5;
+				d2 = d * 3 / 5;
 			}
 
 			rect = new RectF(dx + d, d, dx + width - d2, height - d2);
 			p.setARGB(255, 192, 192, 192);
 			p.setStyle(Style.FILL);
 			c.drawRoundRect(rect, corner, corner, p);
+
 			p.setARGB(255, 255, 255, 255);
+			float textHeight = height;
 			Rect rect2 = new Rect();
-			p.getTextBounds(_sText.toCharArray(), 0, _sText.length(), rect2);
-			c.drawText(_sText, dx + d, d + rect2.height(), p);
+			float wd2 = width * 0.8f;
+			float hg2 = height * 0.8f;
+			do {
+				p.setTextSize(textHeight);
+				p.getTextBounds(_sText.toCharArray(), 0, _sText.length(), rect2);
+				textHeight--;
+			} while (textHeight > 6 && rect2.width() > wd2
+					&& rect2.height() > hg2);
+			if (black == 0) {
+				d *= 2;
+			}
+
+			c.drawText(_sText, dx + d + (width - rect2.width()) / 2,
+					d + rect2.height() + (height - rect2.height()) / 4, p);
 
 		}
 	}
