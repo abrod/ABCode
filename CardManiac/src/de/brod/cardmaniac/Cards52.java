@@ -1,6 +1,8 @@
 package de.brod.cardmaniac;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -10,7 +12,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import de.brod.gui.GuiGrid;
 
-public class Cards52 {
+public class Cards52 extends CardSet {
 
 	public enum CardValue {
 
@@ -49,18 +51,15 @@ public class Cards52 {
 		}
 	}
 
-	private final Hashtable<CardColor, CardSetGrid>	cards		= new Hashtable<Cards52.CardColor, Cards52.CardSetGrid>();
+	private final Hashtable<CardColor, Card52Grid>	cards		= new Hashtable<Cards52.CardColor, Cards52.Card52Grid>();
 
 	public static int								background	= 14;
 	private static int								countX		= 5;
 	private static int								countY		= 3;
 
-	protected static float							CARD_WIDTH	= 1 / 4f;
-	protected static float							CARD_HEIGHT	= 3 / 8f;
+	private class Card52Grid extends GuiGrid {
 
-	private class CardSetGrid extends GuiGrid {
-
-		public CardSetGrid(CardColor pColor) {
+		public Card52Grid(CardColor pColor) {
 			super(countX, countY);
 			color = pColor;
 		}
@@ -161,24 +160,25 @@ public class Cards52 {
 		}
 	}
 
-	public Card createCard(CardColor spades, CardValue ca, float x, float y) {
-		CardSetGrid cardSetColor = cards.get(spades);
+	public Card createCard(CardColor pCardColor, CardValue pCardValue, float x,
+			float y) {
+		Card52Grid cardSetColor = cards.get(pCardColor);
 		if (cardSetColor == null) {
-			cardSetColor = new CardSetGrid(spades);
-			cards.put(spades, cardSetColor);
+			cardSetColor = new Card52Grid(pCardColor);
+			cards.put(pCardColor, cardSetColor);
 		}
-		return cardSetColor.createCard(ca, x, y);
+		return cardSetColor.createCard(pCardValue, x, y);
 	}
 
-	public float getX(float i) {
-		float wdLeft = CARD_WIDTH / 2 - 1;
-		float wdScreen = 2 - CARD_WIDTH;
-		return wdLeft + wdScreen * i / 7;
+	public List<Card> create52Cards() {
+		List<Card> lstQuads = new ArrayList<Card>();
+		for (int j = 0; j < 4; j++) {
+			for (int i = 0; i < 13; i++) {
+				lstQuads.add(createCard(CardColor.values()[j],
+						CardValue.values()[i], 0, 0));
+			}
+		}
+		return lstQuads;
 	}
 
-	public float getY(float i) {
-		float hgTop = CARD_HEIGHT / 2 - 1;
-		float hgScreen = 2 - CARD_HEIGHT;
-		return hgTop + hgScreen * i / 4;
-	}
 }
