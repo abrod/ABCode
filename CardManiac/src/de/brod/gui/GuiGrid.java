@@ -32,20 +32,6 @@ public abstract class GuiGrid {
 		}
 	}
 
-	public GuiQuad createQuad(float pfX, float pfY, float px, float py,
-			float wd, float hg) {
-		GuiQuad guiQuad = new GuiQuad(this, px, py, wd, hg);
-		initGrid(guiQuad, pfX, pfY);
-		_lstGuiQuads.add(guiQuad);
-		return guiQuad;
-	}
-
-	public void initGrid(GuiQuad guiQuad, float pfX, float pfY) {
-		guiQuad.setGrid(pfX, pfY, true);
-		guiQuad.setGrid(pfX, pfY, false);
-
-	}
-
 	public boolean bindTexture(GL10 gl) {
 
 		if (bReload) {

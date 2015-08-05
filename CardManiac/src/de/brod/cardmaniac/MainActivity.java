@@ -25,11 +25,11 @@ public class MainActivity extends GuiActivity {
 	protected void createQuads(List<IGuiQuad> lstQuads, float wd, float hg,
 			int width, int height) {
 		Cards52 cards52 = new Cards52();
-		List<Card> create52Cards = cards52.create52Cards();
+		List<? extends Card> create52Cards = cards52.create52Cards();
 		Collections.shuffle(create52Cards);
 		lstQuads.addAll(create52Cards);
 		for (int i = 0; i < create52Cards.size(); i++) {
-			create52Cards.get(i).moveTo(cards52.getX((i % 13) * 8f / 12),
+			create52Cards.get(i).moveTo(cards52.getX((i % 13) * 7f / 12),
 					cards52.getY((i / 13) * 4f / 3));
 		}
 		float wdButton = 1 / 2f * 2;

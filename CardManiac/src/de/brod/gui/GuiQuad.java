@@ -138,16 +138,14 @@ public class GuiQuad implements IGuiQuad {
 				int i3 = i2 + 1;
 				_line.set(_verticles[i], _verticles[i1], _verticles[i2],
 						_verticles[i3]);
+				_verticles[i] = _line.getX(_rotY);
+				_verticles[i2] = _line.getX(r2);
 				if (_iUp == 1) {
-					_verticles[i] = _line.getX(_rotY);
-					_verticles[i2] = _line.getX(r2);
-					_verticles[i1] = _line.getY(1 + dy);
-					_verticles[i3] = _line.getY(0);
+					_verticles[i1] = _line.getY(1);
+					_verticles[i3] = _line.getY(-dy);
 				} else {
-					_verticles[i] = _line.getX(_rotY);
-					_verticles[i2] = _line.getX(r2);
-					_verticles[i1] = _line.getY(0);
-					_verticles[i3] = _line.getY(1 + dy);
+					_verticles[i1] = _line.getY(-dy);
+					_verticles[i3] = _line.getY(1);
 				}
 			}
 		}

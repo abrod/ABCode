@@ -152,16 +152,19 @@ public class Cards52 extends CardSet {
 
 		}
 
-		public Card createCard(CardValue ca, float x, float y) {
-			Card card = new Card(this, x, y, CARD_WIDTH, CARD_HEIGHT);
-			int ordinal = ca.ordinal();
-			initGrid(card, ordinal % countX, ordinal / countX);
+		public Card52 createCard(CardValue cardValue, float x, float y) {
+			Card52 card = new Card52(this, x, y, CARD_WIDTH, CARD_HEIGHT,
+					color, cardValue);
+			int ordinal = cardValue.ordinal();
+			card.setGrid(ordinal % countX, ordinal / countX, true);
+			card.setGrid(background % countX, background / countX, false);
+			card.setRotationY((float) Math.random());
 			return card;
 		}
 	}
 
-	public Card createCard(CardColor pCardColor, CardValue pCardValue, float x,
-			float y) {
+	public Card52 createCard(CardColor pCardColor, CardValue pCardValue,
+			float x, float y) {
 		Card52Grid cardSetColor = cards.get(pCardColor);
 		if (cardSetColor == null) {
 			cardSetColor = new Card52Grid(pCardColor);
@@ -170,8 +173,8 @@ public class Cards52 extends CardSet {
 		return cardSetColor.createCard(pCardValue, x, y);
 	}
 
-	public List<Card> create52Cards() {
-		List<Card> lstQuads = new ArrayList<Card>();
+	public List<Card52> create52Cards() {
+		List<Card52> lstQuads = new ArrayList<Card52>();
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 13; i++) {
 				lstQuads.add(createCard(CardColor.values()[j],
