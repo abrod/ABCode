@@ -55,11 +55,10 @@ public class GuiText implements IGuiQuad {
 
 	private void drawText(Canvas c, int dx, int width, int height, String _sText) {
 		Paint p = new Paint();
-		int d = Math.min(width, height) / 36;
+		int d36 = Math.min(width, height) / 36;
 
 		p.setStyle(Style.FILL);
 
-		p.setARGB(255, 255, 255, 255);
 		float textHeight = height;
 		Rect rect2 = new Rect();
 		float wd2 = width * 0.8f;
@@ -69,10 +68,15 @@ public class GuiText implements IGuiQuad {
 			p.getTextBounds(_sText.toCharArray(), 0, _sText.length(), rect2);
 			textHeight--;
 		} while (textHeight > 6 && rect2.width() > wd2 && rect2.height() > hg2);
+		int d = d36;
 		if (dx > 0) {
 			d *= 2;
 		}
 
+		p.setARGB(255, 0, 0, 0);
+		c.drawText(_sText, dx + d + d36 + (width - rect2.width()) / 2, d + d36
+				+ rect2.height() + (height - rect2.height()) / 4, p);
+		p.setARGB(255, 255, 255, 255);
 		c.drawText(_sText, dx + d + (width - rect2.width()) / 2,
 				d + rect2.height() + (height - rect2.height()) / 4, p);
 
