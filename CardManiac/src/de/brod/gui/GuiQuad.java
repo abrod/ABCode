@@ -27,21 +27,21 @@ public class GuiQuad implements IGuiQuad {
 	}
 
 	private static class Line {
-		float	x, y, dx, dy;
+		float	xStart, yStart, dx, dy;
 
 		void set(float x1, float y1, float x2, float y2) {
-			x = x1;
-			y = y1;
+			xStart = x1;
+			yStart = y1;
 			dx = x2 - x1;
 			dy = y2 - y1;
 		}
 
 		float getX(float d) {
-			return x + dx * d;
+			return xStart + dx * d;
 		}
 
 		float getY(float d) {
-			return y + dy * d;
+			return yStart + dy * d;
 		}
 	}
 
@@ -52,7 +52,7 @@ public class GuiQuad implements IGuiQuad {
 			1, 1									};
 
 	private float						_x, _y, _width, _height,
-			_xy = -12345678;
+			_xy = -12345678, _xyOrder = -12345678;
 	private float						_rY, _rotY;
 	private int							_iUp;
 	private GuiGrid						_grid;
@@ -106,53 +106,27 @@ public class GuiQuad implements IGuiQuad {
 	}
 
 	void refreshView() {
-		float xy = _x - _y * 4f;
-		if (xy == _xy && _rY == _rotY) {
+		float xy = _x - _y * 2f;
+		if (isPositionChanged(xy)) {
 			return;
 		}
-		_xy = xy;
-		_rY = _rotY;
-		int iPos = 0;
-		for (int k = 0; k < _edges.length; k++) {
-			float x = (_x + _width * _edges[k]);
-			k++;
-			float y = _y + _height * _edges[k];
-			_verticles[iPos] = x;
-			iPos++;
-			_verticles[iPos] = y;
-			iPos += 2;
-		}
-		_iUp = 0;
-		if (_rotY > 0) {
-			float dy;
-			if (_rotY > 0.5) {
-				dy = 1 - _rotY;
-				_iUp = 1;
-			} else {
-				dy = _rotY;
-			}
-			float r2 = 1 - _rotY;
-			for (int i = 0; i <= 3; i += 3) {
-				int i1 = i + 1;
-				int i2 = i + 6;
-				int i3 = i2 + 1;
-				_line.set(_verticles[i], _verticles[i1], _verticles[i2],
-						_verticles[i3]);
-				_verticles[i] = _line.getX(_rotY);
-				_verticles[i2] = _line.getX(r2);
-				if (_iUp == 1) {
-					_verticles[i1] = _line.getY(1);
-					_verticles[i3] = _line.getY(-dy);
-				} else {
-					_verticles[i1] = _line.getY(-dy);
-					_verticles[i3] = _line.getY(1);
-				}
-			}
-		}
+		initVerticlesAndMembers(xy);
+		rotateVerticlesAndSetXYOrder();
+		putVerticlesIntoBuffer();
+		defineRange();
+	}
+
+	private boolean isPositionChanged(float xy) {
+		return xy == _xy && _rY == _rotY;
+	}
+
+	private void putVerticlesIntoBuffer() {
 		_vertexBuffer.position(0);
 		_vertexBuffer.put(_verticles);
 		_vertexBuffer.position(0);
-		// min max X
+	}
+
+	private void defineRange() {
 		_range[0] = _verticles[0];
 		_range[1] = _verticles[0];
 		for (int i = 3; i <= 9; i += 3) {
@@ -165,6 +139,46 @@ public class GuiQuad implements IGuiQuad {
 		for (int i = 4; i <= 10; i += 3) {
 			_range[2] = Math.min(_range[2], _verticles[i]);
 			_range[3] = Math.max(_range[3], _verticles[i]);
+		}
+	}
+
+	private void initVerticlesAndMembers(float xy) {
+		_xy = xy;
+		_iUp = 0;
+		_rY = _rotY;
+		int iPos = 0;
+		for (int k = 0; k < _edges.length; k++) {
+			float x = (_x + _width * _edges[k]);
+			k++;
+			float y = _y + _height * _edges[k];
+			_verticles[iPos] = x;
+			iPos++;
+			_verticles[iPos] = y;
+			iPos += 2;
+		}
+	}
+
+	private void rotateVerticlesAndSetXYOrder() {
+		if (_rotY > 0) {
+			float dy;
+			_line.set(_verticles[0], _verticles[1], _verticles[6],
+					_verticles[7]);
+			if (_rotY > 0.5) {
+				_xyOrder = -2 - _x - _y * 2f;
+				dy = 1 - _rotY;
+				_iUp = 1;
+			} else {
+				_xyOrder = _x - _y * 2f;
+				dy = _rotY;
+			}
+			_verticles[4 + 7 * _iUp] = _line.getY(1 + dy / 2f);
+			_verticles[1 + 9 * _iUp] = _line.getY(-dy / 2f);
+			_verticles[0] = _line.getX(dy);
+			_verticles[3] = _line.getX(dy);
+			_verticles[6] = _line.getX(1 - dy);
+			_verticles[9] = _line.getX(1 - dy);
+		} else {
+			_xyOrder = _x - _y * 2f;
 		}
 	}
 
@@ -257,7 +271,7 @@ public class GuiQuad implements IGuiQuad {
 
 	@Override
 	public float getXY() {
-		return _xy;
+		return _xyOrder;
 	}
 
 }
