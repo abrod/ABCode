@@ -14,4 +14,7 @@ public interface IGuiQuad {
 
 	void moveTo(float eventX, float eventY);
 
+	void slideTo(float X, float Y);
+
+	void setColor(int a, int r, int g, int b);
 }

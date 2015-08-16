@@ -157,7 +157,9 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 	}
 
 	public void sortQuads() {
-		Collections.sort(_lstQuads, GuiQuad.COMPERATOR);
+		if (_lstQuads != null) {
+			Collections.sort(_lstQuads, GuiQuad.COMPERATOR);
+		}
 	}
 
 	@SuppressLint("ClickableViewAccessibility")

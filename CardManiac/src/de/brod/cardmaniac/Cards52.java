@@ -1,6 +1,7 @@
 package de.brod.cardmaniac;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -51,11 +52,11 @@ public class Cards52 extends CardSet {
 		}
 	}
 
-	private final Hashtable<CardColor, Card52Grid>	cards		= new Hashtable<Cards52.CardColor, Cards52.Card52Grid>();
+	private final Hashtable<CardColor, Card52Grid>	cardsGridMap	= new Hashtable<Cards52.CardColor, Cards52.Card52Grid>();
 
-	public static int								background	= 14;
-	private static int								countX		= 5;
-	private static int								countY		= 3;
+	public static int								background		= 14;
+	private static int								countX			= 5;
+	private static int								countY			= 3;
 
 	private class Card52Grid extends GuiGrid {
 
@@ -158,17 +159,16 @@ public class Cards52 extends CardSet {
 			int ordinal = cardValue.ordinal();
 			card.setGrid(ordinal % countX, ordinal / countX, true);
 			card.setGrid(background % countX, background / countX, false);
-			card.setRotationY((float) Math.random());
 			return card;
 		}
 	}
 
-	public Card52 createCard(CardColor pCardColor, CardValue pCardValue,
+	private Card52 createCard(CardColor pCardColor, CardValue pCardValue,
 			float x, float y) {
-		Card52Grid cardSetColor = cards.get(pCardColor);
+		Card52Grid cardSetColor = cardsGridMap.get(pCardColor);
 		if (cardSetColor == null) {
 			cardSetColor = new Card52Grid(pCardColor);
-			cards.put(pCardColor, cardSetColor);
+			cardsGridMap.put(pCardColor, cardSetColor);
 		}
 		return cardSetColor.createCard(pCardValue, x, y);
 	}
@@ -177,10 +177,13 @@ public class Cards52 extends CardSet {
 		List<Card52> lstQuads = new ArrayList<Card52>();
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 13; i++) {
-				lstQuads.add(createCard(CardColor.values()[j],
-						CardValue.values()[i], 0, 0));
+				CardColor cardColor = CardColor.values()[j];
+				CardValue cardValue = CardValue.values()[i];
+				Card52 createdCard = createCard(cardColor, cardValue, 0, 0);
+				lstQuads.add(createdCard);
 			}
 		}
+		Collections.shuffle(lstQuads);
 		return lstQuads;
 	}
 

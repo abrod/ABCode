@@ -31,9 +31,11 @@ public class GuiText implements IGuiQuad {
 			int maxY = (int) (maxSize * height / 2);
 			Bitmap bitmap = Bitmap.createBitmap(maxX * 2, maxY,
 					Bitmap.Config.ARGB_8888);
-			Canvas c = new Canvas(bitmap);
-			draw(_sText, c, 0, maxX, maxY);
-			draw(_sText, c, maxX, maxX, maxY);
+			if (_sText != null && _sText.length() > 0) {
+				Canvas c = new Canvas(bitmap);
+				draw(_sText, c, 0, maxX, maxY);
+				draw(_sText, c, maxX, maxX, maxY);
+			}
 			return bitmap;
 		}
 
@@ -46,7 +48,7 @@ public class GuiText implements IGuiQuad {
 		grid = new TextGrid(psText);
 		lstQuads = new GuiQuad(grid, x, y, width, height);
 		lstQuads.setGrid(0, 0);
-
+		lstQuads.setLevel(-10);
 	}
 
 	protected void draw(String psText, Canvas c, int dx, int maxX, int maxY) {
@@ -109,6 +111,16 @@ public class GuiText implements IGuiQuad {
 
 	public void setDown(boolean pbDown) {
 		lstQuads.setGrid((pbDown ? 1 : 0), 0, true);
+	}
+
+	@Override
+	public void setColor(int a, int r, int g, int b) {
+		lstQuads.setColor(a, r, g, b);
+	}
+
+	@Override
+	public void slideTo(float X, float Y) {
+		lstQuads.slideTo(X, Y);
 	}
 
 }

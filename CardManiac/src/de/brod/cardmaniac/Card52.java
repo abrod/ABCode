@@ -6,8 +6,8 @@ import de.brod.gui.GuiGrid;
 
 public class Card52 extends Card {
 
-	private CardColor	color;
-	private CardValue	cardValue;
+	private final CardColor	color;
+	private final CardValue	cardValue;
 
 	Card52(GuiGrid grid, float px, float py, float wd, float hg,
 			CardColor color, CardValue cardValue) {
@@ -16,5 +16,12 @@ public class Card52 extends Card {
 		this.cardValue = cardValue;
 	}
 
+	public CardColor getColor() {
+		return color;
+	}
+
+	public CardValue getCardValue() {
+		return cardValue;
+	}
 
 }

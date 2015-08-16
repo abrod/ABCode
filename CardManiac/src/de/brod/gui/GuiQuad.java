@@ -54,9 +54,9 @@ public class GuiQuad implements IGuiQuad {
 	private float						_x, _y, _width, _height,
 			_xy = -12345678, _xyOrder = -12345678;
 	private float						_rY, _rotY;
-	private int							_iUp;
+	private int							_iUp, level;
 	private GuiGrid						_grid;
-	private float						_r, _g, _b, _a;
+	private float[]						rgba		= { 1, 1, 1, 1 };
 
 	private FloatBuffer					_vertexBuffer;
 	private ShortBuffer					_indexBuffer;
@@ -76,11 +76,6 @@ public class GuiQuad implements IGuiQuad {
 		_y = py;
 		_width = wd / 2;
 		_height = hg / 2;
-
-		_r = 1;
-		_g = 1;
-		_b = 1;
-		_a = 1;
 
 		// a float is 4 bytes, therefore we multiply the number if vertices with 4.
 		ByteBuffer vbb = ByteBuffer.allocateDirect(3 * 4 * 4);
@@ -164,11 +159,11 @@ public class GuiQuad implements IGuiQuad {
 			_line.set(_verticles[0], _verticles[1], _verticles[6],
 					_verticles[7]);
 			if (_rotY > 0.5) {
-				_xyOrder = -2 - _x - _y * 2f;
+				_xyOrder = -2 - _x - _y;
 				dy = 1 - _rotY;
 				_iUp = 1;
 			} else {
-				_xyOrder = _x - _y * 2f;
+				_xyOrder = _x - _y;
 				dy = _rotY;
 			}
 			_verticles[4 + 7 * _iUp] = _line.getY(1 + dy / 2f);
@@ -178,7 +173,7 @@ public class GuiQuad implements IGuiQuad {
 			_verticles[6] = _line.getX(1 - dy);
 			_verticles[9] = _line.getX(1 - dy);
 		} else {
-			_xyOrder = _x - _y * 2f;
+			_xyOrder = _x - _y;
 		}
 	}
 
@@ -196,7 +191,7 @@ public class GuiQuad implements IGuiQuad {
 	public void draw(GL10 gl) {
 
 		if (_grid.bindTexture(gl)) {
-			gl.glColor4f(_r, _g, _b, _a);
+			gl.glColor4f(rgba[0], rgba[1], rgba[2], rgba[3]);
 			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, _vertexBuffer);
 			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, _textureBuffer[_iUp]);
 			gl.glDrawElements(GL10.GL_TRIANGLES, _indices.length,
@@ -271,7 +266,27 @@ public class GuiQuad implements IGuiQuad {
 
 	@Override
 	public float getXY() {
-		return _xyOrder;
+		return _xyOrder + level * 1000;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	@Override
+	public void setColor(int a, int r, int g, int b) {
+		rgba[0] = r / 255f;
+		rgba[1] = g / 255f;
+		rgba[2] = b / 255f;
+		rgba[3] = a / 255f;
+	}
+
+	@Override
+	public void slideTo(float X, float Y) {
+		_x = Math.max(_width - GuiView._wd, Math.min(GuiView._wd - _width, X));
+		_y = Math
+				.max(_height - GuiView._hg, Math.min(GuiView._hg - _height, Y));
+		refreshView();
 	}
 
 }

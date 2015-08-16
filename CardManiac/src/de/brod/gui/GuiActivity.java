@@ -74,17 +74,20 @@ public abstract class GuiActivity extends Activity {
 
 	public abstract boolean actionUp(float eventX, float eventY);
 
-	public void getQuadsAt(List<IGuiQuad> lstFound, float eventX, float eventY,
-			int iSize) {
-		lstFound.clear();
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getQuadsAt(float eventX, float eventY, int iSize,
+			Class<T> pClass) {
+		List<T> lstFound = new ArrayList<T>();
 		for (int j = lstQuads.size() - 1; j >= 0; j--) {
 			IGuiQuad guiQuad = lstQuads.get(j);
-			if (guiQuad.touches(eventX, eventY)) {
-				lstFound.add(guiQuad);
+
+			if (guiQuad.touches(eventX, eventY) && pClass.isInstance(guiQuad)) {
+				lstFound.add((T) guiQuad);
 				if (lstFound.size() >= iSize) {
 					break;
 				}
 			}
 		}
+		return lstFound;
 	}
 }
