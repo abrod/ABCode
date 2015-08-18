@@ -31,11 +31,9 @@ public class GuiText implements IGuiQuad {
 			int maxY = (int) (maxSize * height / 2);
 			Bitmap bitmap = Bitmap.createBitmap(maxX * 2, maxY,
 					Bitmap.Config.ARGB_8888);
-			if (_sText != null && _sText.length() > 0) {
-				Canvas c = new Canvas(bitmap);
-				draw(_sText, c, 0, maxX, maxY);
-				draw(_sText, c, maxX, maxX, maxY);
-			}
+			Canvas c = new Canvas(bitmap);
+			draw(_sText, c, 0, maxX, maxY);
+			draw(_sText, c, maxX, maxX, maxY);
 			return bitmap;
 		}
 
@@ -52,10 +50,12 @@ public class GuiText implements IGuiQuad {
 	}
 
 	protected void draw(String psText, Canvas c, int dx, int maxX, int maxY) {
-		drawText(c, dx, maxX, maxY, psText);
+		if (psText != null && psText.length() > 0) {
+			drawText(c, dx, maxX, maxY, psText);
+		}
 	}
 
-	private void drawText(Canvas c, int dx, int width, int height, String _sText) {
+	private void drawText(Canvas c, int dx, int width, int height, String psText) {
 		Paint p = new Paint();
 		int d36 = Math.min(width, height) / 36;
 
@@ -67,7 +67,7 @@ public class GuiText implements IGuiQuad {
 		float hg2 = height * 0.8f;
 		do {
 			p.setTextSize(textHeight);
-			p.getTextBounds(_sText.toCharArray(), 0, _sText.length(), rect2);
+			p.getTextBounds(psText.toCharArray(), 0, psText.length(), rect2);
 			textHeight--;
 		} while (textHeight > 6 && rect2.width() > wd2 && rect2.height() > hg2);
 		int d = d36;
@@ -76,10 +76,10 @@ public class GuiText implements IGuiQuad {
 		}
 
 		p.setARGB(255, 0, 0, 0);
-		c.drawText(_sText, dx + d + d36 + (width - rect2.width()) / 2, d + d36
+		c.drawText(psText, dx + d + d36 + (width - rect2.width()) / 2, d + d36
 				+ rect2.height() + (height - rect2.height()) / 4, p);
 		p.setARGB(255, 255, 255, 255);
-		c.drawText(_sText, dx + d + (width - rect2.width()) / 2,
+		c.drawText(psText, dx + d + (width - rect2.width()) / 2,
 				d + rect2.height() + (height - rect2.height()) / 4, p);
 
 	}

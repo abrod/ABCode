@@ -5,18 +5,18 @@ import de.brod.gui.GuiQuad;
 
 public abstract class Card extends GuiQuad {
 
-	private Hand<? extends Card>	hand;
+	private Hand	hand;
 
 	Card(GuiGrid grid, float px, float py, float wd, float hg) {
 		super(grid, px, py, wd, hg);
 		hand = null;
 	}
 
-	public Hand<? extends Card> getHand() {
+	public Hand getHand() {
 		return hand;
 	}
 
-	public void setHand(Hand<? extends Card> hand) {
+	public void setHand(Hand hand) {
 		this.hand = hand;
 	}
 

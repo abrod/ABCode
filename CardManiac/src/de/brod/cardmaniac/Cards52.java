@@ -32,6 +32,11 @@ public class Cards52 extends CardSet {
 		public static int length() {
 			return 13;
 		}
+
+		@Override
+		public String toString() {
+			return sText;
+		}
 	}
 
 	public enum CardColor {
@@ -49,6 +54,11 @@ public class Cards52 extends CardSet {
 
 		public static int length() {
 			return 5;
+		}
+
+		@Override
+		public String toString() {
+			return sText;
 		}
 	}
 

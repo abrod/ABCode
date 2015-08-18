@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Bundle;
+import de.brod.cardmaniac.game.IGame;
+import de.brod.cardmaniac.game.Solitair;
 import de.brod.gui.GuiActivity;
 import de.brod.gui.GuiButton;
 import de.brod.gui.GuiRectangle;
@@ -11,10 +13,11 @@ import de.brod.gui.IGuiQuad;
 
 public class MainActivity extends GuiActivity {
 
-	private List<Card>					_lstActionCards	= new ArrayList<Card>();
-	private List<Hand<? extends Card>>	_lstHands		= new ArrayList<Hand<? extends Card>>();
-	private float						startX, startY;
-	private GuiButton					button;
+	private List<Card>	_lstActionCards	= new ArrayList<Card>();
+	private List<Hand>	_lstHands		= new ArrayList<Hand>();
+	private float		startX, startY;
+	private GuiButton	button;
+	private IGame		game;
 
 	@Override
 	protected void initActivity(Bundle savedInstanceState) {
@@ -25,35 +28,29 @@ public class MainActivity extends GuiActivity {
 	@Override
 	protected void createQuads(List<IGuiQuad> lstQuads, float wd, float hg,
 			int width, int height) {
-		Cards52 cards52 = new Cards52();
-		List<Card52> create52Cards = cards52.create52Cards();
-		lstQuads.addAll(create52Cards);
 
-		List<Hand<Card52>> hands = new ArrayList<Hand<Card52>>();
-		for (int i = 0; i < 4; i++) {
-			float y = i * 4f / 3;
-			hands.add(new Hand<Card52>(0, y, 7 - i, y, String.valueOf(i + 1)));
-		}
+		game = new Solitair();
+		game.init(wd, hg, width, height);
 
-		for (int i = 0; i < create52Cards.size(); i++) {
-			Card52 card = create52Cards.get(i);
-			hands.get(i % hands.size()).addCard(card);
-		}
-		for (Hand<Card52> hand : hands) {
-			lstQuads.add(hand);
-			_lstHands.add(hand);
-		}
+		addGuiItemFromGame(lstQuads, game);
+
 		moveCardsWithinHands();
-		float wdButton = 1 / 2f * 2;
-		float hgButton = 1 / 4f;
-		float x = (wd - wdButton) / 2f;
-		float y = (hg - hgButton) / 2f;
-		GuiButton guiButton = new GuiButton(x, y, wdButton, hgButton, "Show");
-		lstQuads.add(guiButton);
+	}
+
+	private void addGuiItemFromGame(List<IGuiQuad> lstQuads, IGame game) {
+		_lstHands.clear();
+		_lstHands.addAll(game.getHands());
+
+		for (Hand hand : _lstHands) {
+			lstQuads.add(hand);
+			lstQuads.addAll(hand.getCards());
+		}
+		lstQuads.addAll(game.getButtons());
+
 	}
 
 	private void moveCardsWithinHands() {
-		for (Hand<? extends Card> hand : _lstHands) {
+		for (Hand hand : _lstHands) {
 			hand.moveCards();
 		}
 		sortQuads();
@@ -82,6 +79,11 @@ public class MainActivity extends GuiActivity {
 			if (guiQuad instanceof GuiButton) {
 				button = (GuiButton) guiQuad;
 				(button).setDown(true);
+			} else if (guiQuad instanceof Card) {
+				Card card = (Card) guiQuad;
+				_lstActionCards.clear();
+				List<Card> lst = game.actionDown(card);
+				_lstActionCards.addAll(lst);
 			}
 			// don't move rectangles
 			if (guiQuad instanceof GuiRectangle) {
@@ -119,14 +121,12 @@ public class MainActivity extends GuiActivity {
 			// select
 		}
 		if (_lstActionCards.size() > 0) {
-			Hand<? extends Card> hand = _lstActionCards.get(0).getHand();
-			@SuppressWarnings("rawtypes")
+			Hand hand = _lstActionCards.get(0).getHand();
 			List<Hand> lstQuadsAt = getQuadsAt(eventX, eventY, 1, Hand.class);
 			if (lstQuadsAt.size() > 0) {
-				@SuppressWarnings("unchecked")
-				Hand<Card> handNew = lstQuadsAt.get(0);
+				Hand handNew = lstQuadsAt.get(0);
 				if (!handNew.equals(hand)) {
-					handNew.addCard(_lstActionCards.get(0));
+					game.actionUp(_lstActionCards,handNew);
 				}
 			}
 		}

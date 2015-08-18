@@ -24,4 +24,8 @@ public class Card52 extends Card {
 		return cardValue;
 	}
 
+	@Override
+	public String toString() {
+		return color.toString() + cardValue.toString();
+	}
 }
