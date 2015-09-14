@@ -55,7 +55,7 @@ public class GuiQuad implements IGuiQuad {
 			_xyOrder = -12345678;
 	private float[]						_xy			= { -123, -345 };
 	private float						_rotY;
-	private int							_iUp, level;
+	private int							_iUp, level, levelMove;
 	private GuiGrid						_grid;
 	private float[]						rgba		= { 1, 1, 1, 1 };
 
@@ -269,16 +269,18 @@ public class GuiQuad implements IGuiQuad {
 				Math.min(GuiView._wd - _width, _touchX + eventX));
 		_y = Math.max(_height - GuiView._hg,
 				Math.min(GuiView._hg - _height, _touchY + eventY));
+		levelMove = level + 1;
 		refreshView();
 	}
 
 	@Override
 	public float getXY() {
-		return _xyOrder + level * 1000 + index;
+		return _xyOrder + levelMove * 1000 + index;
 	}
 
 	public void setLevel(int level) {
 		this.level = level;
+		this.levelMove = level;
 	}
 
 	@Override
@@ -294,6 +296,7 @@ public class GuiQuad implements IGuiQuad {
 		_x = Math.max(_width - GuiView._wd, Math.min(GuiView._wd - _width, X));
 		_y = Math
 				.max(_height - GuiView._hg, Math.min(GuiView._hg - _height, Y));
+		levelMove = level;
 		refreshView();
 	}
 
