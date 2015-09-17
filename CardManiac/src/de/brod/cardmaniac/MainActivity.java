@@ -7,8 +7,6 @@ import android.os.Bundle;
 import de.brod.cardmaniac.game.IGame;
 import de.brod.cardmaniac.game.Solitair;
 import de.brod.gui.GuiActivity;
-import de.brod.gui.GuiButton;
-import de.brod.gui.GuiRectangle;
 import de.brod.gui.IGuiQuad;
 
 public class MainActivity extends GuiActivity {
@@ -16,7 +14,6 @@ public class MainActivity extends GuiActivity {
 	private List<Card>	_lstActionCards	= new ArrayList<Card>();
 	private List<Hand>	_lstHands		= new ArrayList<Hand>();
 	private float		startX, startY;
-	private GuiButton	button;
 	private IGame		game;
 
 	@Override
@@ -71,24 +68,14 @@ public class MainActivity extends GuiActivity {
 	public boolean actionDown(float eventX, float eventY) {
 		startX = eventX;
 		startY = eventY;
-		button = null;
 		_lstActionCards.clear();
 		_lstActionCards.addAll(getQuadsAt(eventX, eventY, 1, Card.class));
 		if (_lstActionCards.size() > 0) {
 			IGuiQuad guiQuad = _lstActionCards.get(0);
-			if (guiQuad instanceof GuiButton) {
-				button = (GuiButton) guiQuad;
-				(button).setDown(true);
-			} else if (guiQuad instanceof Card) {
-				Card card = (Card) guiQuad;
-				_lstActionCards.clear();
-				List<Card> lst = game.actionDown(card);
-				_lstActionCards.addAll(lst);
-			}
-			// don't move rectangles
-			if (guiQuad instanceof GuiRectangle) {
-				_lstActionCards.clear();
-			}
+			Card card = (Card) guiQuad;
+			_lstActionCards.clear();
+			List<Card> lst = game.actionDown(card);
+			_lstActionCards.addAll(lst);
 			return true;
 		}
 		return false;
@@ -108,13 +95,6 @@ public class MainActivity extends GuiActivity {
 
 	@Override
 	public boolean actionUp(float eventX, float eventY) {
-		if (button != null) {
-			button.setDown(false);
-			if (button.touches(eventX, eventY)) {
-				button.doAction();
-			}
-			return true;
-		}
 		float dx = eventX - startX;
 		float dy = eventY - startY;
 		if ((dx * dx + dy * dy) < 1 / 64f) {
@@ -126,7 +106,7 @@ public class MainActivity extends GuiActivity {
 			if (lstQuadsAt.size() > 0) {
 				Hand handNew = lstQuadsAt.get(0);
 				if (!handNew.equals(hand)) {
-					game.actionUp(_lstActionCards,handNew);
+					game.actionUp(_lstActionCards, handNew);
 				}
 			}
 		}

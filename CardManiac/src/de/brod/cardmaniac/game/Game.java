@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.brod.gui.GuiButton;
+import de.brod.gui.IAction;
 
 public abstract class Game implements IGame {
 
@@ -17,7 +18,20 @@ public abstract class Game implements IGame {
 
 	public void createGuiButton(float x, float y, float wdButton,
 			float hgButton, String string) {
-		GuiButton guiButton = new GuiButton(x, y, wdButton, hgButton, "Show");
+		GuiButton guiButton = new GuiButton(x, y, wdButton, hgButton,
+				new IAction() {
+
+					@Override
+					public String getTitle() {
+						return "Show";
+					}
+
+					@Override
+					public void doAction() {
+						// make nothing
+					}
+
+				});
 		lstButtons.add(guiButton);
 	}
 }

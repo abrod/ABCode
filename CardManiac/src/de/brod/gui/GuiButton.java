@@ -2,14 +2,15 @@ package de.brod.gui;
 
 public class GuiButton extends GuiRectangle {
 
+	private IAction	action;
+
 	public GuiButton(float x, float y, float pfwidth, float pfheight,
-			String psText) {
-		super(x, y, pfwidth, pfheight, psText);
+			IAction pAction) {
+		super(x, y, pfwidth, pfheight, pAction.getTitle());
+		action = pAction;
 	}
 
 	public void doAction() {
-		// TODO Auto-generated method stub
-
+		action.doAction();
 	}
-
 }

@@ -8,6 +8,10 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 
+/**
+ * @author Andreas_2
+ *
+ */
 public class GuiText implements IGuiQuad {
 
 	GuiGrid			grid	= null;
@@ -106,7 +110,16 @@ public class GuiText implements IGuiQuad {
 
 	@Override
 	public void moveTo(float eventX, float eventY) {
-		lstQuads.moveTo(eventX, eventY);
+		if (isMoveable()) {
+			lstQuads.moveTo(eventX, eventY);
+		}
+	}
+
+	/**
+	 * @return false per default
+	 */
+	protected boolean isMoveable() {
+		return false;
 	}
 
 	public void setDown(boolean pbDown) {

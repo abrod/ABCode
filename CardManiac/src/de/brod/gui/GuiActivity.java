@@ -90,4 +90,16 @@ public abstract class GuiActivity extends Activity {
 		}
 		return lstFound;
 	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getQuadAt(float eventX, float eventY, Class<T> pClass) {
+		for (int j = lstQuads.size() - 1; j >= 0; j--) {
+			IGuiQuad guiQuad = lstQuads.get(j);
+
+			if (guiQuad.touches(eventX, eventY) && pClass.isInstance(guiQuad)) {
+				return ((T) guiQuad);
+			}
+		}
+		return null;
+	}
 }

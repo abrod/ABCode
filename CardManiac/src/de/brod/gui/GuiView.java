@@ -17,6 +17,7 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
 	static float			_wd, _hg, _dx, _dy;
 	int						width, height;
+	private GuiButton		button;
 
 	public GuiView(GuiActivity context) {
 		super(context);
@@ -170,8 +171,16 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 			float eventY = _hg - event.getY() * _dy;
 
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				button = null;
 				if (_context.actionDown(eventX, eventY)) {
 					requestRender();
+				} else {
+					button = _context
+							.getQuadAt(eventX, eventY, GuiButton.class);
+					if (button != null) {
+						button.setDown(true);
+						requestRender();
+					}
 				}
 				return true;
 			}
@@ -184,7 +193,14 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
 			}
 			if (event.getAction() == MotionEvent.ACTION_UP) {
-				if (_context.actionUp(eventX, eventY)) {
+				if (button != null) {
+					button.setDown(false);
+					if (button.touches(eventX, eventY)) {
+						button.doAction();
+					}
+					requestRender();
+					button = null;
+				} else if (_context.actionUp(eventX, eventY)) {
 					requestRender();
 				}
 				return true;
