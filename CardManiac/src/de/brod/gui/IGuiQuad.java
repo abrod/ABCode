@@ -6,7 +6,7 @@ public interface IGuiQuad {
 
 	void close();
 
-	void draw(GL10 pGL10);
+	boolean draw(GL10 pGL10, long currentTime);
 
 	float getXY();
 
@@ -17,4 +17,6 @@ public interface IGuiQuad {
 	void slideTo(float X, float Y);
 
 	void setColor(int a, int r, int g, int b);
+
+	boolean slideTo(long l);
 }

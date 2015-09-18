@@ -50,6 +50,7 @@ public class GuiQuad implements IGuiQuad {
 	private static final int[]			_points		= { 0, 1, 2, 3, 0 };
 	private static final float[]		_edges		= { -1, 1, -1, -1, 1, -1,
 			1, 1									};
+	private static final double			delayTime	= 1000;
 
 	private float						_x, _y, _width, _height,
 			_xyOrder = -12345678;
@@ -69,6 +70,9 @@ public class GuiQuad implements IGuiQuad {
 	private boolean						_visible	= true;
 	private float						_touchX;
 	private float						_touchY;
+	private float						xEnd, yEnd, dx, dy, xStart, yStart;
+	private float						timeDelay;
+	private long						timeStart;
 
 	protected GuiQuad(GuiGrid grid, float px, float py, float wd, float hg) {
 		_grid = grid;
@@ -196,8 +200,8 @@ public class GuiQuad implements IGuiQuad {
 	}
 
 	@Override
-	public void draw(GL10 gl) {
-
+	public boolean draw(GL10 gl, long currentTime) {
+		boolean slideTo = slideTo(currentTime);
 		if (_grid.bindTexture(gl)) {
 			gl.glColor4f(rgba[0], rgba[1], rgba[2], rgba[3]);
 			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, _vertexBuffer);
@@ -205,6 +209,7 @@ public class GuiQuad implements IGuiQuad {
 			gl.glDrawElements(GL10.GL_TRIANGLES, _indices.length,
 					GL10.GL_UNSIGNED_SHORT, _indexBuffer);
 		}
+		return slideTo;
 	}
 
 	public GuiQuad setGrid(float pfX, float pfY, boolean pbTop) {
@@ -293,10 +298,25 @@ public class GuiQuad implements IGuiQuad {
 
 	@Override
 	public void slideTo(float X, float Y) {
-		_x = Math.max(_width - GuiView._wd, Math.min(GuiView._wd - _width, X));
-		_y = Math
-				.max(_height - GuiView._hg, Math.min(GuiView._hg - _height, Y));
-		levelMove = level;
+		xEnd = Math
+				.max(_width - GuiView._wd, Math.min(GuiView._wd - _width, X));
+		yEnd = Math.max(_height - GuiView._hg,
+				Math.min(GuiView._hg - _height, Y));
+
+		dx = xEnd - _x;
+		dy = yEnd - _y;
+		if (Math.abs(dx) + Math.abs(dy) > 0.001f) {
+			levelMove = level + 1;
+			xStart = _x;
+			yStart = _y;
+			timeStart = System.currentTimeMillis();
+			timeDelay = (long) Math.max(
+					10,
+					(Math.min(delayTime, Math.sqrt(dx * dx + dy * dy)
+							* delayTime)));
+		} else {
+			slideTo(0);
+		}
 		refreshView();
 	}
 
@@ -304,6 +324,27 @@ public class GuiQuad implements IGuiQuad {
 
 	public void setIndex(int i) {
 		index = i / 1000f;
+	}
+
+	@Override
+	public boolean slideTo(long l) {
+		if (l == 0) {
+			levelMove = level;
+			timeDelay = 0;
+			_x = xEnd;
+			_y = yEnd;
+		} else if (timeDelay > 0) {
+			float fact = (l - timeStart) / timeDelay;
+			if (fact >= 1) {
+				slideTo(0);
+			} else {
+				_x = xStart + dx * fact;
+				_y = yStart + dy * fact;
+			}
+			refreshView();
+			return true;
+		}
+		return false;
 	}
 
 }

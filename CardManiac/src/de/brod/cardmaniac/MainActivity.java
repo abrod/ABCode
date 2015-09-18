@@ -31,7 +31,7 @@ public class MainActivity extends GuiActivity {
 
 		addGuiItemFromGame(lstQuads, game);
 
-		moveCardsWithinHands();
+		moveCardsWithinHands(false);
 	}
 
 	private void addGuiItemFromGame(List<IGuiQuad> lstQuads, IGame game) {
@@ -46,9 +46,9 @@ public class MainActivity extends GuiActivity {
 
 	}
 
-	private void moveCardsWithinHands() {
+	private void moveCardsWithinHands(boolean slide) {
 		for (Hand hand : _lstHands) {
-			hand.moveCards();
+			hand.moveCards(slide);
 		}
 		sortQuads();
 	}
@@ -111,7 +111,7 @@ public class MainActivity extends GuiActivity {
 			}
 		}
 
-		moveCardsWithinHands();
+		moveCardsWithinHands(true);
 		return true;
 	}
 

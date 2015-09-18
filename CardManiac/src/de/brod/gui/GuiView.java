@@ -79,8 +79,11 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 			pGL10.glColor4x(255, 255, 255, 255);
 
 			// draw the rectangles
+			long currentTimeMillis = System.currentTimeMillis();
 			for (IGuiQuad quad : _lstQuads) {
-				quad.draw(pGL10);
+				if (quad.draw(pGL10, currentTimeMillis)) {
+					slideSquares = true;
+				}
 			}
 
 			// Disable the vertices buffer.
@@ -172,6 +175,9 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				button = null;
+				for (IGuiQuad quad : _lstQuads) {
+					quad.slideTo(0L);
+				}
 				if (_context.actionDown(eventX, eventY)) {
 					requestRender();
 				} else {

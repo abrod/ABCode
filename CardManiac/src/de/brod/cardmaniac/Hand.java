@@ -62,14 +62,22 @@ public class Hand extends GuiRectangle {
 		}
 	}
 
-	public void moveCards() {
+	public void moveCards(boolean bSlide) {
 		int size = Math.max(max, lstCards.size() - 1);
 		for (int i = 0; i < lstCards.size(); i++) {
 			Card card = lstCards.get(i);
-			if (i == 0) {
-				card.slideTo(x, y);
+			if (bSlide) {
+				if (i == 0) {
+					card.slideTo(x, y);
+				} else {
+					card.slideTo(x + dx * i / size, y + dy * i / size);
+				}
 			} else {
-				card.slideTo(x + dx * i / size, y + dy * i / size);
+				if (i == 0) {
+					card.moveTo(x, y);
+				} else {
+					card.moveTo(x + dx * i / size, y + dy * i / size);
+				}
 			}
 		}
 	}

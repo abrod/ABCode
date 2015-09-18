@@ -94,8 +94,8 @@ public class GuiText implements IGuiQuad {
 	}
 
 	@Override
-	public void draw(GL10 pGL10) {
-		lstQuads.draw(pGL10);
+	public boolean draw(GL10 pGL10, long currentTime) {
+		return lstQuads.draw(pGL10, currentTime);
 	}
 
 	@Override
@@ -134,6 +134,11 @@ public class GuiText implements IGuiQuad {
 	@Override
 	public void slideTo(float X, float Y) {
 		lstQuads.slideTo(X, Y);
+	}
+
+	@Override
+	public boolean slideTo(long l) {
+		return lstQuads.slideTo(l);
 	}
 
 }
