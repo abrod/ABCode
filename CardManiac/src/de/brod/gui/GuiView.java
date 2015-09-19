@@ -175,18 +175,24 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				button = null;
+				boolean bRequestRender = false;
 				for (IGuiQuad quad : _lstQuads) {
-					quad.slideTo(0L);
+					if (quad.slideTo(0L)) {
+						bRequestRender = true;
+					}
 				}
 				if (_context.actionDown(eventX, eventY)) {
-					requestRender();
+					bRequestRender = true;
 				} else {
 					button = _context
 							.getQuadAt(eventX, eventY, GuiButton.class);
 					if (button != null) {
 						button.setDown(true);
-						requestRender();
+						bRequestRender = true;
 					}
+				}
+				if (bRequestRender) {
+					requestRender();
 				}
 				return true;
 			}

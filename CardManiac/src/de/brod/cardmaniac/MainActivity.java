@@ -76,6 +76,9 @@ public class MainActivity extends GuiActivity {
 			_lstActionCards.clear();
 			List<Card> lst = game.actionDown(card);
 			_lstActionCards.addAll(lst);
+			for (Card c : _lstActionCards) {
+				c.setOffset(eventX,eventY);
+			}
 			return true;
 		}
 		return false;

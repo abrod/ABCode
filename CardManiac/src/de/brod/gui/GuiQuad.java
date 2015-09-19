@@ -270,10 +270,9 @@ public class GuiQuad implements IGuiQuad {
 
 	@Override
 	public void moveTo(float eventX, float eventY) {
-		_x = Math.max(_width - GuiView._wd,
-				Math.min(GuiView._wd - _width, _touchX + eventX));
-		_y = Math.max(_height - GuiView._hg,
-				Math.min(GuiView._hg - _height, _touchY + eventY));
+		_x = getX(eventX) - oX;
+		_y = getY(eventY) - oY;
+		timeDelay = 0;
 		levelMove = level + 1;
 		refreshView();
 	}
@@ -298,15 +297,12 @@ public class GuiQuad implements IGuiQuad {
 
 	@Override
 	public void slideTo(float X, float Y) {
-		xEnd = Math
-				.max(_width - GuiView._wd, Math.min(GuiView._wd - _width, X));
-		yEnd = Math.max(_height - GuiView._hg,
-				Math.min(GuiView._hg - _height, Y));
+		xEnd = getX(X);
+		yEnd = getY(Y);
 
 		dx = xEnd - _x;
 		dy = yEnd - _y;
 		if (Math.abs(dx) + Math.abs(dy) > 0.001f) {
-			levelMove = level + 1;
 			xStart = _x;
 			yStart = _y;
 			timeStart = System.currentTimeMillis();
@@ -314,13 +310,28 @@ public class GuiQuad implements IGuiQuad {
 					10,
 					(Math.min(delayTime, Math.sqrt(dx * dx + dy * dy)
 							* delayTime)));
+			levelMove = level + 1;
 		} else {
-			slideTo(0);
+			_x = xEnd;
+			_y = yEnd;
+			timeDelay = 0;
+			levelMove = level;
 		}
 		refreshView();
 	}
 
+	private float getY(float Y) {
+		return Math.max(_height - GuiView._hg,
+				Math.min(GuiView._hg - _height, Y));
+	}
+
+	private float getX(float X) {
+		return Math
+				.max(_width - GuiView._wd, Math.min(GuiView._wd - _width, X));
+	}
+
 	private float	index;
+	private float	oX, oY;
 
 	public void setIndex(int i) {
 		index = i / 1000f;
@@ -328,12 +339,16 @@ public class GuiQuad implements IGuiQuad {
 
 	@Override
 	public boolean slideTo(long l) {
-		if (l == 0) {
+		if (timeDelay == 0) {
+			levelMove = level;
+			return false;
+		} else if (l == 0) {
 			levelMove = level;
 			timeDelay = 0;
 			_x = xEnd;
 			_y = yEnd;
-		} else if (timeDelay > 0) {
+			return false;
+		} else {
 			float fact = (l - timeStart) / timeDelay;
 			if (fact >= 1) {
 				slideTo(0);
@@ -344,7 +359,11 @@ public class GuiQuad implements IGuiQuad {
 			refreshView();
 			return true;
 		}
-		return false;
+	}
+
+	public void setOffset(float eventX, float eventY) {
+		oX = getX(eventX) - _x;
+		oY = getY(eventY) - _y;
 	}
 
 }

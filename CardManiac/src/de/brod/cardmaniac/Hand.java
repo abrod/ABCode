@@ -5,9 +5,9 @@ import java.util.List;
 
 import de.brod.gui.GuiRectangle;
 
-public class Hand extends GuiRectangle {
+public class Hand<CARD extends Card> extends GuiRectangle {
 
-	private final List<Card>	lstCards	= new ArrayList<Card>();
+	private final List<CARD>	lstCards	= new ArrayList<CARD>();
 	private final float			x, y, dx, dy;
 	private int					max;
 
@@ -43,7 +43,7 @@ public class Hand extends GuiRectangle {
 		max = pMax;
 	}
 
-	public void addCard(Card card) {
+	public void addCard(CARD card) {
 		Hand hand = card.getHand();
 		if (hand == null) {
 			lstCards.add(card);
@@ -65,7 +65,7 @@ public class Hand extends GuiRectangle {
 	public void moveCards(boolean bSlide) {
 		int size = Math.max(max, lstCards.size() - 1);
 		for (int i = 0; i < lstCards.size(); i++) {
-			Card card = lstCards.get(i);
+			CARD card = lstCards.get(i);
 			if (bSlide) {
 				if (i == 0) {
 					card.slideTo(x, y);
@@ -82,7 +82,7 @@ public class Hand extends GuiRectangle {
 		}
 	}
 
-	public List<Card> getCards() {
+	public List<CARD> getCards() {
 		return lstCards;
 	}
 }

@@ -1,32 +1,52 @@
 package de.brod.cardmaniac.game;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import de.brod.cardmaniac.Card;
 import de.brod.cardmaniac.Card52;
 import de.brod.cardmaniac.Cards52;
-import de.brod.cardmaniac.Hand;
 
-public class Solitair extends Game {
-
-	List<Hand>	hands	= new ArrayList<Hand>();
+public class Solitair extends Patience {
 
 	@Override
 	public void init(float wd, float hg, int width, int height) {
 
-		Cards52 cards52 = new Cards52();
-		List<Card52> create52Cards = cards52.create52Cards();
+		hands.clear();
 		for (int i = 0; i < 8; i++) {
 			if (i < 4) {
-				hands.add(new Hand(i, 4, i, 4, null, 52));
+				hands.add(new PatienceHand(i, 4, i, 4, null, 52) {
+
+					@Override
+					public void actionDown(Card card, List<Card> lst) {
+						lst.add(card);
+					}
+				});
 			} else {
-				hands.add(new Hand(i, 4, i, 4, "A", 52));
+				hands.add(new PatienceHand(i, 4, i, 4, "A", 52) {
+					@Override
+					public void actionDown(Card card, List<Card> lst) {
+						lst.add(card);
+					}
+				});
 			}
-			hands.add(new Hand(i, 3, i, 0, null, 12));
+
+			hands.add(new PatienceHand(i, 3, i, 0, null, 12) {
+				@Override
+				public void actionDown(Card card, List<Card> lst) {
+					Card bLast = null;
+					for (Card52 c : getCards()) {
+						if (c.equals(card)) {
+							bLast = c;
+							lst.add(c);
+						} else if (bLast != null) {
+							lst.add(c);
+						}
+					}
+				}
+			});
 		}
 
+		List<Card52> create52Cards = Cards52.create52Cards();
 		for (int i = 0; i < create52Cards.size(); i++) {
 			Card52 card = create52Cards.get(i);
 			hands.get((i * 2 + 1) % hands.size()).addCard(card);
@@ -38,34 +58,6 @@ public class Solitair extends Game {
 		float y = (hg - hgButton) / 2f;
 		createGuiButton(x, y, wdButton, hgButton, "Show");
 
-	}
-
-	@Override
-	public Collection<? extends Hand> getHands() {
-		return hands;
-	}
-
-	@Override
-	public List<Card> actionDown(Card card) {
-		Hand hand = card.getHand();
-		List<Card> lst = new ArrayList<Card>();
-		boolean bAdd = false;
-		for (Card card2 : hand.getCards()) {
-			if (card2.equals(card)) {
-				bAdd = true;
-			}
-			if (bAdd) {
-				lst.add(card2);
-			}
-		}
-		return lst;
-	}
-
-	@Override
-	public void actionUp(List<Card> lstActionCards, Hand handTo) {
-		for (Card card : lstActionCards) {
-			handTo.addCard(card);
-		}
 	}
 
 }
