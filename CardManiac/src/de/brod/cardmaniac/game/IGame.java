@@ -1,21 +1,20 @@
 package de.brod.cardmaniac.game;
 
-import java.util.Collection;
 import java.util.List;
 
 import de.brod.cardmaniac.Card;
 import de.brod.cardmaniac.Hand;
 import de.brod.gui.GuiButton;
 
-public interface IGame {
+public interface IGame<CARD extends Card> {
 
 	void init(float wd, float hg, int width, int height);
 
-	Collection<? extends Hand> getHands();
+	List<? extends Hand<CARD>> getHands();
 
-	Collection<? extends GuiButton> getButtons();
+	List<? extends GuiButton> getButtons();
 
-	List<Card> actionDown(Card card);
+	List<? extends Card> actionDown(CARD card);
 
-	void actionUp(List<Card> lstActionCards, Hand handTo);
+	void actionUp(List<? extends CARD> lstActionCards, Hand<CARD> handTo);
 }

@@ -28,4 +28,8 @@ public class Card52 extends Card {
 	public String toString() {
 		return color.toString() + cardValue.toString();
 	}
+
+	public boolean isRed() {
+		return color.isRed();
+	}
 }

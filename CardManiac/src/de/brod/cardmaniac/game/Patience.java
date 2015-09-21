@@ -1,53 +1,36 @@
 package de.brod.cardmaniac.game;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import de.brod.cardmaniac.Card;
 import de.brod.cardmaniac.Card52;
-import de.brod.cardmaniac.Hand;
+import de.brod.cardmaniac.Cards52.CardValue;
 
-public abstract class Patience extends Game {
+public abstract class Patience extends Game<Card52> {
 
-	protected abstract class PatienceHand extends Hand<Card52> {
-
-		public PatienceHand(float x1, float y1, float x2, float y2,
-				String psText, int pMax) {
-			super(x1, y1, x2, y2, psText, pMax);
-		}
-
-		public abstract void actionDown(Card card, List<Card> lst);
-	}
+	private static final CardValue[]	order	= { CardValue.cA, CardValue.c2,
+			CardValue.c3, CardValue.c4, CardValue.c5, CardValue.c6,
+			CardValue.c7, CardValue.c8, CardValue.c9, CardValue.c10,
+			CardValue.cJ, CardValue.cQ, CardValue.cK };
 
 	public boolean isNextCard(Card52 cTop, Card52 cBottom, boolean sameColor) {
-		// check the values
-		return false;
-	}
-
-	protected List<PatienceHand>	hands	= new ArrayList<PatienceHand>();
-
-	@Override
-	public Collection<? extends Hand> getHands() {
-		return hands;
-	}
-
-	@Override
-	public List<Card> actionDown(Card card) {
-		List<Card> lst = new ArrayList<Card>();
-		Hand cardHand = card.getHand();
-		if (cardHand instanceof PatienceHand) {
-			PatienceHand hand = (PatienceHand) cardHand;
-			hand.actionDown(card, lst);
+		if (getOrder(cTop) + 1 != getOrder(cBottom)) {
+			return false;
 		}
-		return lst;
+		if (sameColor) {
+			return cTop.getColor().equals(cBottom.getColor());
+		}
+		if (cTop.isRed() == cBottom.isRed()) {
+			return false;
+		}
+		return true;
 	}
 
-	@Override
-	public void actionUp(List<Card> lstActionCards, Hand handTo) {
-		for (Card card : lstActionCards) {
-			handTo.addCard(card);
+	private int getOrder(Card52 cTop) {
+		CardValue cardValue = cTop.getCardValue();
+		for (int i = 0; i < order.length; i++) {
+			if (order[i].equals(cardValue)) {
+				return i;
+			}
 		}
+		return -1;
 	}
 
 }

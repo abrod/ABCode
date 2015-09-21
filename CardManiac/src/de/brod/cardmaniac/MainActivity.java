@@ -11,10 +11,10 @@ import de.brod.gui.IGuiQuad;
 
 public class MainActivity extends GuiActivity {
 
-	private List<Card>	_lstActionCards	= new ArrayList<Card>();
-	private List<Hand>	_lstHands		= new ArrayList<Hand>();
-	private float		startX, startY;
-	private IGame		game;
+	private List<Card>		_lstActionCards	= new ArrayList<Card>();
+	private List<Hand<?>>	_lstHands		= new ArrayList<Hand<?>>();
+	private float			startX, startY;
+	private IGame			game;
 
 	@Override
 	protected void initActivity(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class MainActivity extends GuiActivity {
 		_lstHands.clear();
 		_lstHands.addAll(game.getHands());
 
-		for (Hand hand : _lstHands) {
+		for (Hand<?> hand : _lstHands) {
 			lstQuads.add(hand);
 			lstQuads.addAll(hand.getCards());
 		}
@@ -74,10 +74,10 @@ public class MainActivity extends GuiActivity {
 			IGuiQuad guiQuad = _lstActionCards.get(0);
 			Card card = (Card) guiQuad;
 			_lstActionCards.clear();
-			List<Card> lst = game.actionDown(card);
+			List<? extends Card> lst = game.actionDown(card);
 			_lstActionCards.addAll(lst);
 			for (Card c : _lstActionCards) {
-				c.setOffset(eventX,eventY);
+				c.setOffset(eventX, eventY);
 			}
 			return true;
 		}

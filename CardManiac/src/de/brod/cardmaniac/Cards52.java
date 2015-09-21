@@ -40,12 +40,15 @@ public class Cards52 extends CardSet {
 	}
 
 	public enum CardColor {
-		clubs(9827), spades(9824), hearts(9829), diamonds(9830), special(32);
+		clubs(9827, false), spades(9824, false), hearts(9829, true), diamonds(
+				9830, true), special(32, false);
 
 		private String	sText;
+		private boolean	red;
 
-		CardColor(int piValue) {
+		CardColor(int piValue, boolean red) {
 			sText = String.valueOf((char) piValue);
+			this.red = red;
 		}
 
 		public String getText() {
@@ -59,6 +62,10 @@ public class Cards52 extends CardSet {
 		@Override
 		public String toString() {
 			return sText;
+		}
+
+		public boolean isRed() {
+			return red;
 		}
 	}
 
