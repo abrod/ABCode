@@ -23,11 +23,10 @@ public class Solitair extends Patience {
 
 					@Override
 					public void actionUp(List<? extends Card52> lstCardsToAdd) {
-						if (lstCardsToAdd.size() != 0) {
+						if (lstCardsToAdd.size() != 1
+								|| lstCardsToAdd.size() > 1) {
 							// invalid amount
-						} else if (lstCardsToAdd.size() > 1) {
-							// invalid amount
-						} else {
+						} else if (getCards().size() == 0) {
 							addCards(lstCardsToAdd);
 						}
 					}
@@ -44,7 +43,8 @@ public class Solitair extends Patience {
 					public void actionUp(List<? extends Card52> lstCardsToAdd) {
 						if (lstCardsToAdd.size() != 1) {
 							// invalid amount
-						} else {
+						} else if (isNextCard(getLastCard(),
+								lstCardsToAdd.get(0), true)) {
 							addCards(lstCardsToAdd);
 						}
 					}
@@ -54,20 +54,30 @@ public class Solitair extends Patience {
 			hands.add(new Hand<Card52>(i, 3, i, 0, null, 12) {
 				@Override
 				public void actionDown(Card52 card, List<Card52> lst) {
-					Card52 bLast = null;
+					Card52 lastCard = null;
 					for (Card52 c : getCards()) {
 						if (c.equals(card)) {
-							bLast = c;
+							lastCard = c;
 							lst.add(c);
-						} else if (bLast != null) {
-							lst.add(c);
+						} else if (lastCard != null) {
+							if (isNextCard(c, lastCard, false)) {
+								lst.add(c);
+							} else {
+								lst.clear();
+								return;
+							}
+							lastCard = c;
 						}
 					}
 				}
 
 				@Override
 				public void actionUp(List<? extends Card52> lstCardsToAdd) {
-					addCards(lstCardsToAdd);
+					Card52 lastCard = getLastCard();
+					if (lastCard == null
+							|| isNextCard(lstCardsToAdd.get(0), lastCard, false)) {
+						addCards(lstCardsToAdd);
+					}
 				}
 			});
 		}

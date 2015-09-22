@@ -11,6 +11,12 @@ public abstract class Patience extends Game<Card52> {
 			CardValue.cJ, CardValue.cQ, CardValue.cK };
 
 	public boolean isNextCard(Card52 cTop, Card52 cBottom, boolean sameColor) {
+		if (cTop == null) {
+			if (sameColor) {
+				return getOrder(cBottom) == 0;
+			}
+			return true;
+		}
 		if (getOrder(cTop) + 1 != getOrder(cBottom)) {
 			return false;
 		}

@@ -92,6 +92,14 @@ public abstract class Hand<CARD extends Card> extends GuiRectangle {
 		return lstCards;
 	}
 
+	public CARD getLastCard() {
+		int location = lstCards.size() - 1;
+		if (location >= 0) {
+			return lstCards.get(location);
+		}
+		return null;
+	}
+
 	public abstract void actionDown(CARD card, List<CARD> lst);
 
 	public abstract void actionUp(List<? extends CARD> lstCardsToAdd);
