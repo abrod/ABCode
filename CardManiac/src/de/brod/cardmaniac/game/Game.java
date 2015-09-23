@@ -18,13 +18,13 @@ public abstract class Game<CARD extends Card> implements IGame<CARD> {
 	}
 
 	public void createGuiButton(float x, float y, float wdButton,
-			float hgButton, String string) {
+			float hgButton, final String string) {
 		GuiButton guiButton = new GuiButton(x, y, wdButton, hgButton,
 				new IAction() {
 
 					@Override
 					public String getTitle() {
-						return "Show";
+						return string;
 					}
 
 					@Override

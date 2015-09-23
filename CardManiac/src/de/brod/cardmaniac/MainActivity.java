@@ -11,10 +11,11 @@ import de.brod.gui.IGuiQuad;
 
 public class MainActivity extends GuiActivity {
 
-	private List<Card>		_lstActionCards	= new ArrayList<Card>();
-	private List<Hand<?>>	_lstHands		= new ArrayList<Hand<?>>();
+	private List<Card>		_lstActionCards		= new ArrayList<Card>();
+	private List<Hand<?>>	_lstHands			= new ArrayList<Hand<?>>();
 	private float			startX, startY;
 	private IGame			game;
+	private List<Card>		_lstSelctedCards	= new ArrayList<Card>();
 
 	@Override
 	protected void initActivity(Bundle savedInstanceState) {
@@ -69,6 +70,23 @@ public class MainActivity extends GuiActivity {
 		startX = eventX;
 		startY = eventY;
 		_lstActionCards.clear();
+		if (_lstSelctedCards.size() > 0) {
+			for (Card card : _lstSelctedCards) {
+				card.setSelected(false);
+			}
+			List<Hand> lstQuadsAt = getQuadsAt(eventX, eventY, 1, Hand.class);
+			if (lstQuadsAt.size() > 0) {
+				Hand<?> handNew = lstQuadsAt.get(0);
+				if (!handNew.equals(_lstSelctedCards.get(0).getHand())) {
+					game.actionUp(_lstSelctedCards, handNew);
+					_lstSelctedCards.clear();
+					moveCardsWithinHands(true);
+					return true;
+				}
+			}
+
+			_lstSelctedCards.clear();
+		}
 		_lstActionCards.addAll(getQuadsAt(eventX, eventY, 1, Card.class));
 		if (_lstActionCards.size() > 0) {
 			IGuiQuad guiQuad = _lstActionCards.get(0);
@@ -98,18 +116,19 @@ public class MainActivity extends GuiActivity {
 
 	@Override
 	public boolean actionUp(float eventX, float eventY) {
-		float dx = eventX - startX;
-		float dy = eventY - startY;
-		if ((dx * dx + dy * dy) < 1 / 64f) {
-			// select
-		}
 		if (_lstActionCards.size() > 0) {
-			Hand hand = _lstActionCards.get(0).getHand();
+			Hand<?> hand = _lstActionCards.get(0).getHand();
 			List<Hand> lstQuadsAt = getQuadsAt(eventX, eventY, 1, Hand.class);
 			if (lstQuadsAt.size() > 0) {
-				Hand handNew = lstQuadsAt.get(0);
+				Hand<?> handNew = lstQuadsAt.get(0);
 				if (!handNew.equals(hand)) {
 					game.actionUp(_lstActionCards, handNew);
+				} else {
+					_lstSelctedCards.clear();
+					_lstSelctedCards.addAll(_lstActionCards);
+					for (Card card : _lstSelctedCards) {
+						card.setSelected(true);
+					}
 				}
 			}
 		}

@@ -94,7 +94,7 @@ public class Solitair extends Patience {
 		float hgButton = 1 / 4f;
 		float x = (wd - wdButton) / 2f;
 		float y = (hg - hgButton) / 2f;
-		createGuiButton(x, y, wdButton, hgButton, "Show");
+		createGuiButton(x, y, wdButton, hgButton, "New");
 
 	}
 
