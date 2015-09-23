@@ -69,13 +69,13 @@ public class Cards52 extends CardSet {
 		}
 	}
 
-	private static final Hashtable<CardColor, Card52Grid>	cardsGridMap	= new Hashtable<Cards52.CardColor, Cards52.Card52Grid>();
+	private final Hashtable<CardColor, Card52Grid>	cardsGridMap	= new Hashtable<Cards52.CardColor, Cards52.Card52Grid>();
 
-	public static int										background		= 14;
-	private static int										countX			= 5;
-	private static int										countY			= 3;
+	public static int								background		= 14;
+	private static int								countX			= 5;
+	private static int								countY			= 3;
 
-	private static class Card52Grid extends GuiGrid {
+	private class Card52Grid extends GuiGrid {
 
 		public Card52Grid(CardColor pColor) {
 			super(countX, countY);
@@ -180,8 +180,8 @@ public class Cards52 extends CardSet {
 		}
 	}
 
-	private static Card52 createCard(CardColor pCardColor,
-			CardValue pCardValue, float x, float y) {
+	private Card52 createCard(CardColor pCardColor, CardValue pCardValue,
+			float x, float y) {
 		Card52Grid cardSetColor = cardsGridMap.get(pCardColor);
 		if (cardSetColor == null) {
 			cardSetColor = new Card52Grid(pCardColor);
@@ -190,7 +190,7 @@ public class Cards52 extends CardSet {
 		return cardSetColor.createCard(pCardValue, x, y);
 	}
 
-	public static List<Card52> create52Cards() {
+	public List<Card52> create52Cards() {
 		List<Card52> lstQuads = new ArrayList<Card52>();
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 13; i++) {
