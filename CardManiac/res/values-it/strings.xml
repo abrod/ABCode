@@ -5,6 +5,7 @@
 
     <string name="la_jack_queen_king_ace">J Q K A</string>
     <string name="new_game">Nuovo Gioco</string>
+    <string name="new_">Nuovo</string>
     <string name="question">Domanda</string>
     <string name="confirm_yes">Sì</string>
     <string name="select_game">Seleziona gioco</string>

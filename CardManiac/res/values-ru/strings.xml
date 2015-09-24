@@ -5,6 +5,7 @@
 
     <string name="la_jack_queen_king_ace">В д к т</string>
     <string name="new_game">Новая Игра</string>
+    <string name="new_">Игра</string>
     <string name="question">Вопрос</string>
     <string name="confirm_yes">Да</string>
     <string name="select_game">Выбрать игру</string>

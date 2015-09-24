@@ -28,7 +28,7 @@ public class MainActivity extends GuiActivity {
 			int width, int height) {
 
 		game = new Solitair();
-		game.init(wd, hg, width, height);
+		game.init(this, wd, hg, width, height);
 
 		addGuiItemFromGame(lstQuads, game);
 

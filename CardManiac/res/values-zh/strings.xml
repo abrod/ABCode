@@ -2,9 +2,9 @@
 <resources>
 
     <string name="app_name">CardManiac</string>
-
     <string name="la_jack_queen_king_ace">騎士 女王 國王 高手</string>
     <string name="new_game">新遊戲</string>
+    <string name="new_">新遊戲</string>
     <string name="question">題</string>
     <string name="confirm_yes">是</string>
     <string name="select_game">選擇遊戲</string>
@@ -14,4 +14,5 @@
     <string name="only_2_moves_possible">只有2移動的可能</string>
     <string name="confirm_no"></string>
     <string name="this_move_is_not_allowed">這一舉動是不允許的</string>
+
 </resources>

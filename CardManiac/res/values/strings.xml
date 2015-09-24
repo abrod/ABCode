@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">CardManiac</string>
-
     <string name="la_jack_queen_king_ace">J Q K A</string>
     <string name="new_game">New Game</string>
     <string name="do_you_want_to_start_a_new_game">Do you really want to start a new game</string>
@@ -21,4 +20,6 @@
     <string name="la_spanish">español</string>
     <string name="la_russian">русский</string>
     <string name="la_chinese">中國</string>
+    <string name="new_">New</string>
+
 </resources>

@@ -73,7 +73,8 @@ public class GuiText implements IGuiQuad {
 			p.setTextSize(textHeight);
 			p.getTextBounds(psText.toCharArray(), 0, psText.length(), rect2);
 			textHeight--;
-		} while (textHeight > 6 && rect2.width() > wd2 && rect2.height() > hg2);
+		} while (textHeight > 6
+				&& (rect2.width() > wd2 || rect2.height() > hg2));
 		int d = d36;
 		if (dx > 0) {
 			d *= 2;

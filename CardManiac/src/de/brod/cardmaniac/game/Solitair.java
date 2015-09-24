@@ -5,6 +5,8 @@ import java.util.List;
 import de.brod.cardmaniac.Card52;
 import de.brod.cardmaniac.Cards52;
 import de.brod.cardmaniac.Hand;
+import de.brod.cardmaniac.R;
+import de.brod.gui.IAction;
 
 public class Solitair extends Patience {
 
@@ -90,11 +92,23 @@ public class Solitair extends Patience {
 			object.addCard(card);
 		}
 
-		float wdButton = 1 / 2f * 2;
+		float wdButton = 1 / 2f;
 		float hgButton = 1 / 4f;
 		float x = (wd - wdButton) / 2f;
 		float y = (hg - hgButton) / 2f;
-		createGuiButton(x, y, wdButton, hgButton, "New");
+		createGuiButton(x, y, wdButton, hgButton, new IAction() {
+
+			@Override
+			public String getTitle() {
+				return getString(R.string.new_);
+			}
+
+			@Override
+			public void doAction() {
+				askForNewGame();
+			}
+
+		});
 
 	}
 
