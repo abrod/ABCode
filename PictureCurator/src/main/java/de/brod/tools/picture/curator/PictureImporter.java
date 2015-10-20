@@ -1,6 +1,12 @@
 package de.brod.tools.picture.curator;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +28,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
@@ -36,6 +44,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import jdk.management.resource.internal.inst.SocketOutputStreamRMHooks;
 
 public class PictureImporter implements Initializable {
 	@FXML
@@ -239,7 +248,7 @@ public class PictureImporter implements Initializable {
 
 		} catch (Exception e) {
 			// could not open image
-			e.printStackTrace();
+			showError(e);
 		}
 	}
 
@@ -261,6 +270,7 @@ public class PictureImporter implements Initializable {
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			// ... user chose OK
+			int iNotRenamed = 0;
 			for (String string : selectedItems) {
 				File file = mapOfImages.get(string);
 				String year = file.getName().substring(0, 4);
@@ -271,12 +281,41 @@ public class PictureImporter implements Initializable {
 				}
 				File dest = new File(toFolder, file.getName());
 				System.out.println("... rename " + file.getName() + " to " + dest.getAbsolutePath());
-				file.renameTo(dest);
+				if (!file.renameTo(dest)) {
+					iNotRenamed++;
+				}
 			}
+			if (iNotRenamed > 0)
+				showError(new IOException("Could not rename " + iNotRenamed + " file" + (iNotRenamed > 1 ? "s" : "")));
 			reloadImages();
 		} else {
 			// ... user chose CANCEL or closed the dialog
 		}
+	}
+
+	private void showError(Exception ex) {
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Error");
+		alert.setHeaderText(ex.toString());
+		OutputStream out = new ByteArrayOutputStream();
+		ex.printStackTrace(new PrintStream(out));
+		BufferedReader reader = new BufferedReader(new StringReader(out.toString()));
+		String sLine = "";
+		StringBuilder sOut = new StringBuilder();
+		try {
+			while ((sLine = reader.readLine()) != null) {
+				if (sLine.replace("\t", " ").contains(" at "))
+					if (!sLine.contains("de.brod.")) {
+						// ignore
+					} else {
+						sOut.append(sLine).append("\n");
+					}
+			}
+		} catch (IOException e) {
+			// should not happen on stringreader
+		}
+		alert.setContentText(sOut.toString());
+		alert.show();
 	}
 
 	@FXML
@@ -292,6 +331,10 @@ public class PictureImporter implements Initializable {
 	public void reloadImages() {
 		loadImageList();
 		loadFolderList();
+	}
+
+	@FXML public void openOrganizePage() {
+		PictureCurator.openScene(PictureCurator.ORGANIZER);
 	}
 
 }

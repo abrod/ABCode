@@ -14,7 +14,7 @@
 <?import javafx.scene.control.TextField?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-	fx:controller="de.brod.tools.picture.curator.PictureImporter">
+	fx:controller="de.brod.tools.picture.curator.PictureOrganizer">
 	<left>
 		<BorderPane>
 			<center>
@@ -49,7 +49,7 @@
 			</left>
 			<center>
 				<HBox alignment="CENTER">
-					<Button text="Organize" onAction="#openOrganizePage" />
+					<Button text="Import" onAction="#openImportPage" />
 				</HBox>
 			</center>
 			<right>
@@ -64,3 +64,5 @@
 		</BorderPane>
 	</bottom>
 </BorderPane>
+
+	
