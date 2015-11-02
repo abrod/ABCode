@@ -5,17 +5,19 @@ import java.util.List;
 
 import android.os.Bundle;
 import de.brod.cardmaniac.game.IGame;
+import de.brod.cardmaniac.game.NextMove;
 import de.brod.cardmaniac.game.Solitair;
 import de.brod.gui.GuiActivity;
 import de.brod.gui.IGuiQuad;
 
 public class MainActivity extends GuiActivity {
 
-	private List<Card>		_lstActionCards		= new ArrayList<Card>();
-	private List<Hand<?>>	_lstHands			= new ArrayList<Hand<?>>();
-	private float			startX, startY;
-	private IGame			game;
-	private List<Card>		_lstSelctedCards	= new ArrayList<Card>();
+	private List<Card> _lstActionCards = new ArrayList<Card>();
+	private List<Hand<?>> _lstHands = new ArrayList<Hand<?>>();
+	private float startX, startY;
+	private IGame game;
+	private List<Card> _lstSelctedCards = new ArrayList<Card>();
+	private NextMoveThread nextMoveThread;
 
 	@Override
 	protected void initActivity(Bundle savedInstanceState) {
@@ -24,8 +26,7 @@ public class MainActivity extends GuiActivity {
 	}
 
 	@Override
-	protected void createQuads(List<IGuiQuad> lstQuads, float wd, float hg,
-			int width, int height) {
+	protected void createQuads(List<IGuiQuad> lstQuads, float wd, float hg, int width, int height) {
 
 		game = new Solitair();
 		game.init(this, wd, hg, width, height);
@@ -52,17 +53,56 @@ public class MainActivity extends GuiActivity {
 			hand.moveCards(slide);
 		}
 		sortQuads();
+		NextMove nextMove = game.getNextMoveThread();
+		if (nextMove != null) {
+			nextMoveThread = new NextMoveThread(nextMove);
+			nextMoveThread.start();
+		}
+	}
+
+	class NextMoveThread extends Thread {
+		private final NextMove nextMove;
+		private boolean running = true;
+
+		public NextMoveThread(NextMove nextMove) {
+			this.nextMove = nextMove;
+		}
+
+		public void run() {
+			try {
+				nextMove.calculateNextMove();
+				while (containsSlidingSquares()) {
+					Thread.sleep(50);
+				}
+				nextMove.makeNextMove();
+				moveCardsWithinHands(true);
+				running = false;
+				requestRender();
+			} catch (InterruptedException e) {
+				// stopped
+			}
+
+		}
+
+		public boolean isRunning() {
+			return running && isAlive();
+		}
+	}
+
+	@Override
+	public boolean isThinking() {
+		if (nextMoveThread != null) {
+			if (nextMoveThread.isRunning()) {
+				return true;
+			}
+			nextMoveThread = null;
+		}
+		return false;
 	}
 
 	@Override
 	public float[] getColorsRGB() {
 		return new float[] { 0, 0, 0.3f };
-	}
-
-	@Override
-	public boolean isThinking() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override

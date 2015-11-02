@@ -5,10 +5,9 @@ import de.brod.cardmaniac.Cards52.CardValue;
 
 public abstract class Patience extends Game<Card52> {
 
-	private static final CardValue[]	order	= { CardValue.cA, CardValue.c2,
-			CardValue.c3, CardValue.c4, CardValue.c5, CardValue.c6,
-			CardValue.c7, CardValue.c8, CardValue.c9, CardValue.c10,
-			CardValue.cJ, CardValue.cQ, CardValue.cK };
+	private static final CardValue[] order = { CardValue.cA, CardValue.c2, CardValue.c3, CardValue.c4, CardValue.c5,
+			CardValue.c6, CardValue.c7, CardValue.c8, CardValue.c9, CardValue.c10, CardValue.cJ, CardValue.cQ,
+			CardValue.cK };
 
 	public boolean isNextCard(Card52 cTop, Card52 cBottom, boolean sameColor) {
 		if (cTop == null) {
@@ -29,7 +28,7 @@ public abstract class Patience extends Game<Card52> {
 		return true;
 	}
 
-	private int getOrder(Card52 cTop) {
+	protected int getOrder(Card52 cTop) {
 		CardValue cardValue = cTop.getCardValue();
 		for (int i = 0; i < order.length; i++) {
 			if (order[i].equals(cardValue)) {

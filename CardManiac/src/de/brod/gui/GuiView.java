@@ -12,12 +12,13 @@ import android.view.MotionEvent;
 
 public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
-	private List<IGuiQuad>	_lstQuads;
-	private GuiActivity		_context;
+	private List<IGuiQuad> _lstQuads;
+	private GuiActivity _context;
 
-	static float			_wd, _hg, _dx, _dy;
-	int						width, height;
-	private GuiButton		button;
+	static float _wd, _hg, _dx, _dy;
+	int width, height;
+	private GuiButton button;
+	private boolean slideSquares;
 
 	public GuiView(GuiActivity context) {
 		super(context);
@@ -46,7 +47,7 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 pGL10) {
 		synchronized (this) {
 
-			boolean slideSquares = _context.slideSquares(false);
+			slideSquares = _context.slideSquares(false);
 
 			float colors[] = _context.getColorsRGB();
 			if (_context.isThinking()) {
@@ -70,7 +71,8 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 			pGL10.glEnable(GL10.GL_CULL_FACE);
 			// What faces to remove with the face culling.
 			pGL10.glCullFace(GL10.GL_BACK);
-			// Enabled the vertex buffer for writing and to be used during rendering.
+			// Enabled the vertex buffer for writing and to be used during
+			// rendering.
 			pGL10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 			pGL10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 
@@ -97,6 +99,10 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 				requestRender();
 			}
 		}
+	}
+
+	public boolean containsSlidingSquares() {
+		return slideSquares;
 	}
 
 	@Override
@@ -156,7 +162,7 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 		pGL10.glDisable(GL10.GL_DEPTH_TEST);
 		pGL10.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		pGL10.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE,
-		/* GL10.GL_REPLACE */GL10.GL_MODULATE);
+				/* GL10.GL_REPLACE */GL10.GL_MODULATE);
 
 	}
 
@@ -173,7 +179,8 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 			float eventX = event.getX() * _dx - _wd;
 			float eventY = _hg - event.getY() * _dy;
 
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			int action = event.getAction();
+			if (action == MotionEvent.ACTION_DOWN) {
 				button = null;
 				boolean bRequestRender = false;
 				for (IGuiQuad quad : _lstQuads) {
@@ -181,11 +188,12 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 						bRequestRender = true;
 					}
 				}
-				if (_context.actionDown(eventX, eventY)) {
+				if (_context.isThinking()) {
+					// make nothing
+				} else if (_context.actionDown(eventX, eventY)) {
 					bRequestRender = true;
 				} else {
-					button = _context
-							.getQuadAt(eventX, eventY, GuiButton.class);
+					button = _context.getQuadAt(eventX, eventY, GuiButton.class);
 					if (button != null) {
 						button.setDown(true);
 						bRequestRender = true;
@@ -195,24 +203,21 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 					requestRender();
 				}
 				return true;
-			}
-
-			if (event.getAction() == MotionEvent.ACTION_MOVE) {
+			} else if (action == MotionEvent.ACTION_MOVE) {
 				if (_context.actionMove(eventX, eventY)) {
 					requestRender();
 				}
 				return true;
 
-			}
-			if (event.getAction() == MotionEvent.ACTION_UP) {
+			} else if (action == MotionEvent.ACTION_UP) {
 				if (button != null) {
 					button.setDown(false);
-					if (button.touches(eventX, eventY)) {
+					if (!_context.isThinking() && button.touches(eventX, eventY)) {
 						button.doAction();
 					}
 					requestRender();
 					button = null;
-				} else if (_context.actionUp(eventX, eventY)) {
+				} else if (!_context.isThinking() && _context.actionUp(eventX, eventY)) {
 					requestRender();
 				}
 				return true;

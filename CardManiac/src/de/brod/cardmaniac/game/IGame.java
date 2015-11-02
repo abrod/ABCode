@@ -18,4 +18,6 @@ public interface IGame<CARD extends Card> {
 	List<? extends Card> actionDown(CARD card);
 
 	void actionUp(List<? extends CARD> lstActionCards, Hand<CARD> handTo);
+
+	NextMove getNextMoveThread();
 }

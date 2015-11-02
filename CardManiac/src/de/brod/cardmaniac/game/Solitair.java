@@ -1,9 +1,11 @@
 package de.brod.cardmaniac.game;
 
+import java.util.Hashtable;
 import java.util.List;
 
 import de.brod.cardmaniac.Card52;
 import de.brod.cardmaniac.Cards52;
+import de.brod.cardmaniac.Cards52.CardValue;
 import de.brod.cardmaniac.Hand;
 import de.brod.cardmaniac.R;
 import de.brod.gui.IAction;
@@ -25,8 +27,7 @@ public class Solitair extends Patience {
 
 					@Override
 					public void actionUp(List<? extends Card52> lstCardsToAdd) {
-						if (lstCardsToAdd.size() != 1
-								|| lstCardsToAdd.size() > 1) {
+						if (lstCardsToAdd.size() != 1 || lstCardsToAdd.size() > 1) {
 							// invalid amount
 						} else if (getCards().size() == 0) {
 							addCards(lstCardsToAdd);
@@ -45,8 +46,7 @@ public class Solitair extends Patience {
 					public void actionUp(List<? extends Card52> lstCardsToAdd) {
 						if (lstCardsToAdd.size() != 1) {
 							// invalid amount
-						} else if (isNextCard(getLastCard(),
-								lstCardsToAdd.get(0), true)) {
+						} else if (isNextCard(getLastCard(), lstCardsToAdd.get(0), true)) {
 							addCards(lstCardsToAdd);
 						}
 					}
@@ -76,8 +76,7 @@ public class Solitair extends Patience {
 				@Override
 				public void actionUp(List<? extends Card52> lstCardsToAdd) {
 					Card52 lastCard = getLastCard();
-					if (lastCard == null
-							|| isNextCard(lstCardsToAdd.get(0), lastCard, false)) {
+					if (lastCard == null || isNextCard(lstCardsToAdd.get(0), lastCard, false)) {
 						addCards(lstCardsToAdd);
 					}
 				}
@@ -110,6 +109,48 @@ public class Solitair extends Patience {
 
 		});
 
+	}
+
+	class NextSolitairMove implements NextMove {
+
+		Hashtable<Card52, Hand> map = new Hashtable<Card52, Hand>();
+
+		@Override
+		public void calculateNextMove() {
+			// get the min value
+			Card52 minCard = null;
+			for (int i = 8; i < 16; i += 2) {
+				Card52 lastCard = hands.get(i).getLastCard();
+				if (lastCard == null) {
+					minCard = null;
+					break;
+				}
+				if (minCard == null || getOrder(lastCard) < getOrder(minCard)) {
+					minCard = lastCard;
+				}
+			}
+			if (minCard == null) {
+				// check for aces
+				for (int i = 0; i < 8; i += 2) {
+					Card52 lastCard = hands.get(i).getLastCard();
+					if (lastCard != null) {
+						
+					}
+				}
+			}
+		}
+
+		@Override
+		public void makeNextMove() {
+			// TODO Auto-generated method stub
+
+		}
+
+	}
+
+	@Override
+	public NextMove getNextMoveThread() {
+		return new NextSolitairMove();
 	}
 
 }
