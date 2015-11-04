@@ -1,7 +1,9 @@
 package de.brod.cardmaniac.game;
 
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import de.brod.cardmaniac.Card52;
 import de.brod.cardmaniac.Cards52;
@@ -118,31 +120,48 @@ public class Solitair extends Patience {
 		@Override
 		public void calculateNextMove() {
 			// get the min value
-			Card52 minCard = null;
-			for (int i = 8; i < 16; i += 2) {
-				Card52 lastCard = hands.get(i).getLastCard();
-				if (lastCard == null) {
-					minCard = null;
-					break;
-				}
-				if (minCard == null || getOrder(lastCard) < getOrder(minCard)) {
-					minCard = lastCard;
+			int minCard = 99;
+			int[] handsToCheck = { 0, 2, 4, 6, 1, 3, 5, 7, 9, 11, 13, 15 };
+			int[] handsToLayDown = { 8, 10, 12, 14 };
+			for (int i : handsToLayDown) {
+				Hand<Card52> hand = hands.get(i);
+				Card52 lastCard = hand.getLastCard();
+				int order = getOrder(lastCard);
+				if (order < minCard) {
+					minCard = order;
 				}
 			}
-			if (minCard == null) {
-				// check for aces
-				for (int i = 0; i < 8; i += 2) {
-					Card52 lastCard = hands.get(i).getLastCard();
-					if (lastCard != null) {
-						
+			// check for aces
+			for (int j : handsToLayDown) {
+				Hand<Card52> handTo = hands.get(j);
+				Card52 lastCardTo = handTo.getLastCard();
+				int orderTo = getOrder(lastCardTo);
+				if (orderTo == minCard)
+					for (int i : handsToCheck) {
+						Hand<Card52> hand = hands.get(i);
+						Card52 lastCardHand = hand.getLastCard();
+						if (lastCardHand != null && !map.keySet().contains(lastCardHand)) {
+							int orderHand = getOrder(lastCardHand);
+							if (orderHand == minCard + 1) {
+								if (lastCardTo == null || lastCardTo.getColor().equals(lastCardHand.getColor())) {
+									map.put(lastCardHand, handTo);
+								}
+							}
+						}
 					}
-				}
 			}
 		}
 
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
-		public void makeNextMove() {
-			// TODO Auto-generated method stub
+		public boolean makeNextMove() {
+			if (map.size() > 0) {
+				for (Entry<Card52, Hand> entry : map.entrySet()) {
+					entry.getValue().addCard(entry.getKey());
+				}
+				return true;
+			}
+			return false;
 
 		}
 

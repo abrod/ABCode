@@ -29,10 +29,12 @@ public abstract class Patience extends Game<Card52> {
 	}
 
 	protected int getOrder(Card52 cTop) {
-		CardValue cardValue = cTop.getCardValue();
-		for (int i = 0; i < order.length; i++) {
-			if (order[i].equals(cardValue)) {
-				return i;
+		if (cTop != null) {
+			CardValue cardValue = cTop.getCardValue();
+			for (int i = 0; i < order.length; i++) {
+				if (order[i].equals(cardValue)) {
+					return i;
+				}
 			}
 		}
 		return -1;

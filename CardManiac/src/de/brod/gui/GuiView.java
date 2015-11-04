@@ -47,7 +47,7 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 pGL10) {
 		synchronized (this) {
 
-			slideSquares = _context.slideSquares(false);
+			boolean slideSquares = _context.slideSquares(false);
 
 			float colors[] = _context.getColorsRGB();
 			if (_context.isThinking()) {
@@ -95,6 +95,7 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 			// Disable face culling.
 			pGL10.glDisable(GL10.GL_CULL_FACE);
 
+			this.slideSquares = slideSquares;
 			if (slideSquares) {
 				requestRender();
 			}

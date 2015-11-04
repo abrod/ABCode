@@ -4,6 +4,6 @@ public interface NextMove {
 
 	public void calculateNextMove();
 
-	public void makeNextMove();
+	public boolean makeNextMove();
 
 }

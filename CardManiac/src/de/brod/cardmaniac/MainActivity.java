@@ -53,10 +53,12 @@ public class MainActivity extends GuiActivity {
 			hand.moveCards(slide);
 		}
 		sortQuads();
-		NextMove nextMove = game.getNextMoveThread();
-		if (nextMove != null) {
-			nextMoveThread = new NextMoveThread(nextMove);
-			nextMoveThread.start();
+		if (!isThinking()) {
+			NextMove nextMove = game.getNextMoveThread();
+			if (nextMove != null) {
+				nextMoveThread = new NextMoveThread(nextMove);
+				nextMoveThread.start();
+			}
 		}
 	}
 
@@ -71,13 +73,15 @@ public class MainActivity extends GuiActivity {
 		public void run() {
 			try {
 				nextMove.calculateNextMove();
-				while (containsSlidingSquares()) {
+				do {
 					Thread.sleep(50);
+				} while (containsSlidingSquares());
+
+				if (nextMove.makeNextMove()) {
+					moveCardsWithinHands(true);
+					running = false;
+					requestRender();
 				}
-				nextMove.makeNextMove();
-				moveCardsWithinHands(true);
-				running = false;
-				requestRender();
 			} catch (InterruptedException e) {
 				// stopped
 			}

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -101,5 +103,24 @@ public abstract class GuiActivity extends Activity {
 
 	public boolean containsSlidingSquares() {
 		return _view.containsSlidingSquares();
+	}
+
+	public void confirm(String sTitle, String sConfirmText, String sButtonYes, final IAction iActionYes,
+			String sButtonNo, final IAction iActionNo) {
+		DialogInterface.OnClickListener listenYes = iActionYes != null ? new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				iActionYes.doAction();
+			}
+		} : null;
+		DialogInterface.OnClickListener listenNo = iActionNo != null ? new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				iActionNo.doAction();
+			}
+		} : null;
+		new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle(sTitle)
+				.setMessage(sConfirmText).setPositiveButton(sButtonYes, listenYes)
+				.setNegativeButton(sButtonNo, listenNo).show();
 	}
 }
