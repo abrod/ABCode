@@ -181,4 +181,10 @@ public class MainActivity extends GuiActivity {
 		return true;
 	}
 
+	public void newGame() {
+		game.resetGame();
+		moveCardsWithinHands(true);
+		requestRender();
+	}
+
 }

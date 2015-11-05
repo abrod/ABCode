@@ -1,9 +1,11 @@
 package de.brod.cardmaniac.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.brod.cardmaniac.Card;
+import de.brod.cardmaniac.Card52;
 import de.brod.cardmaniac.Hand;
 import de.brod.cardmaniac.MainActivity;
 import de.brod.cardmaniac.R;
@@ -69,10 +71,20 @@ public abstract class Game<CARD extends Card> implements IGame<CARD> {
 
 					@Override
 					public void doAction() {
-						// newGame(false);
+						_main.newGame();
 					}
 				}, getString(R.string.confirm_no), null);
 
+	}
+
+	List<CARD> getAllCards() {
+		List<CARD> lstAllCards = new ArrayList<CARD>();
+		// get all cards
+		for (Hand<CARD> hand : hands) {
+			lstAllCards.addAll(hand.getCards());
+		}
+		Collections.shuffle(lstAllCards);
+		return lstAllCards;
 	}
 
 }

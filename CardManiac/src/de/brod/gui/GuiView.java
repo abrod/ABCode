@@ -1,5 +1,6 @@
 package de.brod.gui;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import android.view.MotionEvent;
 
 public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
-	private List<IGuiQuad> _lstQuads;
+	private List<IGuiQuad> _lstQuads = new ArrayList<IGuiQuad>();
 	private GuiActivity _context;
 
 	static float _wd, _hg, _dx, _dy;
@@ -33,14 +34,15 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 	}
 
 	public void setQuads(List<IGuiQuad> plstQuads) {
-		if (_lstQuads != null) {
+		synchronized (this) {
 			// close all old quads
 			for (IGuiQuad guiQuad : _lstQuads) {
 				guiQuad.close();
 			}
+			_lstQuads.clear();
+			// set the new Quads
+			_lstQuads.addAll(plstQuads);
 		}
-		// set the new Quads
-		_lstQuads = plstQuads;
 	}
 
 	@Override
@@ -168,7 +170,7 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 	}
 
 	public void sortQuads() {
-		if (_lstQuads != null) {
+		synchronized (this) {
 			Collections.sort(_lstQuads, GuiQuad.COMPERATOR);
 		}
 	}

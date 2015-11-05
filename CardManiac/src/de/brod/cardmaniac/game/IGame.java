@@ -20,4 +20,6 @@ public interface IGame<CARD extends Card> {
 	void actionUp(List<? extends CARD> lstActionCards, Hand<CARD> handTo);
 
 	NextMove getNextMoveThread();
+
+	void resetGame();
 }

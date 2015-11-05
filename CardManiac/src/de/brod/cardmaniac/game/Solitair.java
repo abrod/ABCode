@@ -1,13 +1,13 @@
 package de.brod.cardmaniac.game;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
 import de.brod.cardmaniac.Card52;
 import de.brod.cardmaniac.Cards52;
-import de.brod.cardmaniac.Cards52.CardValue;
 import de.brod.cardmaniac.Hand;
 import de.brod.cardmaniac.R;
 import de.brod.gui.IAction;
@@ -86,12 +86,7 @@ public class Solitair extends Patience {
 		}
 
 		List<Card52> create52Cards = new Cards52().create52Cards();
-		for (int i = 0; i < create52Cards.size(); i++) {
-			Card52 card = create52Cards.get(i);
-			int location = (i * 2 + 1) % hands.size();
-			Hand<Card52> object = hands.get(location);
-			object.addCard(card);
-		}
+		shareCards(create52Cards);
 
 		float wdButton = 1 / 2f;
 		float hgButton = 1 / 4f;
@@ -111,6 +106,15 @@ public class Solitair extends Patience {
 
 		});
 
+	}
+
+	private void shareCards(List<Card52> create52Cards) {
+		for (int i = 0; i < create52Cards.size(); i++) {
+			Card52 card = create52Cards.get(i);
+			int location = (i * 2 + 1) % hands.size();
+			Hand<Card52> hand = hands.get(location);
+			hand.addCard(card);
+		}
 	}
 
 	class NextSolitairMove implements NextMove {
@@ -170,6 +174,12 @@ public class Solitair extends Patience {
 	@Override
 	public NextMove getNextMoveThread() {
 		return new NextSolitairMove();
+	}
+
+	@Override
+	public void resetGame() {
+		List<Card52> lstAllCards = getAllCards();
+		shareCards(lstAllCards);
 	}
 
 }
