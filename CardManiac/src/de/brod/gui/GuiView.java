@@ -104,6 +104,7 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 				}
 				requestRender();
 			} else if (slideSquares) {
+				sortQuads();
 				requestRender();
 			}
 		}

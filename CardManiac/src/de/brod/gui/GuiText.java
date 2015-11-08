@@ -14,14 +14,14 @@ import android.graphics.Rect;
  */
 public class GuiText implements IGuiQuad {
 
-	GuiGrid			grid	= null;
-	private GuiQuad	lstQuads;
-	private float	width;
-	private float	height;
+	GuiGrid grid = null;
+	private GuiQuad lstQuads;
+	private float width;
+	private float height;
 
 	class TextGrid extends GuiGrid {
 
-		private String	_sText;
+		private String _sText;
 
 		public TextGrid(String psText) {
 			super(2, 1);
@@ -33,8 +33,7 @@ public class GuiText implements IGuiQuad {
 			float maxSize = Math.max(pwidth, pheight);
 			int maxX = (int) (maxSize * width / 2);
 			int maxY = (int) (maxSize * height / 2);
-			Bitmap bitmap = Bitmap.createBitmap(maxX * 2, maxY,
-					Bitmap.Config.ARGB_8888);
+			Bitmap bitmap = Bitmap.createBitmap(maxX * 2, maxY, Bitmap.Config.ARGB_8888);
 			Canvas c = new Canvas(bitmap);
 			draw(_sText, c, 0, maxX, maxY);
 			draw(_sText, c, maxX, maxX, maxY);
@@ -43,8 +42,7 @@ public class GuiText implements IGuiQuad {
 
 	}
 
-	public GuiText(float x, float y, float pfwidth, float pfheight,
-			String psText) {
+	public GuiText(float x, float y, float pfwidth, float pfheight, String psText) {
 		this.width = pfwidth;
 		this.height = pfheight;
 		grid = new TextGrid(psText);
@@ -73,19 +71,20 @@ public class GuiText implements IGuiQuad {
 			p.setTextSize(textHeight);
 			p.getTextBounds(psText.toCharArray(), 0, psText.length(), rect2);
 			textHeight--;
-		} while (textHeight > 6
-				&& (rect2.width() > wd2 || rect2.height() > hg2));
+		} while (textHeight > 6 && (rect2.width() > wd2 || rect2.height() > hg2));
 		int d = d36;
 		if (dx > 0) {
 			d *= 2;
 		}
 
+		int x1 = d + dx + (width - rect2.width()) / 3;
+		int y1 = d + rect2.height() + (height - rect2.height()) / 3;
+
 		p.setARGB(255, 0, 0, 0);
-		c.drawText(psText, dx + d + d36 + (width - rect2.width()) / 2, d + d36
-				+ rect2.height() + (height - rect2.height()) / 4, p);
+		c.drawText(psText, x1 + d36, y1 + d36, p);
+
 		p.setARGB(255, 255, 255, 255);
-		c.drawText(psText, dx + d + (width - rect2.width()) / 2,
-				d + rect2.height() + (height - rect2.height()) / 4, p);
+		c.drawText(psText, x1, y1, p);
 
 	}
 
