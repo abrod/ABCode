@@ -78,8 +78,8 @@ public class MainActivity extends GuiActivity {
 				} while (containsSlidingSquares());
 
 				if (nextMove.makeNextMove()) {
-					moveCardsWithinHands(true);
 					running = false;
+					moveCardsWithinHands(true);
 					requestRender();
 				}
 			} catch (InterruptedException e) {

@@ -7,9 +7,9 @@ import de.brod.gui.GuiRectangle;
 
 public abstract class Hand<CARD extends Card> extends GuiRectangle {
 
-	private final List<CARD>	lstCards	= new ArrayList<CARD>();
-	private final float			x, y, dx, dy;
-	private int					max;
+	private final List<CARD> lstCards = new ArrayList<CARD>();
+	private final float x, y, dx, dy;
+	private int max;
 
 	/**
 	 * Create a hand object. The range for this object is
@@ -31,15 +31,14 @@ public abstract class Hand<CARD extends Card> extends GuiRectangle {
 	 * @param pMax
 	 */
 	public Hand(float x1, float y1, float x2, float y2, String psText, int pMax) {
-		super(CardSet.getX((x1 + x2) / 2f), CardSet.getY((y1 + y2) / 2),
-				CardSet.getWidth(Math.abs(x1 - x2) + 1f), CardSet
-						.getHeight(Math.abs(y1 - y2) + 1f), psText);
+		super(CardSet.getX((x1 + x2) / 2f), CardSet.getY((y1 + y2) / 2), CardSet.getWidth(Math.abs(x1 - x2) + 1f),
+				CardSet.getHeight(Math.abs(y1 - y2) + 1f), psText);
 		setColor(64, 200, 200, 200);
 		setDown(true);
 		x = CardSet.getX(x1);
 		y = CardSet.getY(y1);
 		dx = CardSet.getX(x2) - x;
-		dy = CardSet.getY(y2) - y;
+		dy = CardSet.getY(y2 + 0.00001f) - y;
 		max = pMax;
 	}
 

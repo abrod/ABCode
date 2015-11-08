@@ -1,7 +1,5 @@
 package de.brod.cardmaniac.game;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
@@ -13,6 +11,9 @@ import de.brod.cardmaniac.R;
 import de.brod.gui.IAction;
 
 public class Solitair extends Patience {
+
+	static int[] handsToCheck = { 0, 2, 4, 6, 1, 3, 5, 7, 9, 11, 13, 15 };
+	static int[] handsToLayDown = { 14, 12, 10, 8 };
 
 	@Override
 	public void init(float wd, float hg, int width, int height) {
@@ -125,8 +126,6 @@ public class Solitair extends Patience {
 		public void calculateNextMove() {
 			// get the min value
 			int minCard = 99;
-			int[] handsToCheck = { 0, 2, 4, 6, 1, 3, 5, 7, 9, 11, 13, 15 };
-			int[] handsToLayDown = { 8, 10, 12, 14 };
 			for (int i : handsToLayDown) {
 				Hand<Card52> hand = hands.get(i);
 				Card52 lastCard = hand.getLastCard();
@@ -149,6 +148,7 @@ public class Solitair extends Patience {
 							if (orderHand == minCard + 1) {
 								if (lastCardTo == null || lastCardTo.getColor().equals(lastCardHand.getColor())) {
 									map.put(lastCardHand, handTo);
+									break;
 								}
 							}
 						}

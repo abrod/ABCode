@@ -41,7 +41,7 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 			}
 			_lstQuads.clear();
 			// set the new Quads
-			_lstQuads.addAll(plstQuads);
+			_lstQuads = plstQuads;
 		}
 	}
 
@@ -97,8 +97,13 @@ public class GuiView extends GLSurfaceView implements GLSurfaceView.Renderer {
 			// Disable face culling.
 			pGL10.glDisable(GL10.GL_CULL_FACE);
 
-			this.slideSquares = slideSquares;
-			if (slideSquares) {
+			if (this.slideSquares != slideSquares) {
+				this.slideSquares = slideSquares;
+				if (!slideSquares) {
+					sortQuads();
+				}
+				requestRender();
+			} else if (slideSquares) {
 				requestRender();
 			}
 		}
