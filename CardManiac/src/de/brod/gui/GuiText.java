@@ -64,14 +64,20 @@ public class GuiText implements IGuiQuad {
 		p.setStyle(Style.FILL);
 
 		float textHeight = height;
+
 		Rect rect2 = new Rect();
 		float wd2 = width * 0.8f;
 		float hg2 = height * 0.8f;
-		do {
+		p.setTextSize(textHeight);
+		p.getTextBounds(psText.toCharArray(), 0, psText.length(), rect2);
+		float dx2 = rect2.width() / wd2;
+		float dy2 = rect2.height() / hg2;
+		float dmax = Math.max(dx2, dy2);
+		if (dmax > 1.01) {
+			textHeight = textHeight / dmax;
 			p.setTextSize(textHeight);
 			p.getTextBounds(psText.toCharArray(), 0, psText.length(), rect2);
-			textHeight--;
-		} while (textHeight > 6 && (rect2.width() > wd2 || rect2.height() > hg2));
+		}
 		int d = d36;
 		if (dx > 0) {
 			d *= 2;
