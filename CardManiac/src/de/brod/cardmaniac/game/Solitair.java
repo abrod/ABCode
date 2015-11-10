@@ -74,6 +74,9 @@ public class Solitair extends Patience {
 							lastCard = c;
 						}
 					}
+					if (lst.size() > getAmountOfFreeHands()) {
+						lst.clear();
+					}
 				}
 
 				@Override
@@ -107,6 +110,24 @@ public class Solitair extends Patience {
 
 		});
 
+	}
+
+	protected int getAmountOfFreeHands() {
+
+		int iCount = 1;
+		int iCountLower = 0;
+		for (int i = 0; i < 8; i += 2) {
+			if (hands.get(i).getCards().size() == 0) {
+				iCount++;
+			}
+		}
+		for (int i = 1; i < 16; i += 2) {
+			if (hands.get(i).getCards().size() == 0) {
+				iCountLower++;
+			}
+		}
+
+		return iCount + Math.max(iCountLower - 1, 0);
 	}
 
 	private void shareCards(List<Card52> create52Cards) {
