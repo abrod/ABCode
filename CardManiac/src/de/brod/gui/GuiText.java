@@ -17,7 +17,7 @@ public class GuiText implements IGuiQuad {
 	GuiGrid grid = null;
 	private GuiQuad lstQuads;
 	private float width;
-	private float height;
+	protected float height;
 
 	class TextGrid extends GuiGrid {
 
@@ -35,8 +35,8 @@ public class GuiText implements IGuiQuad {
 			int maxY = (int) (maxSize * height / 2);
 			Bitmap bitmap = Bitmap.createBitmap(maxX * 2, maxY, Bitmap.Config.ARGB_8888);
 			Canvas c = new Canvas(bitmap);
-			draw(_sText, c, 0, maxX, maxY);
-			draw(_sText, c, maxX, maxX, maxY);
+			draw(_sText, c, 0, maxX, maxY, true);
+			draw(_sText, c, maxX, maxX, maxY, true);
 			return bitmap;
 		}
 
@@ -51,14 +51,15 @@ public class GuiText implements IGuiQuad {
 		lstQuads.setLevel(-10);
 	}
 
-	protected void draw(String psText, Canvas c, int dx, int maxX, int maxY) {
+	protected void draw(String psText, Canvas c, int dx, int maxX, int maxY, boolean up) {
 		if (psText != null && psText.length() > 0) {
-			drawText(c, dx, maxX, maxY, psText);
+			drawText(c, dx, maxX, maxY, psText, up);
 		}
 	}
 
-	private void drawText(Canvas c, int dx, int width, int height, String psText) {
+	private void drawText(Canvas c, int dx, int width, int height, String psText, boolean up) {
 		Paint p = new Paint();
+		p.setAntiAlias(true);
 		int d36 = Math.min(width, height) / 36;
 
 		p.setStyle(Style.FILL);
@@ -86,12 +87,19 @@ public class GuiText implements IGuiQuad {
 		int x1 = d + dx + (width - rect2.width()) / 3;
 		int y1 = d + rect2.height() + (height - rect2.height()) / 3;
 
-		p.setARGB(255, 0, 0, 0);
-		c.drawText(psText, x1 + d36, y1 + d36, p);
+		if (up) {
+			p.setARGB(255, 0, 0, 0);
+			c.drawText(psText, x1 + d36, y1 + d36, p);
 
-		p.setARGB(255, 255, 255, 255);
-		c.drawText(psText, x1, y1, p);
+			p.setARGB(255, 255, 255, 255);
+			c.drawText(psText, x1, y1, p);
+		} else {
+			p.setARGB(255, 0, 0, 0);
+			c.drawText(psText, x1, y1, p);
 
+			p.setARGB(255, 255, 255, 255);
+			c.drawText(psText, x1 + d36, y1 + d36, p);
+		}
 	}
 
 	@Override

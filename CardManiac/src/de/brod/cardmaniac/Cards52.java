@@ -104,9 +104,10 @@ public class Cards52 extends CardSet {
 
 			paint.setColor(Color.WHITE);
 			paint.setStyle(Paint.Style.FILL_AND_STROKE);
+			paint.setAntiAlias(true);
 			float dx = maxX * 1f / countX;
 			float dy = maxY * 1f / countY;
-			int textSize = (int) (dy / 7);
+			int textSize = (int) (dy / 6);
 
 			for (int i = 0; i < countX; i++) {
 				for (int j = 0; j < countY; j++) {
