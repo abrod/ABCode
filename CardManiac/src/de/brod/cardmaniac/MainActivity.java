@@ -31,6 +31,8 @@ public class MainActivity extends GuiActivity {
 		game = new Solitair();
 		game.init(this, wd, hg, width, height);
 
+		game.loadGame();
+
 		addGuiItemFromGame(lstQuads, game);
 
 		moveCardsWithinHands(false);
@@ -51,6 +53,9 @@ public class MainActivity extends GuiActivity {
 	private void moveCardsWithinHands(boolean slide) {
 		for (Hand hand : _lstHands) {
 			hand.moveCards(slide);
+		}
+		if (slide){
+			game.saveGame();
 		}
 		sortQuads();
 		if (!isThinking()) {

@@ -1,11 +1,19 @@
 package de.brod.cardmaniac.game;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 
+import android.util.Log;
 import de.brod.cardmaniac.Card;
-import de.brod.cardmaniac.Card52;
 import de.brod.cardmaniac.Hand;
 import de.brod.cardmaniac.MainActivity;
 import de.brod.cardmaniac.R;
@@ -87,4 +95,65 @@ public abstract class Game<CARD extends Card> implements IGame<CARD> {
 		return lstAllCards;
 	}
 
+	@Override
+	public void loadGame() {
+		File file = getDatFile();
+		try {
+			Hashtable<Integer, CARD> htCards = new Hashtable<Integer, CARD>();
+			// get all cards
+			for (Hand<CARD> hand : hands) {
+				for (CARD card : hand.getCards()) {
+					htCards.put(card.getUniqueId(), card);
+				}
+			}
+			DataInputStream in = new DataInputStream(new FileInputStream(file));
+			for (Hand<CARD> hand : hands) {
+				int size = in.readInt();
+				for (int i = 0; i < size; i++) {
+					int iCard = in.readInt();
+					CARD removedCard = htCards.remove(iCard);
+					if (removedCard == null) {
+						// card not found
+						Log.e("Error", "Card not found");
+						in.close();
+						resetGame();
+						return;
+					}
+					hand.addCard(removedCard);
+				}
+			}
+			in.close();
+		} catch (IOException e) {
+			// could not read
+			Log.e("Error", e.getLocalizedMessage());
+		}
+	}
+
+	@Override
+	public void saveGame() {
+		try {
+			File file = getDatFile();
+			Log.d(getClass().getSimpleName(), "Save " + file.getAbsolutePath());
+			DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
+			writeTo(out);
+			out.close();
+		} catch (IOException e) {
+			Log.e("Error", e.getLocalizedMessage());
+		}
+	}
+
+	private File getDatFile() {
+		return new File(_main.getFilesDir(), getClass().getSimpleName() + ".dat");
+	}
+
+	void writeTo(DataOutputStream out) throws IOException {
+		for (Hand<CARD> hand : hands) {
+			List<CARD> cards = hand.getCards();
+			out.writeInt(cards.size());
+			for (CARD card : cards) {
+				int id = card.getUniqueId();
+				out.writeInt(id);
+			}
+		}
+	}
 }

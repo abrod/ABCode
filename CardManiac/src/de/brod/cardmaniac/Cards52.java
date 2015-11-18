@@ -164,8 +164,8 @@ public class Cards52 extends CardSet {
 
 		}
 
-		public Card52 createCard(CardValue cardValue, float x, float y) {
-			Card52 card = new Card52(this, x, y, CARD_WIDTH, CARD_HEIGHT, color, cardValue);
+		public Card52 createCard(CardValue cardValue, float x, float y, boolean redBack) {
+			Card52 card = new Card52(this, x, y, CARD_WIDTH, CARD_HEIGHT, color, cardValue, redBack);
 			int ordinal = cardValue.ordinal();
 			card.setGrid(ordinal % countX, ordinal / countX, true);
 			card.setGrid(background % countX, background / countX, false);
@@ -173,22 +173,22 @@ public class Cards52 extends CardSet {
 		}
 	}
 
-	private Card52 createCard(CardColor pCardColor, CardValue pCardValue, float x, float y) {
+	private Card52 createCard(CardColor pCardColor, CardValue pCardValue, float x, float y, boolean redBack) {
 		Card52Grid cardSetColor = cardsGridMap.get(pCardColor);
 		if (cardSetColor == null) {
 			cardSetColor = new Card52Grid(pCardColor);
 			cardsGridMap.put(pCardColor, cardSetColor);
 		}
-		return cardSetColor.createCard(pCardValue, x, y);
+		return cardSetColor.createCard(pCardValue, x, y, redBack);
 	}
 
-	public List<Card52> create52Cards() {
+	public List<Card52> create52Cards(boolean redBack) {
 		List<Card52> lstQuads = new ArrayList<Card52>();
 		for (int j = 0; j < 4; j++) {
 			for (int i = 0; i < 13; i++) {
 				CardColor cardColor = CardColor.values()[j];
 				CardValue cardValue = CardValue.values()[i];
-				Card52 createdCard = createCard(cardColor, cardValue, 0, 0);
+				Card52 createdCard = createCard(cardColor, cardValue, 0, 0, redBack);
 				lstQuads.add(createdCard);
 			}
 		}

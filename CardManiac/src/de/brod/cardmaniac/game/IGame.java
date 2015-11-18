@@ -22,4 +22,8 @@ public interface IGame<CARD extends Card> {
 	NextMove getNextMoveThread();
 
 	void resetGame();
+
+	void loadGame();
+
+	void saveGame();
 }

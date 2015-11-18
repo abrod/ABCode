@@ -89,7 +89,7 @@ public class Solitair extends Patience {
 			});
 		}
 
-		List<Card52> create52Cards = new Cards52().create52Cards();
+		List<Card52> create52Cards = new Cards52().create52Cards(false);
 		shareCards(create52Cards);
 
 		float wdButton = 1 / 2f;

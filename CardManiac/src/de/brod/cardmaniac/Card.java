@@ -5,8 +5,8 @@ import de.brod.gui.GuiQuad;
 
 public abstract class Card extends GuiQuad {
 
-	private Hand<?>	hand;
-	private boolean	selected	= false;
+	private Hand<?> hand;
+	private boolean selected = false;
 
 	Card(GuiGrid grid, float px, float py, float wd, float hg) {
 		super(grid, px, py, wd, hg);
@@ -36,4 +36,5 @@ public abstract class Card extends GuiQuad {
 		}
 	}
 
+	public abstract int getUniqueId();
 }

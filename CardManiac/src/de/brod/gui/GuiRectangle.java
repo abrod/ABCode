@@ -73,14 +73,18 @@ public class GuiRectangle extends GuiText {
 		int blue = Color.blue(white);
 		float l = left;
 		float r = right;
-		float iMax = height - corner;
+		int iMax = (int) (height - corner);
+		float[] circleYToX = new float[corner + 1];
+		for (int i = 0; i <= corner; i++) {
+			circleYToX[i] = corner - circleYToX(i, corner);
+		}
 		for (int i = 0; i <= height; i++) {
 			if (i <= corner) {
-				float cX = corner - circleYToX(corner - i, corner);
+				float cX = circleYToX[corner - i];
 				l = left + cX;
 				r = right - cX;
 			} else if (i > iMax) {
-				float cX = corner - circleYToX(i - iMax, corner);
+				float cX = circleYToX[(i - iMax)];
 				l = left + cX;
 				r = right - cX;
 			}
