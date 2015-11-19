@@ -20,8 +20,26 @@ public class Solitair extends Patience {
 
 		hands.clear();
 		for (int i = 0; i < 8; i++) {
+			float xTop = i;
+			float yTop = 4;
+			if (width > height) {
+				yTop = (i % 4) + 0.2f;
+				if (i < 4) {
+					xTop = 8.2f;
+				} else {
+					xTop = -1.2f;
+				}
+			} else {
+				if (i < 4) {
+					xTop = (i % 4) * 1.5f + 0.2f;
+					yTop = 5.2f;
+				} else {
+					xTop = (i % 4) * 2 + 0.5f;
+					yTop = -1.2f;
+				}
+			}
 			if (i < 4) {
-				hands.add(new Hand<Card52>(i, 4, i, 4, null, 52) {
+				hands.add(new Hand<Card52>(xTop, yTop, xTop, yTop, null, 52) {
 
 					@Override
 					public void actionDown(Card52 card, List<Card52> lst) {
@@ -39,7 +57,7 @@ public class Solitair extends Patience {
 
 				});
 			} else {
-				hands.add(new Hand<Card52>(i, 4, i, 4, "A", 52) {
+				hands.add(new Hand<Card52>(xTop, yTop, xTop, yTop, "A", 52) {
 					@Override
 					public void actionDown(Card52 card, List<Card52> lst) {
 						lst.add(card);
@@ -56,7 +74,7 @@ public class Solitair extends Patience {
 				});
 			}
 
-			hands.add(new Hand<Card52>(i, 3, i, 0, null, 12) {
+			hands.add(new Hand<Card52>(i, 4, i, 0, null, 12) {
 				@Override
 				public void actionDown(Card52 card, List<Card52> lst) {
 					Card52 lastCard = null;
