@@ -23,19 +23,32 @@ public class Solitair extends Patience {
 			float xTop = i;
 			float yTop = 4;
 			if (width > height) {
+
+				// +-+-----+-+ width=4
+				// |.|.....|.| height=3
+				// |.|.....|.|
+				// +-+-----+-+
+				float w = ((width * 1f / height));
+				// w=w=1.3333
+				w = (w - 1) * 8 / 2;
+				// w=0.3333*8=2.6666/2=1.3333
+				w = (w - 1) / 2;
 				yTop = (i % 4) + 0.2f;
 				if (i < 4) {
-					xTop = 8.2f;
+					xTop = 8 + w;
 				} else {
-					xTop = -1.2f;
+					xTop = -1 - w;
 				}
 			} else {
+				float h = ((height * 1f / width));
+				h = (h - 1) * 4 / 2;
+				h = (h - 1) / 2;
 				if (i < 4) {
 					xTop = (i % 4) * 1.5f + 0.2f;
-					yTop = 5.2f;
+					yTop = 5 + h;
 				} else {
 					xTop = (i % 4) * 2 + 0.5f;
-					yTop = -1.2f;
+					yTop = -1 - h;
 				}
 			}
 			if (i < 4) {
