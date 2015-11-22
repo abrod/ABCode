@@ -8,6 +8,8 @@ import java.util.Comparator;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import android.graphics.Canvas;
+
 public class GuiQuad implements IGuiQuad {
 
 	private static class GuiQuadComparator implements Comparator<IGuiQuad> {
@@ -27,7 +29,7 @@ public class GuiQuad implements IGuiQuad {
 	}
 
 	private static class Line {
-		float	xStart, yStart, dx, dy;
+		float xStart, yStart, dx, dy;
 
 		void set(float x1, float y1, float x2, float y2) {
 			xStart = x1;
@@ -45,34 +47,32 @@ public class GuiQuad implements IGuiQuad {
 		}
 	}
 
-	static final Comparator<IGuiQuad>	COMPERATOR	= new GuiQuadComparator();
-	private static final short[]		_indices	= { 0, 1, 2, 0, 2, 3 };
-	private static final int[]			_points		= { 0, 1, 2, 3, 0 };
-	private static final float[]		_edges		= { -1, 1, -1, -1, 1, -1,
-			1, 1									};
-	private static final double			delayTime	= 1000;
+	static final Comparator<IGuiQuad> COMPERATOR = new GuiQuadComparator();
+	private static final short[] _indices = { 0, 1, 2, 0, 2, 3 };
+	private static final int[] _points = { 0, 1, 2, 3, 0 };
+	private static final float[] _edges = { -1, 1, -1, -1, 1, -1, 1, 1 };
+	private static final double delayTime = 1000;
 
-	private float						_x, _y, _width, _height,
-			_xyOrder = -12345678;
-	private float[]						_xy			= { -123, -345 };
-	private float						_rotY;
-	private int							_iUp, level, levelMove;
-	private GuiGrid						_grid;
-	private float[]						rgba		= { 1, 1, 1, 1 };
+	private float _x, _y, _width, _height, _xyOrder = -12345678;
+	private float[] _xy = { -123, -345 };
+	private float _rotY;
+	private int _iUp, level, levelMove;
+	private GuiGrid _grid;
+	private float[] rgba = { 1, 1, 1, 1 };
 
-	private FloatBuffer					_vertexBuffer;
-	private ShortBuffer					_indexBuffer;
-	private FloatBuffer[]				_textureBuffer;
+	private FloatBuffer _vertexBuffer;
+	private ShortBuffer _indexBuffer;
+	private FloatBuffer[] _textureBuffer;
 
-	private Line						_line		= new Line();
-	private float[]						_range		= new float[4];
-	private float[]						_verticles	= new float[4 * 3];
-	private boolean						_visible	= true;
-	private float						_touchX;
-	private float						_touchY;
-	private float						xEnd, yEnd, dx, dy, xStart, yStart;
-	private float						timeDelay;
-	private long						timeStart;
+	private Line _line = new Line();
+	private float[] _range = new float[4];
+	private float[] _verticles = new float[4 * 3];
+	private boolean _visible = true;
+	private float _touchX;
+	private float _touchY;
+	private float xEnd, yEnd, dx, dy, xStart, yStart;
+	private float timeDelay;
+	private long timeStart;
 
 	protected GuiQuad(GuiGrid grid, float px, float py, float wd, float hg) {
 		_grid = grid;
@@ -82,12 +82,14 @@ public class GuiQuad implements IGuiQuad {
 		_width = wd / 2;
 		_height = hg / 2;
 
-		// a float is 4 bytes, therefore we multiply the number if vertices with 4.
+		// a float is 4 bytes, therefore we multiply the number if vertices with
+		// 4.
 		ByteBuffer vbb = ByteBuffer.allocateDirect(3 * 4 * 4);
 		vbb.order(ByteOrder.nativeOrder());
 		_vertexBuffer = vbb.asFloatBuffer();
 
-		// short is 2 bytes, therefore we multiply the number if vertices with 2.
+		// short is 2 bytes, therefore we multiply the number if vertices with
+		// 2.
 		ByteBuffer ibb = ByteBuffer.allocateDirect(_indices.length * 2);
 		ibb.order(ByteOrder.nativeOrder());
 		_indexBuffer = ibb.asShortBuffer();
@@ -103,6 +105,7 @@ public class GuiQuad implements IGuiQuad {
 		}
 
 		refreshView();
+		setGrid(0, 0);
 	}
 
 	void refreshView() {
@@ -166,8 +169,7 @@ public class GuiQuad implements IGuiQuad {
 		_iUp = 0;
 		if (_rotY > 0) {
 			float dy;
-			_line.set(_verticles[0], _verticles[1], _verticles[6],
-					_verticles[7]);
+			_line.set(_verticles[0], _verticles[1], _verticles[6], _verticles[7]);
 			if (_rotY > 0.5f) {
 				dy = 1 - _rotY;
 				_iUp = 1;
@@ -199,6 +201,10 @@ public class GuiQuad implements IGuiQuad {
 		_grid.remove(this);
 	}
 
+	public GuiGrid getGrid() {
+		return _grid;
+	}
+
 	@Override
 	public boolean draw(GL10 gl, long currentTime) {
 		boolean slideTo = slideTo(currentTime);
@@ -206,8 +212,7 @@ public class GuiQuad implements IGuiQuad {
 			gl.glColor4f(rgba[0], rgba[1], rgba[2], rgba[3]);
 			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, _vertexBuffer);
 			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, _textureBuffer[_iUp]);
-			gl.glDrawElements(GL10.GL_TRIANGLES, _indices.length,
-					GL10.GL_UNSIGNED_SHORT, _indexBuffer);
+			gl.glDrawElements(GL10.GL_TRIANGLES, _indices.length, GL10.GL_UNSIGNED_SHORT, _indexBuffer);
 		}
 		return slideTo;
 	}
@@ -247,8 +252,7 @@ public class GuiQuad implements IGuiQuad {
 			x1 = _verticles[i];
 			y1 = _verticles[i + 1];
 			if (a > 0) {
-				if (((y1 < eventY) && (y2 >= eventY)) || (y1 >= eventY)
-						&& (y2 < eventY)) {
+				if (((y1 < eventY) && (y2 >= eventY)) || (y1 >= eventY) && (y2 < eventY)) {
 					if ((eventY - y1) / (y2 - y1) * (x2 - x1) < (eventX - x1)) {
 						oddNodes = !oddNodes;
 					}
@@ -306,10 +310,7 @@ public class GuiQuad implements IGuiQuad {
 			xStart = _x;
 			yStart = _y;
 			timeStart = System.currentTimeMillis();
-			timeDelay = (long) Math.max(
-					10,
-					(Math.min(delayTime, Math.sqrt(dx * dx + dy * dy)
-							* delayTime)));
+			timeDelay = (long) Math.max(10, (Math.min(delayTime, Math.sqrt(dx * dx + dy * dy) * delayTime)));
 			levelMove = level + 1;
 		} else {
 			_x = xEnd;
@@ -321,17 +322,15 @@ public class GuiQuad implements IGuiQuad {
 	}
 
 	private float getY(float Y) {
-		return Math.max(_height - GuiView._hg,
-				Math.min(GuiView._hg - _height, Y));
+		return Math.max(_height - GuiView._hg, Math.min(GuiView._hg - _height, Y));
 	}
 
 	private float getX(float X) {
-		return Math
-				.max(_width - GuiView._wd, Math.min(GuiView._wd - _width, X));
+		return Math.max(_width - GuiView._wd, Math.min(GuiView._wd - _width, X));
 	}
 
-	private float	index;
-	private float	oX, oY;
+	private float index;
+	private float oX, oY;
 
 	public void setIndex(int i) {
 		index = i / 1000f;
@@ -364,6 +363,10 @@ public class GuiQuad implements IGuiQuad {
 	public void setOffset(float eventX, float eventY) {
 		oX = getX(eventX) - _x;
 		oY = getY(eventY) - _y;
+	}
+
+	protected void draw(Canvas c, int i, int maxX, int maxY, boolean b) {
+		// may be overwritten
 	}
 
 }

@@ -13,14 +13,14 @@ public class GuiRectangle extends GuiText {
 	}
 
 	@Override
-	protected void draw(String psText, Canvas c, int dx, int maxX, int maxY, boolean up) {
+	protected void draw(Canvas c, int dx, int maxX, int maxY, boolean up) {
 		if (dx == 0) {
 			drawBorder(c, 0, maxX, maxY, Color.WHITE, Color.BLACK);
 		} else {
 			drawBorder(c, dx, maxX, maxY, Color.BLACK, 0);
 		}
 		// draw the text
-		super.draw(psText, c, dx, maxX, maxY, up);
+		super.draw(c, dx, maxX, maxY, up);
 	}
 
 	private void drawBorder(Canvas c, int dx, int width, int height, int white, int black) {

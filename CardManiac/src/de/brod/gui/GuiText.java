@@ -1,63 +1,47 @@
 package de.brod.gui;
 
-import javax.microedition.khronos.opengles.GL10;
-
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.graphics.Paint.Style;
 
 /**
  * @author Andreas_2
  *
  */
-public class GuiText implements IGuiQuad {
+public class GuiText extends GuiQuad {
 
-	GuiGrid grid = null;
-	private GuiQuad lstQuads;
-	private float width;
-	protected float height;
-
-	class TextGrid extends GuiGrid {
-
-		private String _sText;
-
-		public TextGrid(String psText) {
-			super(2, 1);
-			_sText = psText;
-		}
-
-		@Override
-		protected Bitmap createBitmap(int pwidth, int pheight) {
-			float maxSize = Math.max(pwidth, pheight);
-			int maxX = (int) (maxSize * width / 2);
-			int maxY = (int) (maxSize * height / 2);
-			Bitmap bitmap = Bitmap.createBitmap(maxX * 2, maxY, Bitmap.Config.ARGB_8888);
-			Canvas c = new Canvas(bitmap);
-			draw(_sText, c, 0, maxX, maxY, true);
-			draw(_sText, c, maxX, maxX, maxY, true);
-			return bitmap;
-		}
-
-	}
+	private String text;
 
 	public GuiText(float x, float y, float pfwidth, float pfheight, String psText) {
-		this.width = pfwidth;
-		this.height = pfheight;
-		grid = new TextGrid(psText);
-		lstQuads = new GuiQuad(grid, x, y, width, height);
-		lstQuads.setGrid(0, 0);
-		lstQuads.setLevel(-10);
+		super(new GuiTwoItemGrid(pfwidth, pfheight), x, y, pfwidth, pfheight);
+		this.text = psText;
+		getGrid().assignQuad(this);
+		setLevel(-10);
 	}
 
-	protected void draw(String psText, Canvas c, int dx, int maxX, int maxY, boolean up) {
-		if (psText != null && psText.length() > 0) {
-			drawText(c, dx, maxX, maxY, psText, up);
+	@Override
+	public void moveTo(float eventX, float eventY) {
+		if (isMoveable()) {
+			super.moveTo(eventX, eventY);
 		}
 	}
 
-	private void drawText(Canvas c, int dx, int width, int height, String psText, boolean up) {
+	/**
+	 * @return false per default
+	 */
+	protected boolean isMoveable() {
+		return false;
+	}
+
+	public void setDown(boolean pbDown) {
+		setGrid((pbDown ? 1 : 0), 0, true);
+	}
+
+	@Override
+	protected void draw(Canvas c, int dx, int width, int height, boolean up) {
+		if (text == null)
+			return;
 		Paint p = new Paint();
 		p.setAntiAlias(true);
 		int d36 = Math.min(width, height) / 36;
@@ -70,14 +54,14 @@ public class GuiText implements IGuiQuad {
 		float wd2 = width * 0.8f;
 		float hg2 = height * 0.8f;
 		p.setTextSize(textHeight);
-		p.getTextBounds(psText.toCharArray(), 0, psText.length(), rect2);
+		p.getTextBounds(text.toCharArray(), 0, text.length(), rect2);
 		float dx2 = rect2.width() / wd2;
 		float dy2 = rect2.height() / hg2;
 		float dmax = Math.max(dx2, dy2);
 		if (dmax > 1.01) {
 			textHeight = textHeight / dmax;
 			p.setTextSize(textHeight);
-			p.getTextBounds(psText.toCharArray(), 0, psText.length(), rect2);
+			p.getTextBounds(text.toCharArray(), 0, text.length(), rect2);
 		}
 		int d = d36;
 		if (dx > 0) {
@@ -89,70 +73,18 @@ public class GuiText implements IGuiQuad {
 
 		if (up) {
 			p.setARGB(255, 0, 0, 0);
-			c.drawText(psText, x1 + d36, y1 + d36, p);
+			c.drawText(text, x1 + d36, y1 + d36, p);
 
 			p.setARGB(255, 255, 255, 255);
-			c.drawText(psText, x1, y1, p);
+			c.drawText(text, x1, y1, p);
 		} else {
 			p.setARGB(255, 0, 0, 0);
-			c.drawText(psText, x1, y1, p);
+			c.drawText(text, x1, y1, p);
 
 			p.setARGB(255, 255, 255, 255);
-			c.drawText(psText, x1 + d36, y1 + d36, p);
+			c.drawText(text, x1 + d36, y1 + d36, p);
 		}
-	}
 
-	@Override
-	public void close() {
-		lstQuads.close();
-	}
-
-	@Override
-	public boolean draw(GL10 pGL10, long currentTime) {
-		return lstQuads.draw(pGL10, currentTime);
-	}
-
-	@Override
-	public float getXY() {
-		return lstQuads.getXY();
-	}
-
-	@Override
-	public boolean touches(float eventX, float eventY) {
-		return lstQuads.touches(eventX, eventY);
-	}
-
-	@Override
-	public void moveTo(float eventX, float eventY) {
-		if (isMoveable()) {
-			lstQuads.moveTo(eventX, eventY);
-		}
-	}
-
-	/**
-	 * @return false per default
-	 */
-	protected boolean isMoveable() {
-		return false;
-	}
-
-	public void setDown(boolean pbDown) {
-		lstQuads.setGrid((pbDown ? 1 : 0), 0, true);
-	}
-
-	@Override
-	public void setColor(int a, int r, int g, int b) {
-		lstQuads.setColor(a, r, g, b);
-	}
-
-	@Override
-	public void slideTo(float X, float Y) {
-		lstQuads.slideTo(X, Y);
-	}
-
-	@Override
-	public boolean slideTo(long l) {
-		return lstQuads.slideTo(l);
 	}
 
 }

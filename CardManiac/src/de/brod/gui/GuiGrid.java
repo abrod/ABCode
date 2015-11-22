@@ -11,11 +11,16 @@ import android.util.Log;
 
 public abstract class GuiGrid {
 
-	private static GuiView	_view;
-	private float			_xMax, _yMax;
-	private int[]			_textures;
-	List<GuiQuad>			_lstGuiQuads;
-	private boolean			bReload;
+	public static void setView(GuiView guiView) {
+		_view = guiView;
+	}
+
+	private static GuiView _view;
+	private float _xMax, _yMax;
+	private int[] _textures;
+	List<GuiQuad> _lstGuiQuads;
+	private boolean bReload;
+	private GuiQuad guiQuad;
 
 	public GuiGrid(float pfCountX, float pfCountY) {
 		_lstGuiQuads = new ArrayList<GuiQuad>();
@@ -60,13 +65,13 @@ public abstract class GuiGrid {
 		float x2 = (pfX + 1) / _xMax;
 		float y2 = (pfY + 1) / _yMax;
 
-		// bottom left  (V1)
+		// bottom left (V1)
 		textureBuffer.put(x1);
 		textureBuffer.put(y1);
-		// top left     (V2)
+		// top left (V2)
 		textureBuffer.put(x1);
 		textureBuffer.put(y2);
-		// top right    (V4)
+		// top right (V4)
 		textureBuffer.put(x2);
 		textureBuffer.put(y2);
 		// bottom right (V3)
@@ -77,7 +82,12 @@ public abstract class GuiGrid {
 
 	}
 
-	public static void setView(GuiView guiView) {
-		_view = guiView;
+	public void assignQuad(GuiQuad guiQuad) {
+		this.guiQuad = guiQuad;
 	}
+
+	public GuiQuad getGuiQuad() {
+		return guiQuad;
+	}
+
 }
