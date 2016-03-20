@@ -26,6 +26,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		float p0 = 0.5f;
 		float p1 = 0.25f;
 		float p2 = 0.559016994f;
+		float pS = 0.5f * 0.707f;
 		final float[] triangle1VerticesData = {
 				// X, Y, Z,
 				// R, G, B, A
@@ -49,25 +50,27 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 				p0, -p1, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f, //
 				0.0f, p2, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
 
-		final float[] triangle4VerticesData = {
+		final float[] squareVerticesData = {
 				// X, Y, Z,
 				// R, G, B, A
-				-p0, -p1, 0.0f, 1.0f, 1.0f, 0.5f, 1.0f, //
-				p0, -p1, 0.0f, 0.5f, 0.5f, 0.2f, 1.0f, //
-				0.0f, p2, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+				-pS, -pS, 0.0f, 1.0f, 1.0f, 0.5f, 1.0f, //
+				pS, -pS, 0.0f, 0.5f, 0.5f, 0.2f, 1.0f, //
+				pS, pS, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, //
+				-pS, pS, 0.0f, 0.7f, 0.7f, 0.4f, 1.0f };
 
 		// Initialize the buffers.
 		for (int i = 0; i < 10; i++) {
-			float f = 0.51f - i / 20f;
-			createVertice(triangle1VerticesData).setPosition(f, -f, 0.0f);
-			createVertice(triangle2VerticesData).setPosition(f, f, 0.0f);
-			createVertice(triangle3VerticesData).setPosition(-f, f, 0.0f);
-			createVertice(triangle4VerticesData).setPosition(-f, -f, 0.0f);
+			float f = 0.51f - i / 34f;
+			createVertice(triangle1VerticesData).setPosition(f, -f, 0.0f).setSize(1 - i / 20f);
+			createVertice(triangle2VerticesData).setPosition(f, f, 0.0f).setSize(1 - i / 20f);
+			createVertice(triangle3VerticesData).setPosition(-f, f, 0.0f).setSize(1 - i / 20f);
+			createVertice(squareVerticesData).setPosition(-f, -f, 0.0f).setSize(1 - i / 20f);
 		}
 	}
 
-	public Vertice createVertice(float[] triangleVerticesData) {
-		Vertice vertice = new Vertice(triangleVerticesData);
+	public Vertice createVertice(float[] verticesData) {
+		Vertice vertice = new Vertice();
+		vertice.addPoints(verticesData).init();
 		listOfVertices.add(vertice);
 		return vertice;
 	}
@@ -86,7 +89,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 		// Draw the triangle facing straight on.
 		for (Vertice vertice : listOfVertices) {
-			glProgram.drawTriangle(vertice);
+			glProgram.drawVertice(vertice);
 		}
 	}
 
@@ -107,6 +110,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		final float far = 10.0f;
 
 		glProgram.setProjectionMatrix(left, right, bottom, top, near, far);
+		for (Vertice vertice : listOfVertices) {
+			vertice.setDirtyFlag();
+		}
 	}
 
 	@Override
@@ -132,6 +138,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		final float upZ = 0.0f;
 
 		glProgram = new GLProgram(eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
+		for (Vertice vertice : listOfVertices) {
+			vertice.setDirtyFlag();
+		}
 	}
 
 }
