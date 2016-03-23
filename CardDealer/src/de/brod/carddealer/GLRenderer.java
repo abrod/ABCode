@@ -60,18 +60,20 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 		// Initialize the buffers.
 		for (int i = 0; i < 10; i++) {
-			float f = 0.51f - i / 34f;
-			createVertice(triangle1VerticesData).setPosition(f, -f, 0.0f).setSize(1 - i / 20f);
-			createVertice(triangle2VerticesData).setPosition(f, f, 0.0f).setSize(1 - i / 20f);
-			createVertice(triangle3VerticesData).setPosition(-f, f, 0.0f).setSize(1 - i / 20f);
-			createVertice(squareVerticesData).setPosition(-f, -f, 0.0f).setSize(1 - i / 20f);
+			float f = 0.5f - i / 34f;
+			float size = 1 - i / 20f;
+			createVertice(triangle1VerticesData).setPosition(f, -f, 0.0f).setSize(size);
+			createVertice(triangle2VerticesData).setPosition(f, f, 0.0f).setSize(size);
+			createVertice(triangle3VerticesData).setPosition(-f, f, 0.0f).setSize(size);
+			createVertice(squareVerticesData).setPosition(-f, -f, 0.0f).setSize(size);
 		}
 	}
 
 	public Vertice createVertice(float[] verticesData) {
 		Vertice vertice = new Vertice();
-		vertice.addPoints(verticesData).init();
+		vertice.addPoints(verticesData);
 		listOfVertices.add(vertice);
+		vertice.init();
 		return vertice;
 	}
 
@@ -84,7 +86,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		float angleInDegrees = (360.0f / 10000.0f) * ((int) time);
 		for (Vertice vertice : listOfVertices) {
 			vertice.setAngle(0, 0, angleInDegrees);
-			angleInDegrees += 19;
+			angleInDegrees += 3;
 		}
 
 		// Draw the triangle facing straight on.
@@ -101,18 +103,25 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		// Create a new perspective projection matrix. The height will stay the
 		// same
 		// while the width will vary as per aspect ratio.
-		final float ratio = (float) width / height;
-		final float left = -ratio;
-		final float right = ratio;
-		final float bottom = -1.0f;
-		final float top = 1.0f;
+		float ratio = (float) width / height;
+		float right;
+		float top;
+		if (ratio < 1) { // height > width
+			right = 1f;
+			top = 1f / ratio;
+		} else { // width > height
+			right = ratio;
+			top = 1f;
+		}
+		float left = -right;
+		float bottom = -top;
 		final float near = 1.0f;
 		final float far = 10.0f;
 
+		// set the projection matrix
 		glProgram.setProjectionMatrix(left, right, bottom, top, near, far);
-		for (Vertice vertice : listOfVertices) {
-			vertice.setDirtyFlag();
-		}
+		// set dirty flags
+		setDirtyFlagsWithinVertices();
 	}
 
 	@Override
@@ -122,9 +131,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 
 		// Position the eye behind the origin.
-		final float eyeX = 0.0f;
+		final float eyeX = 0.5f;
 		final float eyeY = 0.0f;
-		final float eyeZ = 1.5f;
+		final float eyeZ = 1.1f;
 
 		// We are looking toward the distance
 		final float lookX = 0.0f;
@@ -137,7 +146,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		final float upY = 1.0f;
 		final float upZ = 0.0f;
 
+		// init the program
 		glProgram = new GLProgram(eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
+		// set dirty flags
+		setDirtyFlagsWithinVertices();
+	}
+
+	private void setDirtyFlagsWithinVertices() {
 		for (Vertice vertice : listOfVertices) {
 			vertice.setDirtyFlag();
 		}
