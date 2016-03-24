@@ -66,6 +66,7 @@ public class GLProgram {
 		// view matrix. In OpenGL 2, we can keep track of these matrices
 		// separately if we choose.
 		Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
+		Util.print("ViewMatrix", mViewMatrix);
 
 		// Compile the shader and get the handles
 		int vertextHandle = compileShader(GLES20.GL_VERTEX_SHADER, vertexShader);
@@ -159,5 +160,6 @@ public class GLProgram {
 
 	void setProjectionMatrix(float left, float right, float bottom, float top, float near, float far) {
 		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
+		Util.print("ProjectionMatrix", mProjectionMatrix);
 	}
 }

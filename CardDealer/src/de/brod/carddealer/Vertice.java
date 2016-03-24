@@ -42,7 +42,7 @@ public class Vertice {
 	/** Offset of the color data. */
 	private final int colorOffset = positionDataSize;
 
-	FloatBuffer triangleBuffer;
+	FloatBuffer verticeBuffer;
 
 	private float[] angle = { 0.0f, 0.0f, 0.0f };
 
@@ -50,8 +50,9 @@ public class Vertice {
 
 	private boolean dirtyFlag = true;
 	private int amountOfEdges;
-	private float[] triangleVerticesData;
+	private float[] verticesData;
 	private float[] points;
+	private float size = 1f;
 
 	public Vertice() {
 		points = new float[0];
@@ -89,6 +90,7 @@ public class Vertice {
 		Matrix.multiplyMM(mModelMatrix, 0, GLProgram.mProjectionMatrix, 0, mModelMatrix, 0);
 
 		dirtyFlag = false;
+		Util.print("Model", mModelMatrix);
 	}
 
 	void enableVertexAttributes(int mPositionHandle, int mColorHandle) {
@@ -100,10 +102,10 @@ public class Vertice {
 		enableVertexAttributes(mColorHandle, colorDataSize, colorOffset);
 	}
 
-	private void enableVertexAttributes(int index, int size, int offset) {
-		triangleBuffer.position(offset);
-		GLES20.glVertexAttribPointer(index, size, GLES20.GL_FLOAT, false, strideBytes, triangleBuffer);
-		GLES20.glEnableVertexAttribArray(index);
+	private void enableVertexAttributes(int handleId, int size, int offset) {
+		verticeBuffer.position(offset);
+		GLES20.glVertexAttribPointer(handleId, size, GLES20.GL_FLOAT, false, strideBytes, verticeBuffer);
+		GLES20.glEnableVertexAttribArray(handleId);
 	}
 
 	public int getAmountOfEdges() {
@@ -119,25 +121,25 @@ public class Vertice {
 	}
 
 	public Vertice init() {
-		triangleVerticesData = initTriangles(points);
-		int capacity = triangleVerticesData.length * bytesPerFloat;
+		verticesData = initPoints(points);
+		int capacity = verticesData.length * bytesPerFloat;
 		amountOfEdges = capacity / strideBytes;
-		triangleBuffer = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		setSize(1f);
+		verticeBuffer = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		setSize(size);
 		return this;
 	}
 
-	private float[] initTriangles(float[] originalVerticesData) {
+	private float[] initPoints(float[] originalVerticesData) {
 		int countPoints = originalVerticesData.length / itemSize;
 
 		// if there are more than 3 items
 		if (countPoints > 3) {
-			int triangleSize = itemSize * 3;
-			int trianglesAmount = (countPoints - 2) * triangleSize;
-			// copy first triangle
-			float[] f = Arrays.copyOf(originalVerticesData, trianglesAmount);
-			int offsetNew = triangleSize;
-			int offsetOrg = triangleSize;
+			int verticesSize = itemSize * 3;
+			int verticesAmount = (countPoints - 2) * verticesSize;
+			// copy first vertices
+			float[] f = Arrays.copyOf(originalVerticesData, verticesAmount);
+			int offsetNew = verticesSize;
+			int offsetOrg = verticesSize;
 			while (offsetNew < f.length) {
 				// copy last item
 				System.arraycopy(f, offsetNew - itemSize, f, offsetNew, itemSize);
@@ -155,11 +157,11 @@ public class Vertice {
 		return originalVerticesData;
 	}
 
-	private float[] resize(float[] triangleData, float f) {
+	private float[] resize(float[] verticeData, float f) {
 		if (f == 1f) {
-			return triangleData;
+			return verticeData;
 		} else {
-			float[] copyOf = Arrays.copyOf(triangleData, triangleData.length);
+			float[] copyOf = Arrays.copyOf(verticeData, verticeData.length);
 			for (int i = 0; i < copyOf.length; i += 7) {
 				for (int j = i; j < i + 3; j++) {
 					copyOf[j] *= f;
@@ -206,8 +208,9 @@ public class Vertice {
 	}
 
 	public Vertice setSize(float f) {
-		triangleBuffer.position(0);
-		triangleBuffer.put(resize(triangleVerticesData, f)).position(0);
+		size = f;
+		verticeBuffer.position(0);
+		verticeBuffer.put(resize(verticesData, f)).position(0);
 		return this;
 	}
 }

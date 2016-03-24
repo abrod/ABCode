@@ -81,13 +81,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 glUnused) {
 		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
-		// Do a complete rotation every 10 seconds.
-		long time = SystemClock.uptimeMillis() % 10000L;
-		float angleInDegrees = (360.0f / 10000.0f) * ((int) time);
-		for (Vertice vertice : listOfVertices) {
-			vertice.setAngle(0, 0, angleInDegrees);
-			angleInDegrees += 3;
-		}
+		// rotate();
 
 		// Draw the triangle facing straight on.
 		for (Vertice vertice : listOfVertices) {
@@ -131,7 +125,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		GLES20.glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 
 		// Position the eye behind the origin.
-		final float eyeX = 0.5f;
+		final float eyeX = 0.0f;
 		final float eyeY = 0.0f;
 		final float eyeZ = 1.1f;
 
@@ -150,6 +144,16 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		glProgram = new GLProgram(eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
 		// set dirty flags
 		setDirtyFlagsWithinVertices();
+	}
+
+	private void rotate() {
+		// Do a complete rotation every 10 seconds.
+		long time = SystemClock.uptimeMillis() % 10000L;
+		float angleInDegrees = (360.0f / 10000.0f) * ((int) time);
+		for (Vertice vertice : listOfVertices) {
+			vertice.setAngle(0, 0, angleInDegrees);
+			angleInDegrees += 3;
+		}
 	}
 
 	private void setDirtyFlagsWithinVertices() {
