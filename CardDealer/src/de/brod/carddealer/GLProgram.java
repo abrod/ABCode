@@ -49,12 +49,14 @@ public class GLProgram {
 	 * transforms world space to eye space; it positions things relative to our
 	 * eye.
 	 */
-	static float[] mViewMatrix = new float[16];
+	private static float[] viewMatrix = new float[16];
 	/**
 	 * Store the projection matrix. This is used to project the scene onto a 2D
 	 * viewport.
 	 */
-	static float[] mProjectionMatrix = new float[16];
+	private static float[] projectionMatrix = new float[16];
+
+	static float[] translationMatrix = new float[16];
 
 	public GLProgram(float eyeX, float eyeY, float eyeZ, float lookX, float lookY, float lookZ, float upX, float upY,
 			float upZ) {
@@ -65,8 +67,8 @@ public class GLProgram {
 		// of a model and
 		// view matrix. In OpenGL 2, we can keep track of these matrices
 		// separately if we choose.
-		Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
-		Util.print("ViewMatrix", mViewMatrix);
+		Matrix.setLookAtM(viewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
+		Util.print("ViewMatrix", viewMatrix);
 
 		// Compile the shader and get the handles
 		int vertextHandle = compileShader(GLES20.GL_VERTEX_SHADER, vertexShader);
@@ -159,7 +161,14 @@ public class GLProgram {
 	}
 
 	void setProjectionMatrix(float left, float right, float bottom, float top, float near, float far) {
-		Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-		Util.print("ProjectionMatrix", mProjectionMatrix);
+		// frustumM,orthoM
+		Matrix.frustumM(projectionMatrix, 0, left, right, bottom, top, near, far);
+		Util.print("ProjectionMatrix", projectionMatrix);
+
+		// This multiplies the modelview matrix by the projection matrix, and
+		// stores the result in the MVP matrix
+		Matrix.multiplyMM(translationMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+		Util.print("translationMatrix", translationMatrix);
+
 	}
 }

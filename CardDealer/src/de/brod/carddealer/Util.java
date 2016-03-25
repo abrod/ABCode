@@ -9,7 +9,10 @@ public class Util {
 
 	private static String getString(float f) {
 		String valueOf = String.valueOf(Math.round(f * 100) / 100f);
-		while (valueOf.length() < 4) {
+		if (!valueOf.startsWith("-")) {
+			valueOf = " " + valueOf;
+		}
+		while (valueOf.length() < 5) {
 			valueOf += "0";
 		}
 		return valueOf;

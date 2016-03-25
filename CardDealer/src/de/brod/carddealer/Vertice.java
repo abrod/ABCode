@@ -79,18 +79,13 @@ public class Vertice {
 		if (angle[1] != 0.0f) {
 			Matrix.rotateM(mModelMatrix, 0, angle[1], 0.0f, 0.1f, 0.0f);
 		}
-		// This multiplies the view matrix by the model matrix, and stores the
-		// result in the MVP matrix
-		// (which currently contains model * view).
-		Matrix.multiplyMM(mModelMatrix, 0, GLProgram.mViewMatrix, 0, mModelMatrix, 0);
 
 		// This multiplies the modelview matrix by the projection matrix, and
 		// stores the result in the MVP matrix
 		// (which now contains model * view * projection).
-		Matrix.multiplyMM(mModelMatrix, 0, GLProgram.mProjectionMatrix, 0, mModelMatrix, 0);
+		Matrix.multiplyMM(mModelMatrix, 0, GLProgram.translationMatrix, 0, mModelMatrix, 0);
 
 		dirtyFlag = false;
-		Util.print("Model", mModelMatrix);
 	}
 
 	void enableVertexAttributes(int mPositionHandle, int mColorHandle) {

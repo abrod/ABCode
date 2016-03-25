@@ -81,7 +81,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 glUnused) {
 		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
-		// rotate();
+		rotate();
 
 		// Draw the triangle facing straight on.
 		for (Vertice vertice : listOfVertices) {
@@ -126,7 +126,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 		// Position the eye behind the origin.
 		final float eyeX = 0.0f;
-		final float eyeY = 0.0f;
+		final float eyeY = 0.5f;
 		final float eyeZ = 1.1f;
 
 		// We are looking toward the distance
@@ -142,8 +142,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 		// init the program
 		glProgram = new GLProgram(eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
-		// set dirty flags
-		setDirtyFlagsWithinVertices();
+
 	}
 
 	private void rotate() {
