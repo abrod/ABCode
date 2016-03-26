@@ -50,7 +50,7 @@ public class Vertice {
 
 	private boolean dirtyFlag = true;
 	private int amountOfEdges;
-	private float[] verticesData;
+	private float[] originalVerticesData;
 	private float[] points;
 	private float size = 1f;
 
@@ -63,6 +63,15 @@ public class Vertice {
 		points = Arrays.copyOf(points, points.length + newPoints.length);
 		System.arraycopy(newPoints, 0, points, oldLength, newPoints.length);
 		return this;
+	}
+
+	void assignShaderAttributes(int mPositionHandle, int mColorHandle) {
+
+		// Pass in the position information
+		enableVertexAttributes(mPositionHandle, positionDataSize, positionOffset);
+
+		// Pass in the color information
+		enableVertexAttributes(mColorHandle, colorDataSize, colorOffset);
 	}
 
 	private void calculateModelMatrix() {
@@ -88,15 +97,6 @@ public class Vertice {
 		dirtyFlag = false;
 	}
 
-	void enableVertexAttributes(int mPositionHandle, int mColorHandle) {
-
-		// Pass in the position information
-		enableVertexAttributes(mPositionHandle, positionDataSize, positionOffset);
-
-		// Pass in the color information
-		enableVertexAttributes(mColorHandle, colorDataSize, colorOffset);
-	}
-
 	private void enableVertexAttributes(int handleId, int size, int offset) {
 		verticeBuffer.position(offset);
 		GLES20.glVertexAttribPointer(handleId, size, GLES20.GL_FLOAT, false, strideBytes, verticeBuffer);
@@ -116,23 +116,23 @@ public class Vertice {
 	}
 
 	public Vertice init() {
-		verticesData = initPoints(points);
-		int capacity = verticesData.length * bytesPerFloat;
+		originalVerticesData = initPoints(points);
+		int capacity = originalVerticesData.length * bytesPerFloat;
 		amountOfEdges = capacity / strideBytes;
 		verticeBuffer = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		setSize(size);
 		return this;
 	}
 
-	private float[] initPoints(float[] originalVerticesData) {
-		int countPoints = originalVerticesData.length / itemSize;
+	private float[] initPoints(float[] verticesData) {
+		int countPoints = verticesData.length / itemSize;
 
 		// if there are more than 3 items
 		if (countPoints > 3) {
 			int verticesSize = itemSize * 3;
 			int verticesAmount = (countPoints - 2) * verticesSize;
 			// copy first vertices
-			float[] f = Arrays.copyOf(originalVerticesData, verticesAmount);
+			float[] f = Arrays.copyOf(verticesData, verticesAmount);
 			int offsetNew = verticesSize;
 			int offsetOrg = verticesSize;
 			while (offsetNew < f.length) {
@@ -140,7 +140,7 @@ public class Vertice {
 				System.arraycopy(f, offsetNew - itemSize, f, offsetNew, itemSize);
 				offsetNew += itemSize;
 				// copy next item
-				System.arraycopy(originalVerticesData, offsetOrg, f, offsetNew, itemSize);
+				System.arraycopy(verticesData, offsetOrg, f, offsetNew, itemSize);
 				offsetNew += itemSize;
 				offsetOrg += itemSize;
 				// copy initial item
@@ -149,7 +149,7 @@ public class Vertice {
 			}
 			return f;
 		}
-		return originalVerticesData;
+		return verticesData;
 	}
 
 	private float[] resize(float[] verticeData, float f) {
@@ -205,7 +205,7 @@ public class Vertice {
 	public Vertice setSize(float f) {
 		size = f;
 		verticeBuffer.position(0);
-		verticeBuffer.put(resize(verticesData, f)).position(0);
+		verticeBuffer.put(resize(originalVerticesData, f)).position(0);
 		return this;
 	}
 }

@@ -5,9 +5,9 @@ import android.opengl.Matrix;
 
 public class GLProgram {
 	private static final String U_MVPMATRIX = "u_MVPMatrix";
+
 	private static final String A_POSITION = "a_Position";
 	private static final String A_COLOR = "a_color";
-	private static final String V_COLOR = "v_Color";
 
 	private static final String vertexShader;
 	private static final String fragmentShader;
@@ -22,6 +22,8 @@ public class GLProgram {
 	private static int a_color_id;
 
 	static {
+		String V_COLOR = "v_Color";
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("uniform mat4 ").append(U_MVPMATRIX).append(";");
 		sb.append("attribute vec4 ").append(A_POSITION).append(";");
@@ -121,7 +123,7 @@ public class GLProgram {
 	public void drawVertice(final Vertice aVerticeBuffer) {
 
 		// set the VertexAttributes
-		aVerticeBuffer.enableVertexAttributes(a_position_id, a_color_id);
+		aVerticeBuffer.assignShaderAttributes(a_position_id, a_color_id);
 
 		GLES20.glUniformMatrix4fv(u_MVPMatrix_id, 1, false, aVerticeBuffer.getModelMatrix(), 0);
 		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, aVerticeBuffer.getAmountOfEdges());
