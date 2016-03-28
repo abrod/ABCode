@@ -56,15 +56,15 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		final float[] squarePosition = {
 				// X, Y, Z,
 				-pS, -pS, 0.0f, //
+				-pS, pS, 0.0f, //
 				pS, -pS, 0.0f, //
-				pS, pS, 0.0f, //
-				-pS, pS, 0.0f };
+				pS, pS, 0.0f };
 		final float[] squareColor = {
 				// R, G, B, A
 				1.0f, 1.0f, 0.5f, 1.0f, //
 				0.5f, 0.5f, 0.2f, 1.0f, //
-				0.0f, 0.0f, 0.0f, 1.0f, //
-				0.7f, 0.7f, 0.4f, 1.0f };
+				0.7f, 0.7f, 0.4f, 1.0f, //
+				0.0f, 0.0f, 0.0f, 1.0f };
 
 		// Initialize the vertices
 		for (int i = 0; i < 10; i++) {

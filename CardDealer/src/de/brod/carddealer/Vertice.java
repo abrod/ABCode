@@ -33,15 +33,15 @@ public class Vertice {
 
 	private boolean dirtyFlag = true;
 	private int amountOfTriangleEdges;
-	private float[] initPositionsData, initColorsData;
-	private float[] trianglePositions, trianglesColors;
+	private float[] positionsData, colorsData;
 	private float size = 1f;
+	private int drawMode;
 
 	public Vertice(float[] newPoints) {
-		initPositionsData = newPoints;
+		positionsData = newPoints;
 
-		initColorsData = new float[(newPoints.length / 3) * 4];
-		Arrays.fill(initColorsData, 1f);
+		colorsData = new float[(positionsData.length / 3) * 4];
+		Arrays.fill(colorsData, 1f);
 
 		initPositions();
 		initColors();
@@ -70,34 +70,6 @@ public class Vertice {
 		dirtyFlag = false;
 	}
 
-	private float[] createTriangles(float[] verticesData, int itemSize) {
-		int countPoints = verticesData.length / itemSize;
-
-		// if there are more than 3 items
-		if (countPoints > 3) {
-			int verticesSize = itemSize * 3;
-			int verticesAmount = (countPoints - 2) * verticesSize;
-			// copy first vertices
-			float[] f = Arrays.copyOf(verticesData, verticesAmount);
-			int offsetNew = verticesSize;
-			int offsetOrg = verticesSize;
-			while (offsetNew < f.length) {
-				// copy last item
-				System.arraycopy(f, offsetNew - itemSize, f, offsetNew, itemSize);
-				offsetNew += itemSize;
-				// copy next item
-				System.arraycopy(verticesData, offsetOrg, f, offsetNew, itemSize);
-				offsetNew += itemSize;
-				offsetOrg += itemSize;
-				// copy initial item
-				System.arraycopy(f, 0, f, offsetNew, itemSize);
-				offsetNew += itemSize;
-			}
-			return f;
-		}
-		return verticesData;
-	}
-
 	void draw() {
 
 		// Pass in the position information
@@ -107,7 +79,8 @@ public class Vertice {
 		enableVertexAttributes(GLProgram.a_color_id, 4, colorBuffer);
 
 		GLES20.glUniformMatrix4fv(GLProgram.u_MVPMatrix_id, 1, false, getModelMatrix(), 0);
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, getAmountOfEdges());
+		// draw the arrays
+		GLES20.glDrawArrays(drawMode, 0, amountOfTriangleEdges);
 	}
 
 	private void enableVertexAttributes(int handleId, int size, FloatBuffer verticeBuffer) {
@@ -118,12 +91,8 @@ public class Vertice {
 
 	private void fillPositionBuffer() {
 		positionBuffer.position(0);
-		positionBuffer.put(resize(trianglePositions, size));
+		positionBuffer.put(resize(positionsData, size));
 		positionBuffer.position(0);
-	}
-
-	public int getAmountOfEdges() {
-		return amountOfTriangleEdges;
 	}
 
 	float[] getModelMatrix() {
@@ -135,23 +104,26 @@ public class Vertice {
 	}
 
 	private void initColors() {
-		trianglesColors = createTriangles(initColorsData, 4);
 		if (colorBuffer == null) {
-			colorBuffer = ByteBuffer.allocateDirect(trianglesColors.length * bytesPerFloat)
-					.order(ByteOrder.nativeOrder()).asFloatBuffer();
+			colorBuffer = ByteBuffer.allocateDirect(colorsData.length * bytesPerFloat).order(ByteOrder.nativeOrder())
+					.asFloatBuffer();
 		}
 		// fill the buffer
 		colorBuffer.position(0);
-		colorBuffer.put(trianglesColors).position(0);
+		colorBuffer.put(colorsData).position(0);
 	}
 
 	private void initPositions() {
-		trianglePositions = createTriangles(initPositionsData, 3);
+		amountOfTriangleEdges = positionsData.length / 3;
+		if (amountOfTriangleEdges > 3) {
+			drawMode = GLES20.GL_TRIANGLE_STRIP;
+		} else {
+			drawMode = GLES20.GL_TRIANGLES;
+		}
 
-		amountOfTriangleEdges = trianglePositions.length / 3;
 		// fill the buffer
-		positionBuffer = ByteBuffer.allocateDirect(trianglePositions.length * bytesPerFloat)
-				.order(ByteOrder.nativeOrder()).asFloatBuffer();
+		positionBuffer = ByteBuffer.allocateDirect(positionsData.length * bytesPerFloat).order(ByteOrder.nativeOrder())
+				.asFloatBuffer();
 		fillPositionBuffer();
 	}
 
@@ -185,8 +157,8 @@ public class Vertice {
 
 	public Vertice setColors(float... newPoints) {
 		if (newPoints.length >= 4) {
-			for (int i = 0; i < initColorsData.length; i++) {
-				initColorsData[i] = newPoints[i % newPoints.length];
+			for (int i = 0; i < colorsData.length; i++) {
+				colorsData[i] = newPoints[i % newPoints.length];
 			}
 			initColors();
 		}
