@@ -20,60 +20,67 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	 * Initialize the model data.
 	 */
 	public GLRenderer() {
-		// Define points for equilateral triangles.
 
-		// This triangle is red, green, and blue.
 		float p0 = 0.5f;
 		float p1 = 0.25f;
 		float p2 = 0.559016994f;
 		float pS = 0.5f * 0.707f;
-		final float[] triangle1VerticesData = {
+
+		final float[] trianglePosition = {
 				// X, Y, Z,
+				-p0, -p1, 0.0f, //
+				p0, -p1, 0.0f, //
+				0.0f, p2, 0.0f };
+
+		// This triangle is red, green, and blue.
+		final float[] triangle1Color = {
 				// R, G, B, A
-				-p0, -p1, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, //
-				p0, -p1, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, //
-				0.0f, p2, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f };
+				1.0f, 0.0f, 0.0f, 1.0f, //
+				0.0f, 0.0f, 1.0f, 1.0f, //
+				0.0f, 1.0f, 0.0f, 1.0f };
 
 		// This triangle is yellow, cyan, and magenta.
-		final float[] triangle2VerticesData = {
-				// X, Y, Z,
+		final float[] triangle2Color = {
 				// R, G, B, A
-				-p0, -p1, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, //
-				p0, -p1, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, //
-				0.0f, p2, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f };
+				1.0f, 1.0f, 0.0f, 1.0f, //
+				0.0f, 1.0f, 1.0f, 1.0f, //
+				1.0f, 0.0f, 1.0f, 1.0f };
 
 		// This triangle is white, gray, and black.
-		final float[] triangle3VerticesData = {
-				// X, Y, Z,
+		final float[] triangle3Color = {
 				// R, G, B, A
-				-p0, -p1, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, //
-				p0, -p1, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f, //
-				0.0f, p2, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+				1.0f, 1.0f, 1.0f, 1.0f, //
+				0.5f, 0.5f, 0.5f, 1.0f, //
+				0.0f, 0.0f, 0.0f, 1.0f };
 
-		final float[] squareVerticesData = {
+		final float[] squarePosition = {
 				// X, Y, Z,
+				-pS, -pS, 0.0f, //
+				pS, -pS, 0.0f, //
+				pS, pS, 0.0f, //
+				-pS, pS, 0.0f };
+		final float[] squareColor = {
 				// R, G, B, A
-				-pS, -pS, 0.0f, 1.0f, 1.0f, 0.5f, 1.0f, //
-				pS, -pS, 0.0f, 0.5f, 0.5f, 0.2f, 1.0f, //
-				pS, pS, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, //
-				-pS, pS, 0.0f, 0.7f, 0.7f, 0.4f, 1.0f };
+				1.0f, 1.0f, 0.5f, 1.0f, //
+				0.5f, 0.5f, 0.2f, 1.0f, //
+				0.0f, 0.0f, 0.0f, 1.0f, //
+				0.7f, 0.7f, 0.4f, 1.0f };
 
-		// Initialize the buffers.
+		// Initialize the vertices
 		for (int i = 0; i < 10; i++) {
 			float f = 0.5f - i / 34f;
 			float size = 1 - i / 20f;
-			createVertice(triangle1VerticesData).setPosition(f, -f, 0.0f).setSize(size);
-			createVertice(triangle2VerticesData).setPosition(f, f, 0.0f).setSize(size);
-			createVertice(triangle3VerticesData).setPosition(-f, f, 0.0f).setSize(size);
-			createVertice(squareVerticesData).setPosition(-f, -f, 0.0f).setSize(size);
+			createVertice(trianglePosition, triangle1Color).setPosition(f, -f, 0.0f).setSize(size);
+			createVertice(trianglePosition, triangle2Color).setPosition(f, f, 0.0f).setSize(size);
+			createVertice(trianglePosition, triangle3Color).setPosition(-f, f, 0.0f).setSize(size);
+			createVertice(squarePosition, squareColor).setPosition(-f, -f, 0.0f).setSize(size);
 		}
 	}
 
-	public Vertice createVertice(float[] verticesData) {
-		Vertice vertice = new Vertice();
-		vertice.addPoints(verticesData);
+	public Vertice createVertice(float[] positionData, float[] colorData) {
+		Vertice vertice = new Vertice(positionData);
+		vertice.setColors(colorData);
 		listOfVertices.add(vertice);
-		vertice.init();
 		return vertice;
 	}
 
@@ -85,7 +92,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 		// Draw the triangle facing straight on.
 		for (Vertice vertice : listOfVertices) {
-			glProgram.drawVertice(vertice);
+			vertice.draw();
 		}
 	}
 

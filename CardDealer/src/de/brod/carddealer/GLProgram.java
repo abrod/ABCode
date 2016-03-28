@@ -13,13 +13,13 @@ public class GLProgram {
 	private static final String fragmentShader;
 
 	/** This will be used to pass in the transformation matrix. */
-	private static int u_MVPMatrix_id;
+	static int u_MVPMatrix_id;
 
 	/** This will be used to pass in model position information. */
-	private static int a_position_id;
+	static int a_position_id;
 
 	/** This will be used to pass in model color information. */
-	private static int a_color_id;
+	static int a_color_id;
 
 	static {
 		String V_COLOR = "v_Color";
@@ -112,21 +112,6 @@ public class GLProgram {
 			}
 		}
 		throw new RuntimeException("Error creating shader.");
-	}
-
-	/**
-	 * Draws a Vertice from the given vertex data.
-	 *
-	 * @param aVerticeBuffer
-	 *            The buffer containing the vertex data.
-	 */
-	public void drawVertice(final Vertice aVerticeBuffer) {
-
-		// set the VertexAttributes
-		aVerticeBuffer.assignShaderAttributes(a_position_id, a_color_id);
-
-		GLES20.glUniformMatrix4fv(u_MVPMatrix_id, 1, false, aVerticeBuffer.getModelMatrix(), 0);
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, aVerticeBuffer.getAmountOfEdges());
 	}
 
 	private int initProgramHandle(int vertextHandle, int fragmentHandle) {

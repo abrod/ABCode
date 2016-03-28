@@ -25,53 +25,26 @@ public class Vertice {
 	/** How many bytes per float. */
 	private final int bytesPerFloat = 4;
 
-	/** Size of the position data in elements. */
-	private final int positionDataSize = 3;
-
-	/** Size of the color data in elements. */
-	private final int colorDataSize = 4;
-
-	private final int itemSize = colorDataSize + positionDataSize;
-
-	/** How many elements per vertex. */
-	private final int strideBytes = itemSize * bytesPerFloat;
-
-	/** Offset of the position data. */
-	private final int positionOffset = 0;
-
-	/** Offset of the color data. */
-	private final int colorOffset = positionDataSize;
-
-	FloatBuffer verticeBuffer;
+	FloatBuffer positionBuffer, colorBuffer;
 
 	private float[] angle = { 0.0f, 0.0f, 0.0f };
 
 	private float x, y, z;
 
 	private boolean dirtyFlag = true;
-	private int amountOfEdges;
-	private float[] originalVerticesData;
-	private float[] points;
+	private int amountOfTriangleEdges;
+	private float[] initPositionsData, initColorsData;
+	private float[] trianglePositions, trianglesColors;
 	private float size = 1f;
 
-	public Vertice() {
-		points = new float[0];
-	}
+	public Vertice(float[] newPoints) {
+		initPositionsData = newPoints;
 
-	public Vertice addPoints(float... newPoints) {
-		int oldLength = points.length;
-		points = Arrays.copyOf(points, points.length + newPoints.length);
-		System.arraycopy(newPoints, 0, points, oldLength, newPoints.length);
-		return this;
-	}
+		initColorsData = new float[(newPoints.length / 3) * 4];
+		Arrays.fill(initColorsData, 1f);
 
-	void assignShaderAttributes(int mPositionHandle, int mColorHandle) {
-
-		// Pass in the position information
-		enableVertexAttributes(mPositionHandle, positionDataSize, positionOffset);
-
-		// Pass in the color information
-		enableVertexAttributes(mColorHandle, colorDataSize, colorOffset);
+		initPositions();
+		initColors();
 	}
 
 	private void calculateModelMatrix() {
@@ -97,34 +70,7 @@ public class Vertice {
 		dirtyFlag = false;
 	}
 
-	private void enableVertexAttributes(int handleId, int size, int offset) {
-		verticeBuffer.position(offset);
-		GLES20.glVertexAttribPointer(handleId, size, GLES20.GL_FLOAT, false, strideBytes, verticeBuffer);
-		GLES20.glEnableVertexAttribArray(handleId);
-	}
-
-	public int getAmountOfEdges() {
-		return amountOfEdges;
-	}
-
-	float[] getModelMatrix() {
-		if (dirtyFlag) {
-			calculateModelMatrix();
-		}
-
-		return mModelMatrix;
-	}
-
-	public Vertice init() {
-		originalVerticesData = initPoints(points);
-		int capacity = originalVerticesData.length * bytesPerFloat;
-		amountOfEdges = capacity / strideBytes;
-		verticeBuffer = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		setSize(size);
-		return this;
-	}
-
-	private float[] initPoints(float[] verticesData) {
+	private float[] createTriangles(float[] verticesData, int itemSize) {
 		int countPoints = verticesData.length / itemSize;
 
 		// if there are more than 3 items
@@ -152,15 +98,70 @@ public class Vertice {
 		return verticesData;
 	}
 
+	void draw() {
+
+		// Pass in the position information
+		enableVertexAttributes(GLProgram.a_position_id, 3, positionBuffer);
+
+		// Pass in the color information
+		enableVertexAttributes(GLProgram.a_color_id, 4, colorBuffer);
+
+		GLES20.glUniformMatrix4fv(GLProgram.u_MVPMatrix_id, 1, false, getModelMatrix(), 0);
+		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, getAmountOfEdges());
+	}
+
+	private void enableVertexAttributes(int handleId, int size, FloatBuffer verticeBuffer) {
+		verticeBuffer.position(0);
+		GLES20.glVertexAttribPointer(handleId, size, GLES20.GL_FLOAT, false, size * 4, verticeBuffer);
+		GLES20.glEnableVertexAttribArray(handleId);
+	}
+
+	private void fillPositionBuffer() {
+		positionBuffer.position(0);
+		positionBuffer.put(resize(trianglePositions, size));
+		positionBuffer.position(0);
+	}
+
+	public int getAmountOfEdges() {
+		return amountOfTriangleEdges;
+	}
+
+	float[] getModelMatrix() {
+		if (dirtyFlag) {
+			calculateModelMatrix();
+		}
+
+		return mModelMatrix;
+	}
+
+	private void initColors() {
+		trianglesColors = createTriangles(initColorsData, 4);
+		if (colorBuffer == null) {
+			colorBuffer = ByteBuffer.allocateDirect(trianglesColors.length * bytesPerFloat)
+					.order(ByteOrder.nativeOrder()).asFloatBuffer();
+		}
+		// fill the buffer
+		colorBuffer.position(0);
+		colorBuffer.put(trianglesColors).position(0);
+	}
+
+	private void initPositions() {
+		trianglePositions = createTriangles(initPositionsData, 3);
+
+		amountOfTriangleEdges = trianglePositions.length / 3;
+		// fill the buffer
+		positionBuffer = ByteBuffer.allocateDirect(trianglePositions.length * bytesPerFloat)
+				.order(ByteOrder.nativeOrder()).asFloatBuffer();
+		fillPositionBuffer();
+	}
+
 	private float[] resize(float[] verticeData, float f) {
 		if (f == 1f) {
 			return verticeData;
 		} else {
 			float[] copyOf = Arrays.copyOf(verticeData, verticeData.length);
-			for (int i = 0; i < copyOf.length; i += 7) {
-				for (int j = i; j < i + 3; j++) {
-					copyOf[j] *= f;
-				}
+			for (int j = 0; j < copyOf.length; j++) {
+				copyOf[j] *= f;
 			}
 			return copyOf;
 		}
@@ -178,6 +179,16 @@ public class Vertice {
 		if (angle[2] != z) {
 			angle[2] = z;
 			dirtyFlag = true;
+		}
+		return this;
+	}
+
+	public Vertice setColors(float... newPoints) {
+		if (newPoints.length >= 4) {
+			for (int i = 0; i < initColorsData.length; i++) {
+				initColorsData[i] = newPoints[i % newPoints.length];
+			}
+			initColors();
 		}
 		return this;
 	}
@@ -204,8 +215,7 @@ public class Vertice {
 
 	public Vertice setSize(float f) {
 		size = f;
-		verticeBuffer.position(0);
-		verticeBuffer.put(resize(originalVerticesData, f)).position(0);
+		fillPositionBuffer();
 		return this;
 	}
 }
