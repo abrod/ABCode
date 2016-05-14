@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.ConfigurationInfo;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -22,6 +23,7 @@ import android.view.WindowManager;
 public class MainActivity extends Activity {
 
 	private GLSurfaceView mGLView;
+	private GLRenderer renderer;
 
 	private boolean hasGLES20() {
 		ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -34,7 +36,8 @@ public class MainActivity extends Activity {
 			mGLView = new GLSurfaceView(this);
 			mGLView.setEGLContextClientVersion(2);
 			mGLView.setPreserveEGLContextOnPause(true);
-			mGLView.setRenderer(new GLRenderer());
+			renderer = new GLRenderer();
+			mGLView.setRenderer(renderer);
 			setContentView(mGLView);
 		} else {
 			// Time to get a new phone, OpenGL ES 2.0 not supported.
@@ -61,6 +64,18 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		mGLView.onResume();
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			renderer.actionDown(event.getX(), event.getY());
+		} else if (event.getAction() == MotionEvent.ACTION_UP) {
+		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+		}
+
+		return true;
 	}
 
 	private void setFullScreenFlags() {

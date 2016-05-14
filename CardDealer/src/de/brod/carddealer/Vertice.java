@@ -16,6 +16,8 @@ public class Vertice {
 	 * the universe) to world space.
 	 */
 	private float[] mModelMatrix = new float[16];
+	private float[] min = new float[3];
+	private float[] max = new float[3];
 	/**
 	 * Allocate storage for the final combined matrix. This will be passed into
 	 * the shader program.
@@ -28,18 +30,18 @@ public class Vertice {
 	FloatBuffer positionBuffer, colorBuffer;
 
 	private float[] angle = { 0.0f, 0.0f, 0.0f };
+	private float[] positionsData, colorsData, positions2dData;
 
 	private float x, y, z;
 
 	private boolean dirtyFlag = true;
 	private int amountOfTriangleEdges;
-	private float[] positionsData, colorsData;
 	private float size = 1f;
 	private int drawMode;
 
 	public Vertice(float[] newPoints) {
 		positionsData = newPoints;
-
+		positions2dData = Arrays.copyOf(newPoints, newPoints.length);
 		colorsData = new float[(positionsData.length / 3) * 4];
 		Arrays.fill(colorsData, 1f);
 
@@ -66,6 +68,24 @@ public class Vertice {
 		// stores the result in the MVP matrix
 		// (which now contains model * view * projection).
 		Matrix.multiplyMM(mModelMatrix, 0, GLProgram.translationMatrix, 0, mModelMatrix, 0);
+
+		float[] left = { 0, 0, 0, 0 };
+		float[] right = { 0, 0, 0, 0 };
+		for (int i = 0; i < positions2dData.length; i += 3) {
+
+			Matrix.multiplyMV(left, 0, mModelMatrix, 0, right, 0);
+		}
+
+		for (int i = 0; i < positions2dData.length; i++) {
+			if (i < 3) {
+				min[i] = positions2dData[i];
+				max[i] = positions2dData[i];
+			} else {
+				int j = i % 3;
+				min[j] = Math.min(min[j], positions2dData[i]);
+				max[j] = Math.max(max[j], positions2dData[i]);
+			}
+		}
 
 		dirtyFlag = false;
 	}
@@ -189,5 +209,10 @@ public class Vertice {
 		size = f;
 		fillPositionBuffer();
 		return this;
+	}
+
+	public boolean touches(float x, float y) {
+
+		return false;
 	}
 }

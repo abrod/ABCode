@@ -9,12 +9,15 @@ import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
+import android.util.Log;
 
 public class GLRenderer implements GLSurfaceView.Renderer {
 
 	/** Store our model data in a float buffer. */
 	private final List<Vertice> listOfVertices = new ArrayList<Vertice>();
 	private GLProgram glProgram;
+
+	float right, top, wd2, hg2;
 
 	/**
 	 * Initialize the model data.
@@ -67,7 +70,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 				0.0f, 0.0f, 0.0f, 1.0f };
 
 		// Initialize the vertices
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1; i++) {
 			float f = 0.5f - i / 34f;
 			float size = 1 - i / 20f;
 			createVertice(trianglePosition, triangle1Color).setPosition(f, -f, 0.0f).setSize(size);
@@ -77,8 +80,22 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		}
 	}
 
+	public void actionDown(float x, float y) {
+		float x1 = (x / wd2 - 1) * top;
+		float y1 = (y / hg2 - 1) * right;
+		Log.d("Pos", x1 + " x " + y1);
+		for (Vertice vertice : listOfVertices) {
+			if (vertice.touches(x1, y1)) {
+				vertice.setColors(new float[] { 1, 1, 1, 1 });
+			} else {
+				vertice.setColors(new float[] { 0, 0, 0, 0 });
+			}
+		}
+	}
+
 	public Vertice createVertice(float[] positionData, float[] colorData) {
 		Vertice vertice = new Vertice(positionData);
+
 		vertice.setColors(colorData);
 		listOfVertices.add(vertice);
 		return vertice;
@@ -88,7 +105,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 glUnused) {
 		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
-		rotate();
+		// rotate();
 
 		// Draw the triangle facing straight on.
 		for (Vertice vertice : listOfVertices) {
@@ -98,15 +115,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onSurfaceChanged(GL10 glUnused, int width, int height) {
+		wd2 = width / 2f;
+		hg2 = height / 2f;
+
 		// Set the OpenGL viewport to the same size as the surface.
 		GLES20.glViewport(0, 0, width, height);
 
-		// Create a new perspective projection matrix. The height will stay the
-		// same
-		// while the width will vary as per aspect ratio.
 		float ratio = (float) width / height;
-		float right;
-		float top;
 		if (ratio < 1) { // height > width
 			right = 1f;
 			top = 1f / ratio;
