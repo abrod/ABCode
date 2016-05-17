@@ -1,14 +1,11 @@
 package de.brod.carddealer;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.pm.ConfigurationInfo;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
+import de.brod.opengl.GLView;
 
 /**
  *
@@ -22,28 +19,7 @@ import android.view.WindowManager;
  */
 public class MainActivity extends Activity {
 
-	private GLSurfaceView mGLView;
-	private GLRenderer renderer;
-
-	private boolean hasGLES20() {
-		ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-		ConfigurationInfo info = am.getDeviceConfigurationInfo();
-		return info.reqGlEsVersion >= 0x20000;
-	}
-
-	private void initialize() {
-		if (hasGLES20()) {
-			mGLView = new GLSurfaceView(this);
-			mGLView.setEGLContextClientVersion(2);
-			mGLView.setPreserveEGLContextOnPause(true);
-			renderer = new GLRenderer();
-			mGLView.setRenderer(renderer);
-			setContentView(mGLView);
-		} else {
-			// Time to get a new phone, OpenGL ES 2.0 not supported.
-			setContentView(R.layout.activity_main);
-		}
-	}
+	private GLView glView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,28 +27,32 @@ public class MainActivity extends Activity {
 
 		setFullScreenFlags();
 
-		initialize();
+		// create a view
+		glView = new GLView(this);
+		setContentView(glView);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mGLView.onPause();
+		glView.onPause();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		mGLView.onResume();
+		glView.onResume();
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			renderer.actionDown(event.getX(), event.getY());
+			glView.actionDown(event.getX(), event.getY());
 		} else if (event.getAction() == MotionEvent.ACTION_UP) {
+			glView.actionUp(event.getX(), event.getY());
 		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+			glView.actionMove(event.getX(), event.getY());
 		}
 
 		return true;
