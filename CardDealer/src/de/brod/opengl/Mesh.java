@@ -42,6 +42,9 @@ public class Mesh {
 	private boolean dirty, doRotate;
 
 	private float[] resultVec = { 0, 0, 0, 0 };
+	private float[] range = { 0, 0, 0, 0 };
+
+	private float dx, dy;
 
 	private void calculateVertexBuffer() {
 		if (doRotate) {
@@ -71,6 +74,21 @@ public class Mesh {
 			vertexBuffer.position(0);
 		}
 		vertexBuffer.put(verticesCalc);
+		for (int i = 0; i < verticesCalc.length; i += 3) {
+			float x = verticesCalc[i];
+			float y = verticesCalc[i + 1];
+			if (i == 0) {
+				range[0] = x;
+				range[1] = x;
+				range[2] = y;
+				range[3] = y;
+			} else {
+				range[0] = Math.min(range[0], x);
+				range[1] = Math.max(range[1], x);
+				range[2] = Math.min(range[2], y);
+				range[3] = Math.max(range[3], y);
+			}
+		}
 		vertexBuffer.position(0);
 		dirty = false;
 	}
@@ -201,6 +219,13 @@ public class Mesh {
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
 	}
 
+	public void moveTo(float x, float y, float z) {
+		position[0] = x + dx;
+		position[1] = y + dy;
+		position[2] = z;
+		dirty = true;
+	}
+
 	/**
 	 * Set one flat color on the mesh.
 	 *
@@ -292,5 +317,22 @@ public class Mesh {
 		this.vertices = vertices;
 		verticesCalc = new float[vertices.length];
 		dirty = true;
+	}
+
+	public boolean touch(float x, float y) {
+		dx = position[0] - x;
+		dy = position[1] - y;
+		if (x < range[0] || x > range[1]) {
+			return false;
+		}
+		if (y < range[2] || y > range[3]) {
+			return false;
+		}
+		return true;
+	}
+
+	public void untouch() {
+		dx = 0;
+		dy = 0;
 	}
 }

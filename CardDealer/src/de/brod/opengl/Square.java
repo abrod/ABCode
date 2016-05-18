@@ -25,4 +25,9 @@ public class Square extends Mesh {
 		);
 	}
 
+	public Square(float width, float height, float x, float y, float z) {
+		this(width, height);
+		setPosition(x, y, z);
+	}
+
 }

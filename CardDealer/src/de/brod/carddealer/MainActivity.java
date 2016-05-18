@@ -1,65 +1,39 @@
 package de.brod.carddealer;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.Window;
-import android.view.WindowManager;
-import de.brod.opengl.GLView;
+import de.brod.opengl.GLActivity;
+import de.brod.opengl.Mesh;
+import de.brod.opengl.Meshes;
+import de.brod.opengl.Square;
 
-/**
- *
- *
- * Added the following to AndroidManifest.xml
- *
- * <uses-feature android:glEsVersion="0x00020000" android:required="true" />
- *
- * @author Andreas
- *
- */
-public class MainActivity extends Activity {
-
-	private GLView glView;
+public class MainActivity extends GLActivity {
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void init() {
+		addMesh(new Square(1, 0.8f, 0, 0, 0));
+		addMesh(new Square(0.8f, 1, 0.5f, 0.2f, 0));
 
-		setFullScreenFlags();
-
-		// create a view
-		glView = new GLView(this);
-		setContentView(glView);
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					while (true) {
+						long l = System.currentTimeMillis() % 20000;
+						if (l > 10000) {
+							l = 20000 - l;
+						}
+						float angle = l / 10000f * 360f;
+						Meshes meshes = getMeshes();
+						for (Mesh mesh : meshes) {
+							mesh.setRotateZ(angle);
+						}
+						requestRender();
+						sleep(25);
+					}
+				} catch (InterruptedException e) {
+					// stopped
+				}
+			}
+		}.start();
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		glView.onPause();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		glView.onResume();
-	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-
-		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			glView.actionDown(event.getX(), event.getY());
-		} else if (event.getAction() == MotionEvent.ACTION_UP) {
-			glView.actionUp(event.getX(), event.getY());
-		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-			glView.actionMove(event.getX(), event.getY());
-		}
-
-		return true;
-	}
-
-	private void setFullScreenFlags() {
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-	}
 }
