@@ -10,7 +10,7 @@ public class MainActivity extends GLActivity {
 
 	@Override
 	protected void init(final Shapes meshes, float wd, float hg) {
-		meshes.add(new Rectangle(1, 0.8f, 0, 0, 0));
+		meshes.add(new Rectangle(0.8f, 0.8f, 0, 0, 0));
 		meshes.add(new Rectangle(0.8f, 1, 0.5f, 0.2f, 0));
 
 		meshes.get(0).loadBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon));
