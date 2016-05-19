@@ -3,29 +3,31 @@ package de.brod.opengl;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 
 public class GLView extends GLSurfaceView implements Renderer {
 
-	private Meshes meshes = new Meshes();
+	private Shapes meshes = new Shapes();
 
 	protected float wd, hg, width, height;
 
-	public GLView(Context context) {
-		super(context);
+	private GLActivity activity;
+
+	public GLView(GLActivity activity) {
+		super(activity);
+		this.activity = activity;
 
 		setRenderer(this);
 		setRenderMode(RENDERMODE_WHEN_DIRTY);
 	}
 
-	public void addMesh(Mesh mesh) {
+	public void addMesh(ShapeBase mesh) {
 		meshes.add(mesh);
 	}
 
-	public Meshes getMeshes() {
+	public Shapes getMeshes() {
 		return meshes;
 	}
 
@@ -80,6 +82,8 @@ public class GLView extends GLSurfaceView implements Renderer {
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		// Reset the modelview matrix
 		gl.glLoadIdentity();
+
+		activity.init(meshes, wd, hg);
 	}
 
 	/*
@@ -106,9 +110,9 @@ public class GLView extends GLSurfaceView implements Renderer {
 
 	}
 
-	public void setTouchedMeshes(float x, float y, Meshes selectedMeshes) {
+	public void setTouchedMeshes(float x, float y, Shapes selectedMeshes) {
 		selectedMeshes.clear();
-		for (Mesh mesh : meshes) {
+		for (Shape mesh : meshes) {
 			if (mesh.touch(x, y)) {
 				selectedMeshes.add(mesh);
 			}

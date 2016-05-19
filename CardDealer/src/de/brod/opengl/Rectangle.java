@@ -1,11 +1,11 @@
 package de.brod.opengl;
 
-public class Square extends Mesh {
+public class Rectangle extends ShapeBase {
 
 	// default order for quares.
 	private final short[] indices = { 0, 1, 2, 0, 2, 3 };
 
-	public Square(float width, float height) {
+	public Rectangle(float width, float height) {
 
 		float wd = width / 2;
 		float hg = height / 2;
@@ -23,9 +23,16 @@ public class Square extends Mesh {
 				0, 0, 1, 1, //
 				1, 0, 0, 1//
 		);
+
+		float textureCoordinates[] = { 0.0f, 0.0f, //
+				0.0f, 1.0f, //
+				1.0f, 1.0f, //
+				1.0f, 0.0f, //
+		};
+		setTextureCoordinates(textureCoordinates);
 	}
 
-	public Square(float width, float height, float x, float y, float z) {
+	public Rectangle(float width, float height, float x, float y, float z) {
 		this(width, height);
 		setPosition(x, y, z);
 	}

@@ -11,7 +11,7 @@ import android.graphics.Bitmap;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
-public class Mesh {
+class ShapeBase implements Shape {
 
 	private final float[] calculationatrix = new float[16];
 
@@ -102,12 +102,12 @@ public class Mesh {
 		return floatBuffer;
 	}
 
-	/**
-	 * Render the mesh.
+	/*
+	 * (non-Javadoc)
 	 *
-	 * @param gl
-	 *            the OpenGL context to render to.
+	 * @see de.brod.opengl.IMesh#draw(javax.microedition.khronos.opengles.GL10)
 	 */
+	@Override
 	public void draw(GL10 gl) {
 
 		if (dirty) {
@@ -182,11 +182,12 @@ public class Mesh {
 		}
 	}
 
-	/**
-	 * Set the bitmap to load into a texture.
+	/*
+	 * (non-Javadoc)
 	 *
-	 * @param bitmap
+	 * @see de.brod.opengl.IMesh#loadBitmap(android.graphics.Bitmap)
 	 */
+	@Override
 	public void loadBitmap(Bitmap bitmap) { // New function.
 		this.bitmap = bitmap;
 		loadTexture = true;
@@ -217,8 +218,15 @@ public class Mesh {
 		// Use the Android GLUtils to specify a two-dimensional texture image
 		// from our bitmap
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
+
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see de.brod.opengl.IMesh#moveTo(float, float, float)
+	 */
+	@Override
 	public void moveTo(float x, float y, float z) {
 		position[0] = x + dx;
 		position[1] = y + dy;
@@ -266,6 +274,12 @@ public class Mesh {
 		numberOfIndices = indices.length;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see de.brod.opengl.IMesh#setPosition(float, float, float)
+	 */
+	@Override
 	public void setPosition(float x, float y, float z) {
 		position[0] = x;
 		position[1] = y;
@@ -284,16 +298,34 @@ public class Mesh {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see de.brod.opengl.IMesh#setRotateX(float)
+	 */
+	@Override
 	public void setRotateX(float rotateX) {
 		this.angles[0] = rotateX;
 		setRotateFlag();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see de.brod.opengl.IMesh#setRotateY(float)
+	 */
+	@Override
 	public void setRotateY(float rotateY) {
 		this.angles[1] = rotateY;
 		setRotateFlag();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see de.brod.opengl.IMesh#setRotateZ(float)
+	 */
+	@Override
 	public void setRotateZ(float rotateZ) {
 		this.angles[2] = rotateZ;
 		setRotateFlag();
@@ -319,6 +351,12 @@ public class Mesh {
 		dirty = true;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see de.brod.opengl.IMesh#touch(float, float)
+	 */
+	@Override
 	public boolean touch(float x, float y) {
 		dx = position[0] - x;
 		dy = position[1] - y;
@@ -331,6 +369,12 @@ public class Mesh {
 		return true;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see de.brod.opengl.IMesh#untouch()
+	 */
+	@Override
 	public void untouch() {
 		dx = 0;
 		dy = 0;

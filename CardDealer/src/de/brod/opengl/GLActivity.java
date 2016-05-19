@@ -8,17 +8,9 @@ import android.view.WindowManager;
 
 public abstract class GLActivity extends Activity {
 	private GLView glView;
-	private Meshes selectedMeshes = new Meshes();
+	private Shapes selectedMeshes = new Shapes();
 
-	public void addMesh(Mesh mesh) {
-		glView.addMesh(mesh);
-	}
-
-	public Meshes getMeshes() {
-		return glView.getMeshes();
-	}
-
-	protected abstract void init();
+	protected abstract void init(Shapes meshes, float wd, float hg);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +20,6 @@ public abstract class GLActivity extends Activity {
 
 		// create a view
 		glView = new GLView(this);
-		init();
 		setContentView(glView);
 	}
 
@@ -54,7 +45,7 @@ public abstract class GLActivity extends Activity {
 		} else if (event.getAction() == MotionEvent.ACTION_UP) {
 			glView.requestRender();
 		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-			for (Mesh mesh : selectedMeshes) {
+			for (Shape mesh : selectedMeshes) {
 				mesh.moveTo(x, y, 0);
 			}
 			glView.requestRender();
