@@ -13,38 +13,38 @@ import android.opengl.Matrix;
 
 class ShapeBase implements Shape {
 
-	private final float[] calculationatrix = new float[16];
+	private final float[]	calculationatrix	= new float[16];
 
-	private FloatBuffer vertexBuffer = null;
+	private FloatBuffer		vertexBuffer		= null;
 
-	private ShortBuffer indexBuffer = null;
+	private ShortBuffer		indexBuffer			= null;
 
-	private FloatBuffer textureBuffer;
+	private FloatBuffer		textureBuffer;
 
-	private int textureId = -1;
+	private int				textureId			= -1;
 
-	private Bitmap bitmap;
+	private Bitmap			bitmap;
 
-	private boolean loadTexture = false;
+	private boolean			loadTexture			= false;
 
-	private int numberOfIndices = -1;
+	private int				numberOfIndices		= -1;
 
-	private final float[] color = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+	private final float[]	color				= new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	private FloatBuffer colorBuffer = null;
+	private FloatBuffer		colorBuffer			= null;
 
-	private float[] position = { 0, 0, 0 };
+	private float[]			position			= { 0, 0, 0 };
 
-	private float[] angles = { 0, 0, 0 };
+	private float[]			angles				= { 0, 0, 0 };
 
-	private float[] vertices, verticesCalc;
+	private float[]			vertices, verticesCalc;
 
-	private boolean dirty, doRotate;
+	private boolean			dirty, doRotate;
 
-	private float[] resultVec = { 0, 0, 0, 0 };
-	private float[] range = { 0, 0, 0, 0 };
+	private float[]			resultVec			= { 0, 0, 0, 0 };
+	private float[]			range				= { 0, 0, 0, 0 };
 
-	private float dx, dy;
+	private float			dx, dy;
 
 	private void calculateVertexBuffer() {
 		if (doRotate) {
@@ -104,7 +104,6 @@ class ShapeBase implements Shape {
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see de.brod.opengl.IMesh#draw(javax.microedition.khronos.opengles.GL10)
 	 */
 	@Override
@@ -137,6 +136,10 @@ class ShapeBase implements Shape {
 
 		if (textureId != -1 && textureBuffer != null) {
 			gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+			gl.glDisable(GL10.GL_TEXTURE_2D);
+		}
+		if (colorBuffer != null) {
+			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 		}
 
 		// Disable face culling.
@@ -184,7 +187,6 @@ class ShapeBase implements Shape {
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see de.brod.opengl.IMesh#loadBitmap(android.graphics.Bitmap)
 	 */
 	@Override
@@ -223,7 +225,6 @@ class ShapeBase implements Shape {
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see de.brod.opengl.IMesh#moveTo(float, float, float)
 	 */
 	@Override
@@ -242,7 +243,7 @@ class ShapeBase implements Shape {
 	 * @param blue
 	 * @param alpha
 	 */
-	protected void setColor(float red, float green, float blue, float alpha) {
+	public void setColor(float red, float green, float blue, float alpha) {
 		color[0] = red;
 		color[1] = green;
 		color[2] = blue;
@@ -254,7 +255,7 @@ class ShapeBase implements Shape {
 	 *
 	 * @param colors
 	 */
-	protected void setColors(float... colors) {
+	public void setColors(float... colors) {
 		colorBuffer = createFloatBuffer(colors);
 	}
 
@@ -276,7 +277,6 @@ class ShapeBase implements Shape {
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see de.brod.opengl.IMesh#setPosition(float, float, float)
 	 */
 	@Override
@@ -300,7 +300,6 @@ class ShapeBase implements Shape {
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see de.brod.opengl.IMesh#setRotateX(float)
 	 */
 	@Override
@@ -311,7 +310,6 @@ class ShapeBase implements Shape {
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see de.brod.opengl.IMesh#setRotateY(float)
 	 */
 	@Override
@@ -322,7 +320,6 @@ class ShapeBase implements Shape {
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see de.brod.opengl.IMesh#setRotateZ(float)
 	 */
 	@Override
@@ -353,7 +350,6 @@ class ShapeBase implements Shape {
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see de.brod.opengl.IMesh#touch(float, float)
 	 */
 	@Override
@@ -371,7 +367,6 @@ class ShapeBase implements Shape {
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see de.brod.opengl.IMesh#untouch()
 	 */
 	@Override

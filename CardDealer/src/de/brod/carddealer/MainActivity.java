@@ -10,10 +10,17 @@ public class MainActivity extends GLActivity {
 
 	@Override
 	protected void init(final Shapes meshes, float wd, float hg) {
-		meshes.add(new Rectangle(0.8f, 0.8f, 0, 0, 0));
-		meshes.add(new Rectangle(0.8f, 1, 0.5f, 0.2f, 0));
+		Rectangle rect1 = new Rectangle(0.8f, 0.8f, -0.2f, 0, 0);
+		meshes.add(rect1);
+		Rectangle rect2 = new Rectangle(0.8f, 0.8f, 0.5f, 0.2f, 0);
+		meshes.add(rect2);
 
-		meshes.get(0).loadBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon));
+		rect2.loadBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon));
+		rect1.setColors(1, 1, 0, 1, //
+				0, 1, 0, 1, //
+				0, 0, 1, 1, //
+				1, 0, 0, 1//
+		);
 
 		new Thread() {
 			@Override

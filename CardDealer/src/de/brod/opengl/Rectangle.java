@@ -18,11 +18,6 @@ public class Rectangle extends ShapeBase {
 
 		setVertices(vertices);
 		setIndices(indices);
-		setColors(1, 1, 0, 1, //
-				0, 1, 0, 1, //
-				0, 0, 1, 1, //
-				1, 0, 0, 1//
-		);
 
 		float textureCoordinates[] = { 0.0f, 0.0f, //
 				0.0f, 1.0f, //
