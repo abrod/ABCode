@@ -2,8 +2,6 @@ package de.brod.opengl;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.graphics.Bitmap;
-
 public interface Shape {
 
 	/**
@@ -14,14 +12,14 @@ public interface Shape {
 	 */
 	void draw(GL10 gl);
 
+	void moveTo(float x, float y, float z);
+
 	/**
 	 * Set the bitmap to load into a texture.
 	 *
 	 * @param bitmap
 	 */
-	void loadBitmap(Bitmap bitmap);
-
-	void moveTo(float x, float y, float z);
+	void setGrid(GLGrid grid, int x1, int y1, int x2, int y2);
 
 	void setPosition(float x, float y, float z);
 

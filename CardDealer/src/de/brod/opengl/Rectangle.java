@@ -19,17 +19,22 @@ public class Rectangle extends ShapeBase {
 		setVertices(vertices);
 		setIndices(indices);
 
-		float textureCoordinates[] = { 0.0f, 0.0f, //
-				0.0f, 1.0f, //
-				1.0f, 1.0f, //
-				1.0f, 0.0f, //
-		};
-		setTextureCoordinates(textureCoordinates);
 	}
 
 	public Rectangle(float width, float height, float x, float y, float z) {
 		this(width, height);
 		setPosition(x, y, z);
+	}
+
+	@Override
+	protected float[] getTextureCoords(float xMin, float yMin, float xMax, float yMax) {
+		// TODO Auto-generated method stub
+		float textureCoordinates[] = { xMin, yMin, //
+				xMin, yMax, //
+				xMax, yMax, //
+				xMax, yMin //
+		};
+		return textureCoordinates;
 	}
 
 }

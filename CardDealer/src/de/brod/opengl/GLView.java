@@ -9,16 +9,21 @@ import android.opengl.GLU;
 
 public class GLView extends GLSurfaceView implements Renderer {
 
-	private Shapes meshes = new Shapes();
+	private Shapes		meshes	= new Shapes();
 
-	protected float wd, hg, width, height;
+	protected float		wd, hg, width, height;
 
-	private GLActivity activity;
+	private GLActivity	activity;
 
 	public GLView(GLActivity activity) {
 		super(activity);
 		this.activity = activity;
 
+		// set config for RGB data, alpha, depth, stencil.
+		// ... it must be called before setRenderer(Renderer) is called
+		setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+
+		// set the render
 		setRenderer(this);
 		setRenderMode(RENDERMODE_WHEN_DIRTY);
 	}
@@ -43,7 +48,6 @@ public class GLView extends GLSurfaceView implements Renderer {
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.
 	 * microedition.khronos.opengles.GL10)
 	 */
@@ -54,12 +58,24 @@ public class GLView extends GLSurfaceView implements Renderer {
 		// Reset the matrix
 		gl.glLoadIdentity();
 
+		// Enable face culling.
+		gl.glEnable(GL10.GL_CULL_FACE);
+
+		// Enabled the vertices buffer for writing and to be used during
+		// rendering.
+		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+
 		meshes.draw(gl);
+
+		// Disable the vertices buffer.
+		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+		// Disable face culling.
+		gl.glDisable(GL10.GL_CULL_FACE);
+
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see android.opengl.GLSurfaceView.Renderer#onSurfaceChanged(javax.
 	 * microedition.khronos.opengles.GL10, int, int)
 	 */
@@ -88,7 +104,6 @@ public class GLView extends GLSurfaceView implements Renderer {
 
 	/*
 	 * (non-Javadoc)
-	 *
 	 * @see android.opengl.GLSurfaceView.Renderer#onSurfaceCreated(javax.
 	 * microedition.khronos.opengles.GL10, javax.microedition.khronos.
 	 * egl.EGLConfig)
@@ -102,11 +117,16 @@ public class GLView extends GLSurfaceView implements Renderer {
 		// Depth buffer setup.
 		gl.glClearDepthf(1.0f);
 		// Enables depth testing.
-		gl.glEnable(GL10.GL_DEPTH_TEST);
+		// gl.glEnable(GL10.GL_DEPTH_TEST);
 		// The type of depth testing to do.
-		gl.glDepthFunc(GL10.GL_LEQUAL);
+		// gl.glDepthFunc(GL10.GL_LEQUAL);
 		// Really nice perspective calculations.
-		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
+		// gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
+
+		// Counter-clockwise winding.
+		gl.glFrontFace(GL10.GL_CCW);
+		// What faces to remove with the face culling.
+		gl.glCullFace(GL10.GL_BACK);
 
 	}
 

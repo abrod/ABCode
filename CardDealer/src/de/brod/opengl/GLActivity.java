@@ -7,8 +7,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 public abstract class GLActivity extends Activity {
-	private GLView glView;
-	private Shapes selectedMeshes = new Shapes();
+	private GLView	glView;
+	private Shapes	selectedMeshes	= new Shapes();
 
 	protected abstract void init(Shapes meshes, float wd, float hg);
 
@@ -20,6 +20,7 @@ public abstract class GLActivity extends Activity {
 
 		// create a view
 		glView = new GLView(this);
+
 		setContentView(glView);
 	}
 
