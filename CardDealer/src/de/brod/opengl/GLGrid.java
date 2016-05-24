@@ -8,9 +8,12 @@ import android.opengl.GLUtils;
 public abstract class GLGrid {
 	private boolean	loadTexture;
 	private int		textureId;
+	float			countX, countY;
 
-	public GLGrid() { // New function.
+	public GLGrid(int countX, int countY) { // New function.
 		loadTexture = true;
+		this.countX = Math.max(countX, 1);
+		this.countY = Math.max(countY, 1);
 	}
 
 	public int getTextureId(GL10 gl) {
@@ -22,11 +25,11 @@ public abstract class GLGrid {
 	}
 
 	public float getX(int x1) {
-		return x1;
+		return x1 / countX;
 	}
 
 	public float getY(int y1) {
-		return y1;
+		return y1 / countY;
 	}
 
 	protected abstract Bitmap loadBitmap();

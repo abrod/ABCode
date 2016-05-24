@@ -165,6 +165,16 @@ abstract class ShapeBase implements Shape {
 
 	protected abstract float[] getTextureCoords(float xMin, float yMin, float xMax, float yMax);
 
+	@Override
+	public float getX() {
+		return position[0];
+	}
+
+	@Override
+	public float getY() {
+		return position[1];
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see de.brod.opengl.IMesh#moveTo(float, float, float)

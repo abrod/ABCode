@@ -12,6 +12,10 @@ public interface Shape {
 	 */
 	void draw(GL10 gl);
 
+	float getX();
+
+	float getY();
+
 	void moveTo(float x, float y, float z);
 
 	/**
