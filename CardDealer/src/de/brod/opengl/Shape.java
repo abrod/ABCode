@@ -2,7 +2,7 @@ package de.brod.opengl;
 
 import javax.microedition.khronos.opengles.GL10;
 
-public interface Shape {
+public interface Shape extends Comparable<Shape> {
 
 	/**
 	 * Render the mesh.

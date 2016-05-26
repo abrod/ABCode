@@ -1,5 +1,7 @@
 package de.brod.opengl;
 
+import java.util.Collections;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -64,6 +66,8 @@ public class GLView extends GLSurfaceView implements Renderer {
 		// Enabled the vertices buffer for writing and to be used during
 		// rendering.
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+
+		Collections.sort(meshes);
 
 		meshes.draw(gl);
 

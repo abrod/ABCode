@@ -10,8 +10,11 @@ import de.brod.opengl.Shapes;
 
 public class MainActivity extends GLActivity {
 
+	private Rectangle	rect;
+	private Shapes		gridMeshes;
+
 	private void addColorRect(final Shapes meshes) {
-		Rectangle rect = new Rectangle(0.8f, 0.8f, -0.2f, 0, 0);
+		rect = new Rectangle(0.8f, 0.8f, -0.2f, 0, -1);
 		rect.setColors(1, 1, 0, 1, //
 				0, 1, 0, 1, //
 				0, 0, 1, 1, //
@@ -20,27 +23,34 @@ public class MainActivity extends GLActivity {
 		meshes.add(rect);
 	}
 
-	private void addGridMeshes(final Shapes meshes) {
-		GLGrid grid = new GLGrid(2, 2) {
+	private Shapes addGridMeshes() {
+		gridMeshes = new Shapes();
+		GLGrid grid = new GLGrid(14, 4) {
 
 			@Override
 			protected Bitmap loadBitmap() {
-				return BitmapFactory.decodeResource(getResources(), R.drawable.icon);
+				return BitmapFactory.decodeResource(getResources(), R.drawable.cards);
 			}
 		};
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 2; j++) {
-				Rectangle rect = new Rectangle(0.5f, 0.5f, i * 0.5f - 0.5f, 0.8f - j * 0.5f, 0);
-				meshes.add(rect);
+		float wd = 2f / 8;
+		float hg = wd * 4 / 3;
+
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 4; j++) {
+				float x = -1 + wd / 2 + wd * i;
+				float y = 1 - hg / 2 - hg * j;
+				Rectangle rect = new Rectangle(wd, hg, x, y, 0);
+				gridMeshes.add(rect);
 				rect.setGrid(grid, i, j, i, j);
 			}
 		}
+		return gridMeshes;
 	}
 
 	@Override
-	protected void init(final Shapes meshes, float wd, float hg) {
+	protected void init(Shapes meshes, float wd, float hg) {
 		addColorRect(meshes);
-		addGridMeshes(meshes);
+		meshes.addAll(addGridMeshes());
 
 		new Thread() {
 			@Override
@@ -52,12 +62,10 @@ public class MainActivity extends GLActivity {
 							l = 20000 - l;
 						}
 						float angle = l / 10000f * 360f;
-						Shape shape = meshes.get(0);
-						shape.setRotateZ(angle);
-						float yAngle = (shape.getY() + shape.getX() * 0.5f) * 180;
-						for (int i = 1; i < meshes.size(); i++) {
-							Shape shape1 = meshes.get(i);
-							shape1.setRotateZ(yAngle);
+						rect.setRotateZ(angle);
+						float yAngle = (rect.getY() + rect.getX() * 0.5f) * 180;
+						for (Shape shape : gridMeshes) {
+							shape.setRotateZ(yAngle);
 						}
 						requestRender();
 						sleep(25);
