@@ -32,12 +32,13 @@ public class MainActivity extends GLActivity {
 				return BitmapFactory.decodeResource(getResources(), R.drawable.cards);
 			}
 		};
-		float wd = 2f / 8;
+		float wd = 2f / 7;
 		float hg = wd * 4 / 3;
 
-		for (int i = 0; i < 8; i++) {
+		float f = 7f / 13f;
+		for (int i = 0; i < 13; i++) {
 			for (int j = 0; j < 4; j++) {
-				float x = -1 + wd / 2 + wd * i;
+				float x = -1 + wd / 2 + wd * i * f;
 				float y = 1 - hg / 2 - hg * j;
 				Rectangle rect = new Rectangle(wd, hg, x, y, 0);
 				gridMeshes.add(rect);

@@ -91,14 +91,8 @@ abstract class ShapeBase implements Shape {
 
 	@Override
 	public int compareTo(Shape another) {
-		float[] position2 = ((ShapeBase) another).position;
-		if (position2[2] < position[2]) {
-			return -1;
-		}
-		if (position2[2] > position[2]) {
-			return 1;
-		}
-		float diff = position2[1] - position2[0] * 2 - (position[1] - position[0] * 2);
+		ShapeBase otherShape = (ShapeBase) another;
+		float diff = otherShape.getComparePosition() - getComparePosition();
 		if (diff < 0) {
 			return -1;
 		} else if (diff > 0) {
@@ -181,6 +175,10 @@ abstract class ShapeBase implements Shape {
 		}
 	}
 
+	private float getComparePosition() {
+		return position[1] - position[0] * 2 + position[2] * 10;
+	}
+
 	protected abstract float[] getTextureCoords(float xMin, float yMin, float xMax, float yMax);
 
 	@Override
@@ -198,10 +196,9 @@ abstract class ShapeBase implements Shape {
 	 * @see de.brod.opengl.IMesh#moveTo(float, float, float)
 	 */
 	@Override
-	public void moveTo(float x, float y, float z) {
+	public void moveTo(float x, float y) {
 		position[0] = x + dx;
 		position[1] = y + dy;
-		position[2] = z;
 		dirty = true;
 	}
 

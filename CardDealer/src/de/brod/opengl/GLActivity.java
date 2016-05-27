@@ -47,7 +47,7 @@ public abstract class GLActivity extends Activity {
 			glView.requestRender();
 		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
 			for (Shape mesh : selectedMeshes) {
-				mesh.moveTo(x, y, 0);
+				mesh.moveTo(x, y);
 			}
 			glView.requestRender();
 		}

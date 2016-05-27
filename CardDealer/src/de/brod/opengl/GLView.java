@@ -17,6 +17,8 @@ public class GLView extends GLSurfaceView implements Renderer {
 
 	private GLActivity	activity;
 
+	private float[]		color	= { 0 / 255f, 35 / 255f, 102 / 255f };
+
 	public GLView(GLActivity activity) {
 		super(activity);
 		this.activity = activity;
@@ -57,6 +59,7 @@ public class GLView extends GLSurfaceView implements Renderer {
 	public void onDrawFrame(GL10 gl) {
 		// Clear color and depth buffer.
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		gl.glClearColor(color[0], color[1], color[2], 1);
 		// Reset the matrix
 		gl.glLoadIdentity();
 
@@ -115,7 +118,7 @@ public class GLView extends GLSurfaceView implements Renderer {
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// Set the background color to black ( rgba ).
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+		// gl.glClearColor(0 / 255f, 35 / 255f, 102 / 255f, 1);
 		// Enable Smooth Shading, default not really needed.
 		gl.glShadeModel(GL10.GL_SMOOTH);
 		// Depth buffer setup.

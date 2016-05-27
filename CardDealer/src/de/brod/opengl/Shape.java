@@ -16,7 +16,7 @@ public interface Shape extends Comparable<Shape> {
 
 	float getY();
 
-	void moveTo(float x, float y, float z);
+	void moveTo(float x, float y);
 
 	/**
 	 * Set the bitmap to load into a texture.
