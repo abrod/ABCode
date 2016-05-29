@@ -89,18 +89,6 @@ abstract class ShapeBase implements Shape {
 		dirty = false;
 	}
 
-	@Override
-	public int compareTo(Shape another) {
-		ShapeBase otherShape = (ShapeBase) another;
-		float diff = otherShape.getComparePosition() - getComparePosition();
-		if (diff < 0) {
-			return -1;
-		} else if (diff > 0) {
-			return 1;
-		}
-		return 0;
-	}
-
 	private FloatBuffer createFloatBuffer(float[] values) {
 		ByteBuffer byteBuf = ByteBuffer.allocateDirect(values.length * 4);
 		byteBuf.order(ByteOrder.nativeOrder());
@@ -175,7 +163,8 @@ abstract class ShapeBase implements Shape {
 		}
 	}
 
-	private float getComparePosition() {
+	@Override
+	public float getPosition() {
 		return position[1] - position[0] * 2 + position[2] * 10;
 	}
 

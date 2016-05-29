@@ -2,7 +2,7 @@ package de.brod.opengl;
 
 import javax.microedition.khronos.opengles.GL10;
 
-public interface Shape extends Comparable<Shape> {
+public interface Shape {
 
 	/**
 	 * Render the mesh.
@@ -11,6 +11,8 @@ public interface Shape extends Comparable<Shape> {
 	 *            the OpenGL context to render to.
 	 */
 	void draw(GL10 gl);
+
+	float getPosition();
 
 	float getX();
 
@@ -36,5 +38,4 @@ public interface Shape extends Comparable<Shape> {
 	boolean touch(float x, float y);
 
 	void untouch();
-
 }
