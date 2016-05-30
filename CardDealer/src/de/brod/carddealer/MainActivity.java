@@ -13,6 +13,20 @@ public class MainActivity extends GLActivity {
 	private Rectangle	rect;
 	private Shapes		gridMeshes;
 
+	@Override
+	protected void actionDown(Shapes shapes) {
+		// remove all except first
+		while (shapes.size() > 1) {
+			shapes.remove(0);
+		}
+	}
+
+	@Override
+	protected void actionUp(Shapes selected, Shapes up) {
+		// TODO Auto-generated method stub
+
+	}
+
 	private void addColorRect(final Shapes meshes) {
 		rect = new Rectangle(0.8f, 0.8f, -0.2f, 0, -1);
 		rect.setColors(1, 1, 0, 1, //

@@ -9,6 +9,11 @@ import android.view.WindowManager;
 public abstract class GLActivity extends Activity {
 	private GLView	glView;
 	private Shapes	selectedMeshes	= new Shapes();
+	private Shapes	upMeshes		= new Shapes();
+
+	protected abstract void actionDown(Shapes selectedMeshes2);
+
+	protected abstract void actionUp(Shapes selected, Shapes up);
 
 	protected abstract void init(Shapes meshes, float wd, float hg);
 
@@ -42,8 +47,14 @@ public abstract class GLActivity extends Activity {
 		float y = glView.getY(event.getY());
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			glView.setTouchedMeshes(x, y, selectedMeshes);
+			actionDown(selectedMeshes);
 			glView.requestRender();
 		} else if (event.getAction() == MotionEvent.ACTION_UP) {
+			glView.setTouchedMeshes(x, y, upMeshes);
+			for (Shape shape : selectedMeshes) {
+				upMeshes.remove(shape);
+			}
+			actionUp(selectedMeshes, upMeshes);
 			glView.requestRender();
 		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
 			for (Shape mesh : selectedMeshes) {

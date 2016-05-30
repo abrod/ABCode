@@ -1,8 +1,5 @@
 package de.brod.opengl;
 
-import java.util.Collections;
-import java.util.Comparator;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -12,26 +9,13 @@ import android.opengl.GLU;
 
 public class GLView extends GLSurfaceView implements Renderer {
 
-	private Shapes						meshes			= new Shapes();
+	private Shapes		meshes	= new Shapes();
 
-	protected float						wd, hg, width, height;
+	protected float		wd, hg, width, height;
 
-	private GLActivity					activity;
+	private GLActivity	activity;
 
-	private float[]						color			= { 0 / 255f, 35 / 255f, 102 / 255f };
-
-	private Comparator<? super Shape>	compareShape	= new Comparator<Shape>() {
-															@Override
-															public int compare(Shape lhs, Shape rhs) {
-																float diff = lhs.getPosition() - rhs.getPosition();
-																if (diff < 0) {
-																	return -1;
-																} else if (diff > 0) {
-																	return 1;
-																}
-																return 0;
-															}
-														};
+	private float[]		color	= { 0 / 255f, 35 / 255f, 102 / 255f };
 
 	public GLView(GLActivity activity) {
 		super(activity);
@@ -84,7 +68,7 @@ public class GLView extends GLSurfaceView implements Renderer {
 		// rendering.
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 
-		Collections.sort(meshes, compareShape);
+		meshes.sort();
 
 		meshes.draw(gl);
 
