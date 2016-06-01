@@ -104,6 +104,8 @@ public class GLView extends GLSurfaceView implements Renderer {
 		// Reset the modelview matrix
 		gl.glLoadIdentity();
 
+		// remove old meshes
+		meshes.clear();
 		activity.init(meshes, wd, hg);
 	}
 

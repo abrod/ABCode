@@ -98,6 +98,15 @@ abstract class ShapeBase implements Shape {
 		return floatBuffer;
 	}
 
+	private FloatBuffer createFloatBuffer(GLGrid grid, int x1, int y1) {
+		float xMin = grid.getX(x1);
+		float xMax = grid.getX(x1 + 1);
+		float yMin = grid.getY(y1);
+		float yMax = grid.getY(y1 + 1);
+		FloatBuffer fb = createFloatBuffer(getTextureCoords(xMin, yMin, xMax, yMax));
+		return fb;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see de.brod.opengl.IMesh#draw(javax.microedition.khronos.opengles.GL10)
@@ -121,9 +130,9 @@ abstract class ShapeBase implements Shape {
 
 		// finally draw the elements
 		if (useUpSide) {
-			gl.glDrawElements(GL10.GL_TRIANGLES, numberOfIndices, GL10.GL_UNSIGNED_SHORT, indexBufferDown);
-		} else {
 			gl.glDrawElements(GL10.GL_TRIANGLES, numberOfIndices, GL10.GL_UNSIGNED_SHORT, indexBufferUp);
+		} else {
+			gl.glDrawElements(GL10.GL_TRIANGLES, numberOfIndices, GL10.GL_UNSIGNED_SHORT, indexBufferDown);
 		}
 
 		drawDisable(gl);
@@ -215,15 +224,10 @@ abstract class ShapeBase implements Shape {
 		colorBuffer = createFloatBuffer(colors);
 	}
 
-	@Override
-	public void setGrid(GLGrid grid, int x1, int y1, int x2, int y2) {
+	protected void setGrid(GLGrid grid, int x1, int y1, int x2, int y2) {
 		this.grid = grid;
-		float xMin = grid.getX(x1);
-		float xMax = grid.getX(x1 + 1);
-		float yMin = grid.getY(y1);
-		float yMax = grid.getY(y1 + 1);
-		textureBufferUp = createFloatBuffer(getTextureCoords(xMin, yMin, xMax, yMax));
-		textureBufferDown = createFloatBuffer(getTextureCoords(xMin, yMin, xMax, yMax));
+		textureBufferUp = createFloatBuffer(grid, x1, y1);
+		textureBufferDown = createFloatBuffer(grid, x2, y2);
 	}
 
 	/**
@@ -266,7 +270,7 @@ abstract class ShapeBase implements Shape {
 	private void setRotateFlag() {
 		dirty = true;
 		doRotate = false;
-		useUpSide = false;
+		useUpSide = true;
 		for (int i = 0; i < angles.length; i++) {
 			float f = angles[i];
 			if (i < 2 && f > 90 && f < 270) {
@@ -285,7 +289,7 @@ abstract class ShapeBase implements Shape {
 	 */
 	@Override
 	public void setRotateX(float rotateX) {
-		this.angles[0] = rotateX;
+		this.angles[0] = rotateX % 360;
 		setRotateFlag();
 	}
 
@@ -295,7 +299,7 @@ abstract class ShapeBase implements Shape {
 	 */
 	@Override
 	public void setRotateY(float rotateY) {
-		this.angles[1] = rotateY;
+		this.angles[1] = rotateY % 360;
 		setRotateFlag();
 	}
 
@@ -305,7 +309,7 @@ abstract class ShapeBase implements Shape {
 	 */
 	@Override
 	public void setRotateZ(float rotateZ) {
-		this.angles[2] = rotateZ;
+		this.angles[2] = rotateZ % 360;
 		setRotateFlag();
 	}
 

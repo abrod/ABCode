@@ -54,9 +54,11 @@ public class MainActivity extends GLActivity {
 			for (int j = 0; j < 4; j++) {
 				float x = -1 + wd / 2 + wd * i * f;
 				float y = 1 - hg / 2 - hg * j;
-				Rectangle rect = new Rectangle(wd, hg, x, y, 0);
+				Rectangle rect = grid.createRectangle(wd, hg, x, y, 0, i, j, 13, j);
 				gridMeshes.add(rect);
-				rect.setGrid(grid, i, j, i, j);
+				if (Math.random() < 0.3f) {
+					rect.setRotateX(180);
+				}
 			}
 		}
 		return gridMeshes;
@@ -78,9 +80,9 @@ public class MainActivity extends GLActivity {
 						}
 						float angle = l / 10000f * 360f;
 						rect.setRotateZ(angle);
-						float yAngle = (rect.getY() + rect.getX() * 0.5f) * 180;
+						angle = Math.abs((rect.getY() + rect.getX() * 0.5f) * 180);
 						for (Shape shape : gridMeshes) {
-							shape.setRotateZ(yAngle);
+							shape.setRotateZ(angle);
 						}
 						requestRender();
 						sleep(25);

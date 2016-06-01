@@ -20,13 +20,6 @@ public interface Shape {
 
 	void moveTo(float x, float y);
 
-	/**
-	 * Set the bitmap to load into a texture.
-	 *
-	 * @param bitmap
-	 */
-	void setGrid(GLGrid grid, int x1, int y1, int x2, int y2);
-
 	void setPosition(float x, float y, float z);
 
 	void setRotateX(float rotateX);

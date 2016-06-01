@@ -10,10 +10,15 @@ public abstract class GLGrid {
 	private int		textureId;
 	float			countX, countY;
 
-	public GLGrid(int countX, int countY) { // New function.
+	public GLGrid(int countX, int countY) {
 		loadTexture = true;
-		this.countX = Math.max(countX, 1);
-		this.countY = Math.max(countY, 1);
+		setCount(countX, countY);
+	}
+
+	public Rectangle createRectangle(float wd, float hg, float x, float y, int z, int x1, int y1, int x2, int y2) {
+		Rectangle rect = new Rectangle(wd, hg, x, y, z);
+		rect.setGrid(this, x1, y1, x2, y2);
+		return rect;
 	}
 
 	public int getTextureId(GL10 gl) {
@@ -61,6 +66,11 @@ public abstract class GLGrid {
 		// from our bitmap
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
 		bitmap.recycle();
+	}
+
+	protected void setCount(int countX, int countY) {
+		this.countX = Math.max(countX, 1);
+		this.countY = Math.max(countY, 1);
 	}
 
 }
