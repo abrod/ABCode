@@ -55,6 +55,11 @@ public class Button implements Shape {
 	}
 
 	@Override
+	public float getZ() {
+		return buttonItems[1].getZ();
+	}
+
+	@Override
 	public void moveTo(float x, float y) {
 		for (Rectangle rectangle : buttonItems) {
 			rectangle.moveTo(x, y);
@@ -102,6 +107,13 @@ public class Button implements Shape {
 	public void setRotateZ(float rotateZ) {
 		for (Rectangle rectangle : buttonItems) {
 			rectangle.setRotateZ(rotateZ);
+		}
+	}
+
+	@Override
+	public void setZ(float zValue) {
+		for (Rectangle rectangle : buttonItems) {
+			rectangle.setZ(zValue);
 		}
 	}
 

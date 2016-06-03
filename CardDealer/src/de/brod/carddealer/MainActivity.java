@@ -19,16 +19,24 @@ public class MainActivity extends GLActivity {
 		while (shapes.size() > 1) {
 			shapes.remove(0);
 		}
+		for (Shape shape : shapes) {
+			if (!shape.equals(rect)) {
+				shape.setZ(1f);
+			}
+		}
 	}
 
 	@Override
 	protected void actionUp(Shapes selected, Shapes up) {
-		// TODO Auto-generated method stub
-
+		for (Shape shape : selected) {
+			if (!shape.equals(rect)) {
+				shape.setZ(0f);
+			}
+		}
 	}
 
 	private void addColorRect(final Shapes meshes) {
-		rect = new Rectangle(0.8f, 0.8f, -0.2f, 0, -1);
+		rect = new Rectangle(0.8f, 0.8f, -0.2f, 0, 0.8f);
 		rect.setColors(1, 1, 0, 1, //
 				0, 1, 0, 1, //
 				0, 0, 1, 1, //

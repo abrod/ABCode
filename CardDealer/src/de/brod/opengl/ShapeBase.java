@@ -174,7 +174,7 @@ abstract class ShapeBase implements Shape {
 
 	@Override
 	public float getPosition() {
-		return position[1] - position[0] * 2 + position[2] * 10;
+		return position[1] - position[0] * 2 - position[2] * 1000;
 	}
 
 	protected abstract float[] getTextureCoords(float xMin, float yMin, float xMax, float yMax);
@@ -187,6 +187,11 @@ abstract class ShapeBase implements Shape {
 	@Override
 	public float getY() {
 		return position[1];
+	}
+
+	@Override
+	public float getZ() {
+		return position[2];
 	}
 
 	/*
@@ -322,6 +327,11 @@ abstract class ShapeBase implements Shape {
 		this.vertices = vertices;
 		verticesCalc = new float[vertices.length];
 		dirty = true;
+	}
+
+	@Override
+	public void setZ(float zValue) {
+		position[2] = zValue;
 	}
 
 	/*

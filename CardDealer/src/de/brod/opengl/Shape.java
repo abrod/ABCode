@@ -18,6 +18,8 @@ public interface Shape {
 
 	float getY();
 
+	float getZ();
+
 	void moveTo(float x, float y);
 
 	void setPosition(float x, float y, float z);
@@ -27,6 +29,8 @@ public interface Shape {
 	void setRotateY(float rotateY);
 
 	void setRotateZ(float rotateZ);
+
+	void setZ(float zValue);
 
 	boolean touch(float x, float y);
 
