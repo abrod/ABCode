@@ -1,9 +1,6 @@
 package de.brod.carddealer;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import de.brod.opengl.GLActivity;
-import de.brod.opengl.GLGrid;
 import de.brod.opengl.Rectangle;
 import de.brod.opengl.Shape;
 import de.brod.opengl.Shapes;
@@ -47,26 +44,14 @@ public class MainActivity extends GLActivity {
 
 	private Shapes addGridMeshes() {
 		gridMeshes = new Shapes();
-		GLGrid grid = new GLGrid(14, 4) {
 
-			@Override
-			protected Bitmap loadBitmap() {
-				return BitmapFactory.decodeResource(getResources(), R.drawable.cards);
-			}
-		};
-		float wd = 2f / 7;
-		float hg = wd * 4 / 3;
+		CardSet cardSet = new CardSet(getResources(), 7);
 
-		float f = 7f / 13f;
 		for (int i = 0; i < 13; i++) {
 			for (int j = 0; j < 4; j++) {
-				float x = -1 + wd / 2 + wd * i * f;
-				float y = 1 - hg / 2 - hg * j;
-				Rectangle rect = grid.createRectangle(wd, hg, x, y, 0, i, j, 13, j);
-				gridMeshes.add(rect);
-				if (Math.random() < 0.3f) {
-					rect.setRotateX(180);
-				}
+				Card card = cardSet.createCard(i, j, i * 7 / 13f, j);
+
+				gridMeshes.add(card.getRectangle());
 			}
 		}
 		return gridMeshes;
