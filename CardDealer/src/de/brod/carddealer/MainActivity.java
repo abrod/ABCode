@@ -48,8 +48,8 @@ public class MainActivity extends GLActivity {
 		CardSet cardSet = new CardSet(getResources(), 7);
 
 		for (int i = 0; i < 13; i++) {
-			for (int j = 0; j < 4; j++) {
-				Card card = cardSet.createCard(i, j, i * 7 / 13f, j);
+			for (int j = 0; j < 5; j++) {
+				Card card = cardSet.createCard(i, j % 4, i * 7 / 13f, j);
 
 				gridMeshes.add(card.getRectangle());
 			}
