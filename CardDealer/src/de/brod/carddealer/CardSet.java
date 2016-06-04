@@ -37,6 +37,7 @@ public class CardSet {
 		if (Math.random() < 0.3f) {
 			rect.setRotateX(180);
 		}
+		rect.setRotateZ(0);
 		return new Card(rect);
 	}
 }

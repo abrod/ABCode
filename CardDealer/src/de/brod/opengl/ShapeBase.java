@@ -98,11 +98,11 @@ abstract class ShapeBase implements Shape {
 		return floatBuffer;
 	}
 
-	private FloatBuffer createFloatBuffer(GLGrid grid, int x1, int x2, int y1) {
+	private FloatBuffer createFloatBuffer(GLGrid grid, int x1, int x2, int y1, int y2) {
 		float xMin = grid.getX(x1);
 		float xMax = grid.getX(x2);
 		float yMin = grid.getY(y1);
-		float yMax = grid.getY(y1 + 1);
+		float yMax = grid.getY(y2);
 		FloatBuffer fb = createFloatBuffer(getTextureCoords(xMin, yMin, xMax, yMax));
 		return fb;
 	}
@@ -231,8 +231,8 @@ abstract class ShapeBase implements Shape {
 
 	protected void setGrid(GLGrid grid, int x1, int y1, int x2, int y2) {
 		this.grid = grid;
-		textureBufferUp = createFloatBuffer(grid, x1, x1 + 1, y1);
-		textureBufferDown = createFloatBuffer(grid, x2 + 1, x2, y2);
+		textureBufferUp = createFloatBuffer(grid, x1, x1 + 1, y1, y1 + 1);
+		textureBufferDown = createFloatBuffer(grid, x2, x2 + 1, y2 + 1, y2);
 	}
 
 	/**

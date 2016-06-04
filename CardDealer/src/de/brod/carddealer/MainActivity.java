@@ -1,14 +1,12 @@
 package de.brod.carddealer;
 
 import de.brod.opengl.GLActivity;
-import de.brod.opengl.Rectangle;
 import de.brod.opengl.Shape;
 import de.brod.opengl.Shapes;
 
 public class MainActivity extends GLActivity {
 
-	private Rectangle	rect;
-	private Shapes		gridMeshes;
+	private Shapes gridMeshes;
 
 	@Override
 	protected void actionDown(Shapes shapes) {
@@ -17,29 +15,16 @@ public class MainActivity extends GLActivity {
 			shapes.remove(0);
 		}
 		for (Shape shape : shapes) {
-			if (!shape.equals(rect)) {
-				shape.setZ(1f);
-			}
+			shape.setZ(0.5f);
 		}
+
 	}
 
 	@Override
 	protected void actionUp(Shapes selected, Shapes up) {
 		for (Shape shape : selected) {
-			if (!shape.equals(rect)) {
-				shape.setZ(0f);
-			}
+			shape.setZ(0f);
 		}
-	}
-
-	private void addColorRect(final Shapes meshes) {
-		rect = new Rectangle(0.8f, 0.8f, -0.2f, 0, 0.8f);
-		rect.setColors(1, 1, 0, 1, //
-				0, 1, 0, 1, //
-				0, 0, 1, 1, //
-				1, 0, 0, 1//
-		);
-		meshes.add(rect);
 	}
 
 	private Shapes addGridMeshes() {
@@ -59,32 +44,9 @@ public class MainActivity extends GLActivity {
 
 	@Override
 	protected void init(Shapes meshes, float wd, float hg) {
-		addColorRect(meshes);
+
 		meshes.addAll(addGridMeshes());
 
-		new Thread() {
-			@Override
-			public void run() {
-				try {
-					while (true) {
-						long l = System.currentTimeMillis() % 20000;
-						if (l > 10000) {
-							l = 20000 - l;
-						}
-						float angle = l / 10000f * 360f;
-						rect.setRotateZ(angle);
-						angle = Math.abs((rect.getY() + rect.getX() * 0.5f) * 180);
-						for (Shape shape : gridMeshes) {
-							shape.setRotateZ(angle);
-						}
-						requestRender();
-						sleep(25);
-					}
-				} catch (InterruptedException e) {
-					// stopped
-				}
-			}
-		}.start();
 	}
 
 }
