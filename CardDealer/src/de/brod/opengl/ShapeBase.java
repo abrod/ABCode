@@ -233,6 +233,7 @@ abstract class ShapeBase implements Shape {
 		this.grid = grid;
 		textureBufferUp = createFloatBuffer(grid, x1, x1 + 1, y1, y1 + 1);
 		textureBufferDown = createFloatBuffer(grid, x2, x2 + 1, y2 + 1, y2);
+		setRotateFlag();
 	}
 
 	/**

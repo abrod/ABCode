@@ -56,8 +56,11 @@ public class GLView extends GLSurfaceView implements Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		// Clear color and depth buffer.
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		gl.glClearColor(color[0], color[1], color[2], 1);
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
+		gl.glEnable(GL10.GL_BLEND);
+		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		// Reset the matrix
 		gl.glLoadIdentity();
 
@@ -76,6 +79,7 @@ public class GLView extends GLSurfaceView implements Renderer {
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 		// Disable face culling.
 		gl.glDisable(GL10.GL_CULL_FACE);
+		gl.glDisable(GL10.GL_BLEND);
 
 	}
 
@@ -137,11 +141,11 @@ public class GLView extends GLSurfaceView implements Renderer {
 
 	}
 
-	public void setTouchedMeshes(float x, float y, Shapes selectedMeshes) {
-		selectedMeshes.clear();
+	public void setTouchedMeshes(float x, float y, Shapes shapes) {
+		shapes.clear();
 		for (Shape mesh : meshes) {
 			if (mesh.touch(x, y)) {
-				selectedMeshes.add(mesh);
+				shapes.add(mesh);
 			}
 		}
 	}

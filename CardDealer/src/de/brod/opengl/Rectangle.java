@@ -28,7 +28,6 @@ public class Rectangle extends ShapeBase {
 
 	@Override
 	protected float[] getTextureCoords(float xMin, float yMin, float xMax, float yMax) {
-		// TODO Auto-generated method stub
 		float textureCoordinates[] = { xMin, yMin, //
 				xMin, yMax, //
 				xMax, yMax, //
