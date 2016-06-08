@@ -25,7 +25,7 @@ public class CardSet {
 			@Override
 			protected Bitmap loadBitmap() {
 
-				return BitmapFactory.decodeResource(resources, R.drawable.cards);
+				return BitmapFactory.decodeResource(resources, R.drawable.card2);
 			}
 		};
 	}

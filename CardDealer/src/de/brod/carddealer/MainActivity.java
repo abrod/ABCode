@@ -32,10 +32,10 @@ public class MainActivity extends GLActivity {
 	private Shapes addGridMeshes() {
 		gridMeshes = new Shapes();
 
-		CardSet cardSet = new CardSet(getResources(), 7);
+		CardSet cardSet = new CardSet(getResources(), 8);
 
-		for (int i = 0; i < 7; i++) {
-			for (int j = 0; j < 5; j++) {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 6; j++) {
 				int j2 = j % 4;
 				Card card = cardSet.createCard(((int) (Math.random() * 13)), j2, i, j);
 				gridMeshes.add(card.getRectangle());
