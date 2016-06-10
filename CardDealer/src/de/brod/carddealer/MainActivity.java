@@ -1,6 +1,6 @@
 package de.brod.carddealer;
 
-import de.brod.opengl.Button;
+import de.brod.opengl.ButtonAction;
 import de.brod.opengl.GLActivity;
 import de.brod.opengl.Grid3d;
 import de.brod.opengl.Shape;
@@ -35,9 +35,13 @@ public class MainActivity extends GLActivity {
 		CardSet cardSet = new CardSet(getResources(), 8);
 
 		for (int i = 0; i < 8; i++) {
+			CardRow cardRow = cardSet.createCardRow(i, 0, 0, 5, 10);
+			gridMeshes.add(cardRow.getRectangle());
+		}
+
+		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 6; j++) {
-				int j2 = j % 4;
-				Card card = cardSet.createCard(((int) (Math.random() * 13)), j2, i, j);
+				Card card = cardSet.createCard(((int) (Math.random() * 14)), ((int) (Math.random() * 8)), i, j);
 				gridMeshes.add(card.getRectangle());
 			}
 		}
@@ -46,19 +50,18 @@ public class MainActivity extends GLActivity {
 
 	private Shape createButton(float wd, float hg) {
 		Grid3d buttonGrid = new Grid3d();
-		Button button;
+
 		float abs = Math.abs(wd - hg);
 		float width = abs;
 		float height = abs / 2;
-		button = new Button(width, height, wd - width / 2, hg - height / 2, -0.1f, buttonGrid) {
+
+		return buttonGrid.createButton(width, height, wd - width / 2, hg - height / 2, -0.1f, new ButtonAction() {
 
 			@Override
 			public void doAction() {
-				// TODO Auto-generated method stub
-
+				// make nothing
 			}
-		};
-		return button;
+		});
 	}
 
 	@Override

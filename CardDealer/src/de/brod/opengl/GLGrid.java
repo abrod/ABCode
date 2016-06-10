@@ -8,16 +8,16 @@ import android.opengl.GLUtils;
 public abstract class GLGrid {
 	private boolean	loadTexture;
 	private int		textureId;
-	float			countX, countY;
+	private int		countX, countY;
 
 	public GLGrid(int countX, int countY) {
 		loadTexture = true;
 		setCount(countX, countY);
 	}
 
-	public Rectangle createRectangle(float wd, float hg, float x, float y, int z, int x1, int y1, int x2, int y2) {
+	public Rectangle createRectangle(float wd, float hg, float x, float y, int z, int a, int b) {
 		Rectangle rect = new Rectangle(wd, hg, x, y, z);
-		rect.setGrid(this, x1, y1, x2, y2);
+		rect.setGrid(this, a % countX, a / countX, b % countX, b / countX);
 		return rect;
 	}
 
@@ -29,11 +29,11 @@ public abstract class GLGrid {
 		return textureId;
 	}
 
-	public float getX(int x1) {
+	public float getX(float x1) {
 		return x1 / countX;
 	}
 
-	public float getY(int y1) {
+	public float getY(float y1) {
 		return y1 / countY;
 	}
 

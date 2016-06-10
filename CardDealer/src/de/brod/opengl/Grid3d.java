@@ -18,6 +18,10 @@ public class Grid3d extends GLGrid {
 		wd = size / 25;
 	}
 
+	public Button createButton(float width, float height, float f, float g, float h, ButtonAction action) {
+		return new Button(width, height, f, g, h, this, action);
+	}
+
 	private void draw(Canvas c, int dx, int width, int white, int black) {
 		Paint p = new Paint();
 		int d = wd / 2;
@@ -55,7 +59,6 @@ public class Grid3d extends GLGrid {
 		draw(c, 0, size - 1, Color.WHITE, Color.BLACK);
 		draw(c, size, size - 1, Color.BLACK, 0);
 		return bitmap;
-		// return BitmapFactory.decodeResource(getResources(), R.drawable.button);
 	}
 
 }

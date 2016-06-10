@@ -2,14 +2,16 @@ package de.brod.opengl;
 
 import javax.microedition.khronos.opengles.GL10;
 
-public abstract class Button implements Shape {
+public class Button implements Shape {
 
-	private Rectangle[]	buttonItems;
-	private float		posX, posY;
+	private Rectangle[]		buttonItems;
+	private float			posX, posY;
 
-	private boolean		landscape, pressed;
+	private boolean			landscape, pressed;
+	private ButtonAction	action;
 
-	public Button(float width, float height, float x, float y, float z, GLGrid grid) {
+	public Button(float width, float height, float x, float y, float z, GLGrid grid, ButtonAction action) {
+		this.action = action;
 		pressed = false;
 		// create 9 items
 		buttonItems = new Rectangle[3];
@@ -19,7 +21,9 @@ public abstract class Button implements Shape {
 		setGrid(grid);
 	}
 
-	public abstract void doAction();
+	public final void doAction() {
+		action.doAction();
+	}
 
 	@Override
 	public void draw(GL10 gl) {
@@ -79,6 +83,12 @@ public abstract class Button implements Shape {
 		}
 	}
 
+	public void setColor(float red, float green, float blue, float alpha) {
+		for (Rectangle rectangle : buttonItems) {
+			rectangle.setColor(red, green, blue, alpha);
+		}
+	}
+
 	private void setGrid(GLGrid grid) {
 		if (landscape) {
 			grid.setCount(6, 1);
@@ -87,9 +97,9 @@ public abstract class Button implements Shape {
 			buttonItems[2].setGrid(grid, 2, 0, 5, 0);
 		} else {
 			grid.setCount(2, 3);
-			buttonItems[0].setGrid(grid, 0, 0, 1, 0);
+			buttonItems[0].setGrid(grid, 0, 2, 1, 0);
 			buttonItems[1].setGrid(grid, 0, 1, 1, 1);
-			buttonItems[2].setGrid(grid, 0, 2, 1, 2);
+			buttonItems[2].setGrid(grid, 0, 0, 1, 2);
 		}
 	}
 
@@ -159,5 +169,4 @@ public abstract class Button implements Shape {
 			rectangle.untouch();
 		}
 	}
-
 }

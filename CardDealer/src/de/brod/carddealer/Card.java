@@ -1,6 +1,7 @@
 package de.brod.carddealer;
 
 import de.brod.opengl.Rectangle;
+import de.brod.opengl.Shape;
 
 public class Card {
 
@@ -10,7 +11,7 @@ public class Card {
 		this.rect = rect;
 	}
 
-	public Rectangle getRectangle() {
+	public Shape getRectangle() {
 		return rect;
 	}
 
