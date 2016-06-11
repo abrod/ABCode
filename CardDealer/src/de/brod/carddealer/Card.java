@@ -21,14 +21,14 @@ public class Card {
 	}
 
 	public void moveTo(float x, float y) {
-		rect.moveTo(x, y);
+		rect.setPosition(x, y, 0);
 	}
 
-	public void setCardRow(CardRow cardRow) {
-		if (cardRow != null) {
-			cardRow.removeCard(this);
+	public void setCardRow(CardRow cardRownew) {
+		if (this.cardRow != null) {
+			this.cardRow.removeCard(this);
 		}
-		this.cardRow = cardRow;
+		this.cardRow = cardRownew;
 
 	}
 
