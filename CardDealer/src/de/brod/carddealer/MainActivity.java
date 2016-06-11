@@ -44,6 +44,25 @@ public class MainActivity extends GLActivity {
 
 	@Override
 	protected void actionUp(Shapes selected, Shapes up) {
+		List<CardRow> cardRows = cardSet.getCardRows(up);
+		List<Card> cards = cardSet.getCards(selected);
+		if (cardRows.size() > 0) {
+			CardRow cardRow = cardRows.get(cardRows.size() - 1);
+			for (Card card : cards) {
+				cardRow.addCard(card);
+			}
+		} else {
+			for (Card card : cards) {
+				CardRow cardRow = card.getCardRow();
+				if (cardRows.contains(cardRow)) {
+					cardRows.add(cardRow);
+				}
+			}
+			for (CardRow cardRow : cardRows) {
+				cardRow.organize();
+			}
+		}
+
 		for (Shape shape : selected) {
 			shape.setZ(0f);
 		}

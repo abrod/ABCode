@@ -15,9 +15,9 @@ public class CardRow implements ButtonAction {
 	int				minCount;
 	List<Card>		cards	= new ArrayList<Card>();
 
-	public void addCard(Card c) {
-		c.setCardRow(this);
-		cards.add(c);
+	public void addCard(Card card) {
+		card.setCardRow(this);
+		cards.add(card);
 		organize();
 	}
 
@@ -42,7 +42,7 @@ public class CardRow implements ButtonAction {
 
 	}
 
-	private void organize() {
+	void organize() {
 		int size = cards.size();
 		float count = Math.max(minCount, size - 1);
 		for (int i = 0; i < size; i++) {
