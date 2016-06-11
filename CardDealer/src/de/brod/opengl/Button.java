@@ -83,6 +83,7 @@ public class Button implements Shape {
 		}
 	}
 
+	@Override
 	public void setColor(float red, float green, float blue, float alpha) {
 		for (Rectangle rectangle : buttonItems) {
 			rectangle.setColor(red, green, blue, alpha);

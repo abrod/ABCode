@@ -213,6 +213,7 @@ abstract class ShapeBase implements Shape {
 	 * @param blue
 	 * @param alpha
 	 */
+	@Override
 	public void setColor(float red, float green, float blue, float alpha) {
 		color[0] = red;
 		color[1] = green;

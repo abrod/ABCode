@@ -18,8 +18,8 @@ public class Grid3d extends GLGrid {
 		wd = size / 25;
 	}
 
-	public Button createButton(float width, float height, float f, float g, float h, ButtonAction action) {
-		return new Button(width, height, f, g, h, this, action);
+	public Button createButton(float width, float height, float x, float y, float z, ButtonAction action) {
+		return new Button(width, height, x, y, z, this, action);
 	}
 
 	private void draw(Canvas c, int dx, int width, int white, int black) {

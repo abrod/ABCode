@@ -22,6 +22,8 @@ public interface Shape {
 
 	void moveTo(float x, float y);
 
+	void setColor(float red, float green, float blue, float alpha);
+
 	void setPosition(float x, float y, float z);
 
 	void setRotateX(float rotateX);

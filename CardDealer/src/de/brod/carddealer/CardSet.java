@@ -1,5 +1,10 @@
 package de.brod.carddealer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,14 +13,18 @@ import de.brod.opengl.ButtonAction;
 import de.brod.opengl.GLGrid;
 import de.brod.opengl.Grid3d;
 import de.brod.opengl.Rectangle;
+import de.brod.opengl.Shape;
+import de.brod.opengl.Shapes;
 
 public class CardSet {
-	private float	wd;
-	private float	hg;
-	private GLGrid	grid;
-	private float	left;
-	private float	top;
-	private Grid3d	buttonGrid;
+	private float				wd;
+	private float				hg;
+	private GLGrid				grid;
+	private float				left;
+	private float				top;
+	private Grid3d				buttonGrid;
+	private Map<Shape, Card>	cards		= new HashMap<Shape, Card>();
+	private Map<Shape, CardRow>	cardRows	= new HashMap<Shape, CardRow>();
 
 	public CardSet(final Resources resources, int countX) {
 
@@ -33,6 +42,15 @@ public class CardSet {
 			}
 		};
 		buttonGrid = new Grid3d();
+	}
+
+	public void clearAll() {
+		cards.clear();
+		cardRows.clear();
+	}
+
+	public Button createButton(float width, float height, float x, float y, float z, ButtonAction action) {
+		return buttonGrid.createButton(width, height, x, y, z, action);
 	}
 
 	public Card createCard(int i, int j, float px, float py) {
@@ -53,7 +71,9 @@ public class CardSet {
 			rect.setRotateX(180);
 		}
 		rect.setRotateZ(0);
-		return new Card(rect);
+		Card card = new Card(rect);
+		cards.put(rect, card);
+		return card;
 	}
 
 	public CardRow createCardRow(float px, float py, float width, float height, int count) {
@@ -62,17 +82,39 @@ public class CardSet {
 		float y1 = getY(py);
 		float x2 = getX(px + width);
 		float y2 = getY(py + height);
-		Button button = buttonGrid.createButton(wd + Math.abs(x1 - x2), hg + Math.abs(y1 - y2), (x1 + x2) / 2,
-				(y1 + y2) / 2, -0.1f, new ButtonAction() {
-
-					@Override
-					public void doAction() {
-						// make nothing
-					}
-				});
+		float widthButton = wd + Math.abs(x1 - x2);
+		float heighButton = hg + Math.abs(y1 - y2);
+		float x = (x1 + x2) / 2;
+		float y = (y1 + y2) / 2;
+		float z = -0.1f;
+		CardRow cardRow = new CardRow();
+		Button button = createButton(widthButton, heighButton, x, y, z, cardRow);
 		button.setRotateZ(0);
-		button.setColor(0.5f, 0.5f, 1f, 0.5f);
-		return new CardRow(button, x1, x2, y1, y2, count);
+		cardRow.init(button, x1, x2, y1, y2, count);
+		cardRows.put(button, cardRow);
+		return cardRow;
+	}
+
+	public List<CardRow> getCardRows(Shapes shapes) {
+		List<CardRow> lst = new ArrayList<CardRow>();
+		for (Shape shape : shapes) {
+			CardRow cardRow = cardRows.get(shape);
+			if (cardRow != null) {
+				lst.add(cardRow);
+			}
+		}
+		return lst;
+	}
+
+	public List<Card> getCards(Shapes shapes) {
+		List<Card> lst = new ArrayList<Card>();
+		for (Shape shape : shapes) {
+			Card card = cards.get(shape);
+			if (card != null) {
+				lst.add(card);
+			}
+		}
+		return lst;
 	}
 
 	public float getX(float px) {
