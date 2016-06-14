@@ -53,42 +53,44 @@ public abstract class GLActivity extends Activity {
 	public boolean onTouchEvent(MotionEvent event) {
 		float x = glView.getX(event.getX());
 		float y = glView.getY(event.getY());
-		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			glView.setTouchedMeshes(x, y, selectedMeshes);
-			Shape lastItem = lastItem(selectedMeshes);
-			if (lastItem instanceof Button) {
-				selectedButton = (Button) lastItem;
-				selectedButton.setPressed(true);
-				selectedMeshes.clear();
-			} else {
-				selectedButton = null;
-				actionDown(selectedMeshes);
-			}
-			glView.requestRender();
-		} else if (event.getAction() == MotionEvent.ACTION_UP) {
-			glView.setTouchedMeshes(x, y, upMeshes);
-			if (selectedButton != null) {
-				selectedButton.setPressed(false);
-				if (upMeshes.contains(selectedButton)) {
-					selectedButton.doAction();
+		synchronized (GLActivity.class) {
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				glView.setTouchedMeshes(x, y, selectedMeshes);
+				Shape lastItem = lastItem(selectedMeshes);
+				if (lastItem instanceof Button) {
+					selectedButton = (Button) lastItem;
+					selectedButton.setPressed(true);
+					selectedMeshes.clear();
+				} else {
+					selectedButton = null;
+					actionDown(selectedMeshes);
 				}
-			} else {
-				for (Shape shape : selectedMeshes) {
-					upMeshes.remove(shape);
-				}
-				actionUp(selectedMeshes, upMeshes);
-			}
-			glView.requestRender();
-		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-			if (selectedButton != null) {
+				glView.requestRender();
+			} else if (event.getAction() == MotionEvent.ACTION_UP) {
 				glView.setTouchedMeshes(x, y, upMeshes);
-				selectedButton.setPressed(upMeshes.contains(selectedButton));
-			} else {
-				for (Shape mesh : selectedMeshes) {
-					mesh.moveTo(x, y);
+				if (selectedButton != null) {
+					selectedButton.setPressed(false);
+					if (upMeshes.contains(selectedButton)) {
+						selectedButton.doAction();
+					}
+				} else {
+					for (Shape shape : selectedMeshes) {
+						upMeshes.remove(shape);
+					}
+					actionUp(selectedMeshes, upMeshes);
 				}
+				glView.requestRender();
+			} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+				if (selectedButton != null) {
+					glView.setTouchedMeshes(x, y, upMeshes);
+					selectedButton.setPressed(upMeshes.contains(selectedButton));
+				} else {
+					for (Shape mesh : selectedMeshes) {
+						mesh.moveTo(x, y);
+					}
+				}
+				glView.requestRender();
 			}
-			glView.requestRender();
 		}
 		return true;
 	}

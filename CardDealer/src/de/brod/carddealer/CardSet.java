@@ -59,7 +59,7 @@ public class CardSet {
 			// joker = position 53,54
 			a = 52 + j % 2;
 		} else {
-			a = (j % 4) * 12 + i;
+			a = (j % 4) * 13 + i;
 		}
 		// back = position 55,56,57,58
 		int b = 54 + (j / 4);
@@ -67,9 +67,6 @@ public class CardSet {
 		float x = getX(px);
 		float y = getY(py);
 		Rectangle rect = grid.createRectangle(wd, hg, x, y, 0, a, b);
-		if (Math.random() < 0.3f) {
-			rect.setRotateX(180);
-		}
 		rect.setRotateZ(0);
 		Card card = new Card(rect);
 		cards.put(rect, card);

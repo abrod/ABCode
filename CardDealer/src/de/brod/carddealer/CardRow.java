@@ -27,6 +27,10 @@ public class CardRow implements ButtonAction {
 
 	}
 
+	public List<Card> getCards() {
+		return cards;
+	}
+
 	public Shape getRectangle() {
 		return rect;
 	}

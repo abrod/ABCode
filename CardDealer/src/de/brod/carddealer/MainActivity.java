@@ -1,5 +1,7 @@
 package de.brod.carddealer;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.brod.opengl.Button;
@@ -36,6 +38,20 @@ public class MainActivity extends GLActivity {
 				shapes.remove(i);
 			}
 		}
+
+		if (cards.size() == 1) {
+			Card card = cards.get(0);
+			CardRow cardRow = card.getCardRow();
+			boolean add = false;
+			for (Card card2 : cardRow.getCards()) {
+				if (card2 == card) {
+					add = true;
+				} else if (add) {
+					shapes.add(card2.getRectangle());
+				}
+			}
+		}
+
 		for (Shape shape : shapes) {
 			shape.setZ(0.5f);
 		}
@@ -74,16 +90,24 @@ public class MainActivity extends GLActivity {
 
 		CardRow[] row = new CardRow[8];
 		for (int i = 0; i < row.length; i++) {
-			row[i] = cardSet.createCardRow(i, 0, 0, 5, 10);
+			row[i] = cardSet.createCardRow(i, 1, 0, 4, 10);
 			gridMeshes.add(row[i].getRectangle());
 		}
-
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 6; j++) {
-				Card card = cardSet.createCard(((int) (Math.random() * 14)), ((int) (Math.random() * 8)), i, j);
-				gridMeshes.add(card.getRectangle());
-				row[i].addCard(card);
-			}
+		for (int i = 0; i < row.length; i++) {
+			CardRow rows = cardSet.createCardRow(i, 0, 0, 0, 1);
+			gridMeshes.add(rows.getRectangle());
+		}
+		List<Card> lst = new ArrayList<Card>();
+		for (int i = 0; i < 52; i++) {
+			Card card = cardSet.createCard(i % 13, i / 13, 0, 0);
+			lst.add(card);
+			gridMeshes.add(card.getRectangle());
+		}
+		Collections.shuffle(lst);
+		int count = 0;
+		while (lst.size() > 0) {
+			row[count].addCard(lst.remove(0));
+			count = (count + 1) % row.length;
 		}
 		return gridMeshes;
 	}

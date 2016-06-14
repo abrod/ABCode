@@ -71,9 +71,10 @@ public class GLView extends GLSurfaceView implements Renderer {
 		// rendering.
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 
-		meshes.sort();
-
-		meshes.draw(gl);
+		synchronized (GLActivity.class) {
+			meshes.sort();
+			meshes.draw(gl);
+		}
 
 		// Disable the vertices buffer.
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
