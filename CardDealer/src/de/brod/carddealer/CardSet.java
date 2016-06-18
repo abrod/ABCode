@@ -1,6 +1,7 @@
 package de.brod.carddealer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class CardSet {
 	private Grid3d				buttonGrid;
 	private Map<Shape, Card>	cards		= new HashMap<Shape, Card>();
 	private Map<Shape, CardRow>	cardRows	= new HashMap<Shape, CardRow>();
+	private Collection<Button>	buttons		= new ArrayList<Button>();
 
 	public CardSet(final Resources resources, int countX) {
 
@@ -47,34 +49,35 @@ public class CardSet {
 	public void clearAll() {
 		cards.clear();
 		cardRows.clear();
+		buttons.clear();
 	}
 
 	public Button createButton(float width, float height, float x, float y, float z, ButtonAction action) {
-		return buttonGrid.createButton(width, height, x, y, z, action);
+		Button button = buttonGrid.createButton(width, height, x, y, z, action);
+		buttons.add(button);
+		return button;
 	}
 
-	public Card createCard(int i, int j, float px, float py) {
+	public Card createCard(int value, int color, float px, float py) {
 		int a;
-		if (i >= 13) {
+		if (value >= 13) {
 			// joker = position 53,54
-			a = 52 + j % 2;
+			a = 52 + color % 2;
 		} else {
-			a = (j % 4) * 13 + i;
+			a = (color % 4) * 13 + value;
 		}
 		// back = position 55,56,57,58
-		int b = 54 + (j / 4);
-
+		int b = 54 + (color / 4);
 		float x = getX(px);
 		float y = getY(py);
 		Rectangle rect = grid.createRectangle(wd, hg, x, y, 0, a, b);
 		rect.setRotateZ(0);
-		Card card = new Card(rect);
+		Card card = new Card(rect, value, color % 4);
 		cards.put(rect, card);
 		return card;
 	}
 
-	public CardRow createCardRow(float px, float py, float width, float height, int count) {
-
+	public CardRow createCardRow(int index, float px, float py, float width, float height, int count) {
 		float x1 = getX(px);
 		float y1 = getY(py);
 		float x2 = getX(px + width);
@@ -84,12 +87,20 @@ public class CardSet {
 		float x = (x1 + x2) / 2;
 		float y = (y1 + y2) / 2;
 		float z = -0.1f;
-		CardRow cardRow = new CardRow();
+		CardRow cardRow = new CardRow(index);
 		Button button = createButton(widthButton, heighButton, x, y, z, cardRow);
 		button.setRotateZ(0);
 		cardRow.init(button, x1, x2, y1, y2, count);
 		cardRows.put(button, cardRow);
 		return cardRow;
+	}
+
+	public Collection<Button> getButtons() {
+		return buttons;
+	}
+
+	public Collection<CardRow> getCardRows() {
+		return cardRows.values();
 	}
 
 	public List<CardRow> getCardRows(Shapes shapes) {
@@ -101,6 +112,10 @@ public class CardSet {
 			}
 		}
 		return lst;
+	}
+
+	public Collection<Card> getCards() {
+		return cards.values();
 	}
 
 	public List<Card> getCards(Shapes shapes) {

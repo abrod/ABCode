@@ -7,13 +7,18 @@ import de.brod.opengl.ButtonAction;
 import de.brod.opengl.Shape;
 
 public class CardRow implements ButtonAction {
-	private Shape	rect;
-	float			x1;
-	float			y1;
-	float			dx;
-	float			dy;
-	int				minCount;
-	List<Card>		cards	= new ArrayList<Card>();
+	private Shape		rect;
+	float				x1;
+	float				y1;
+	float				dx;
+	float				dy;
+	int					minCount;
+	List<Card>			cards	= new ArrayList<Card>();
+	private final int	index;
+
+	public CardRow(int index) {
+		this.index = index;
+	}
 
 	public void addCard(Card card) {
 		card.setCardRow(this);
@@ -29,6 +34,18 @@ public class CardRow implements ButtonAction {
 
 	public List<Card> getCards() {
 		return cards;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public Card getLastCard() {
+		int location = cards.size() - 1;
+		if (location >= 0) {
+			return cards.get(location);
+		}
+		return null;
 	}
 
 	public Shape getRectangle() {
